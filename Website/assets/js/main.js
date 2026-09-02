@@ -261,6 +261,7 @@ const Cart = {
       const x = e.target.closest('[data-x]');
       if (q){
         const line = this.items.find(i => i.id === q.dataset.id);
+        if (!line) return;
         this.setQty(q.dataset.id, line.qty + (q.dataset.q === '+' ? 1 : -1));
       }
       if (x) this.remove(x.dataset.x);
@@ -346,17 +347,95 @@ function initNav(){
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
 }
 
-function initHeroVideo(){
-  const v = $('#hero-video');
-  if (!v) return;
-  const media = v.closest('.hero__media');
-  const fail = () => media?.classList.add('is-empty');
-  const ok   = () => media?.classList.remove('is-empty');
-  v.addEventListener('error', fail);
-  v.addEventListener('loadeddata', ok);
-  if (!v.querySelector('source')) fail();
-  setTimeout(() => { if (v.readyState === 0) fail(); }, 2500);
-  v.play?.().catch(() => {});
+/* =============================================================
+   SHOP MEGA MENU
+   The desktop dropdown and the mobile accordion both need the
+   same category list and the same featured product, sourced live
+   from CATEGORIES/PRODUCTS. Rendering that in one shared place
+   (rather than a copy of this script pasted into all seven pages)
+   is what keeps them from silently drifting apart — the same
+   reason the header/mnav/footer markup itself has to stay
+   byte-identical across pages.
+   ============================================================= */
+const MegaMenu = {
+  featuredId: 'herbal-hair-oil',
+
+  paint(){
+    const catsHTML = CATEGORIES.map(c =>
+      `<li role="none"><a role="menuitem" href="shop.html?cat=${c.id}">${isRTL() ? c.ar : c.en}</a></li>`
+    ).join('');
+    $$('.js-mega-cats').forEach(ul => { ul.innerHTML = catsHTML; });
+
+    const p = PRODUCTS.find(x => x.id === this.featuredId) || PRODUCTS[0];
+    if (!p) return;
+    $$('.js-mega-feat').forEach(a => {
+      a.href = `product.html?id=${p.id}`;
+      const img = a.querySelector('img');
+      img.src = imgSrc(p.id, 1); img.alt = L(p).name; guard(img);
+      a.querySelector('.mega__feat-name').textContent = L(p).name;
+      a.querySelector('.mega__feat-price').textContent = money(p.price);
+    });
+  },
+
+  init(){
+    this.paint();
+    document.addEventListener('lang:change', () => this.paint());
+
+    const wrap = $('#shop-mega-wrap');
+    const trigger = $('#shop-mega-trigger');
+    const panel = $('#shop-mega');
+    if (!wrap || !trigger || !panel) return;
+
+    const items = () => $$('a[role="menuitem"]', panel);
+
+    const open = () => { wrap.classList.add('is-open'); trigger.setAttribute('aria-expanded', 'true'); };
+    const close = (returnFocus) => {
+      wrap.classList.remove('is-open');
+      trigger.setAttribute('aria-expanded', 'false');
+      if (returnFocus) trigger.focus();
+    };
+
+    wrap.addEventListener('mouseenter', open);
+    wrap.addEventListener('mouseleave', () => close(false));
+    trigger.addEventListener('focus', open);
+    wrap.addEventListener('focusout', e => { if (!wrap.contains(e.relatedTarget)) close(false); });
+
+    wrap.addEventListener('keydown', e => {
+      const list = items();
+      if (!list.length) return;
+      const i = list.indexOf(document.activeElement);
+
+      if (e.key === 'Escape'){ close(true); return; }
+      if (e.key === 'ArrowDown'){
+        e.preventDefault();
+        if (document.activeElement === trigger){ open(); list[0].focus(); }
+        else list[Math.min(i + 1, list.length - 1)].focus();
+      }
+      if (e.key === 'ArrowUp'){
+        e.preventDefault();
+        if (i <= 0) trigger.focus();
+        else list[i - 1].focus();
+      }
+    });
+  }
+};
+
+/* mobile nav collapses the same Shop content into an accordion */
+function initMobileShopAccordion(){
+  const acc = $('#mnav-shop-acc');
+  const btn = $('#mnav-shop-toggle');
+  const panel = $('#mnav-shop-panel');
+  if (!acc || !btn || !panel) return;
+
+  btn.addEventListener('click', () => {
+    const open = acc.classList.toggle('is-open');
+    btn.setAttribute('aria-expanded', String(open));
+    panel.style.maxHeight = open ? panel.scrollHeight + 'px' : 0;
+  });
+
+  document.addEventListener('lang:change', () => {
+    if (acc.classList.contains('is-open')) panel.style.maxHeight = panel.scrollHeight + 'px';
+  });
 }
 
 /* the shop hero photo may not exist yet — fall back to the gradient */
@@ -388,9 +467,10 @@ function initNewsletter(){
 document.addEventListener('DOMContentLoaded', () => {
   initLang();
   initNav();
+  MegaMenu.init();
+  initMobileShopAccordion();
   initMarquee();
   initPageHero();
-  initHeroVideo();
   initNewsletter();
   Cart.init();
   Audio_.init();

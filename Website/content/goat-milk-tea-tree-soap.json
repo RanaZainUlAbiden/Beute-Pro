@@ -1,0 +1,18 @@
+{
+  "id": "goat-milk-tea-tree-soap",
+  "url": "https://beutepro.com/product/goat-milk-tea-tree-soap/",
+  "name": "Goat Milk & Tea Tree Soap",
+  "price": 1500,
+  "size": "NOT FOUND",
+  "description": "Blending the creamy nourishment of goat milk with the purifying properties of tea tree, this balancing bar gently cleanses while supporting healthy looking skin.",
+  "ingredients": ["NOT FOUND"],
+  "benefits": [
+    "Deeply moisturizes dry, sensitive, or irritated skin",
+    "Helps fight acne, inflammation, and clogged pores",
+    "Soothes eczema, redness, and itchiness",
+    "Maintains skin's pH while gently cleansing",
+    "Suitable for both face and body"
+  ],
+  "usage": "NOT FOUND",
+  "notes": "New product, not previously in products.js."
+}

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Shop — Béute Pro</title>
-<link rel="icon" href="assets/img/brand/favicon.png">
+<link rel="icon" href="assets/img/brand/BeutePro_Favicon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -17,11 +17,11 @@
 <header class="site-head">
   <div class="topbar">
   <div class="wrap topbar__in">
-    <a class="topbar__mail" href="mailto:support@beutepro.com" data-i18n="topbar.mail">support@beutepro.com</a>
+    <span class="topbar__note" data-i18n="topbar.note">Cash on delivery across Pakistan · Free shipping over Rs 3,000</span>
     <div class="topbar__set">
-      <a href="#" data-i18n="topbar.login">Login / Register</a>
-      <a href="#" data-i18n="topbar.track">Track Order</a>
-      <a href="#" data-i18n="topbar.wishlist">Wishlist</a>
+      <span class="topbar__link" aria-disabled="true"><span data-i18n="topbar.login">Login / Register</span><span class="pill-soon" data-i18n="topbar.soon">Soon</span></span>
+      <span class="topbar__link" aria-disabled="true"><span data-i18n="topbar.track">Track Order</span><span class="pill-soon" data-i18n="topbar.soon">Soon</span></span>
+      <span class="topbar__link" aria-disabled="true"><span data-i18n="topbar.wishlist">Wishlist</span><span class="pill-soon" data-i18n="topbar.soon">Soon</span></span>
     </div>
   </div>
   </div>
@@ -30,14 +30,47 @@
   <div class="wrap nav__in">
     <a class="nav__logo" href="index.html">
       <img src="assets/img/brand/logo-white.png" alt="Béute Pro"
-           onerror="this.outerHTML='<span class=\'nav__logo-fallback\'>B&eacute;ute Pro</span>'">
+           onerror="this.onerror=null;this.src='assets/img/brand/logo.png';this.addEventListener('error',()=>{this.outerHTML='<span class=\'nav__logo-fallback\'>B&eacute;ute Pro</span>'})">
     </a>
-    <nav class="nav__links">
+    <nav class="nav__links" aria-label="Primary">
       <a href="index.html" data-i18n="nav.home">Home</a>
-      <a href="shop.html" class="is-active" data-i18n="nav.shop">Shop</a>
-      <a href="index.html#feature" data-i18n="nav.story">Our Story</a>
-      <a href="#" data-i18n="nav.journal">Journal</a>
-      <a href="#" data-i18n="nav.contact">Contact</a>
+
+      <div class="nav__item has-mega" id="shop-mega-wrap">
+        <a href="shop.html" class="nav__mega-trigger is-active" id="shop-mega-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="shop-mega"><span data-i18n="nav.shop">Shop</span><svg class="nav__caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a>
+        <div class="mega" id="shop-mega" role="menu" aria-label="Shop menu">
+          <div class="wrap mega__in">
+            <div class="mega__col">
+              <h4 data-i18n="nav.megamenu.category">Shop by category</h4>
+              <ul class="mega__list js-mega-cats" role="none"></ul>
+            </div>
+            <div class="mega__col">
+              <h4 data-i18n="nav.megamenu.concern">Shop by concern</h4>
+              <ul class="mega__list" role="none">
+                <li role="none"><a role="menuitem" href="shop.html?concern=acne" data-i18n="concern.acne">Acne</a></li>
+                <li role="none"><a role="menuitem" href="shop.html?concern=dullness" data-i18n="concern.dullness">Dullness</a></li>
+                <li role="none"><a role="menuitem" href="shop.html?concern=dryness" data-i18n="concern.dryness">Dryness</a></li>
+                <li role="none"><a role="menuitem" href="shop.html?concern=hairfall" data-i18n="concern.hairfall">Hairfall</a></li>
+                <li role="none"><a role="menuitem" href="shop.html?concern=dandruff" data-i18n="concern.dandruff">Dandruff</a></li>
+                <li role="none"><a role="menuitem" href="shop.html?concern=frizz" data-i18n="concern.frizz">Frizz</a></li>
+              </ul>
+            </div>
+            <div class="mega__col mega__col--feat">
+              <h4 data-i18n="nav.megamenu.featured">Featured</h4>
+              <a class="mega__all" role="menuitem" href="shop.html" data-i18n="nav.shopall">Shop all products</a>
+              <a class="mega__feat js-mega-feat" role="menuitem" href="#">
+                <span class="mega__feat-frame"><img src="" alt="" data-fallback></span>
+                <span class="mega__feat-name"></span>
+                <span class="mega__feat-price"></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a href="shop.html?group=skincare" data-i18n="nav.skincare">Skincare</a>
+      <a href="shop.html?group=haircare" data-i18n="nav.haircare">Haircare</a>
+      <a href="about.html" data-i18n="nav.story">Our Story</a>
+      <a href="contact.html" data-i18n="nav.contact">Contact</a>
     </nav>
     <div class="nav__tools">
       <button class="lang-btn" aria-label="Language">ع</button>
@@ -73,10 +106,38 @@
 
   <nav class="mnav__links">
     <a href="index.html" data-i18n="nav.home">Home</a>
-    <a href="shop.html" data-i18n="nav.shop">Shop</a>
-    <a href="index.html#feature" data-i18n="nav.story">Our Story</a>
-    <a href="#" data-i18n="nav.journal">Journal</a>
-    <a href="#" data-i18n="nav.contact">Contact</a>
+
+    <div class="mnav__acc" id="mnav-shop-acc">
+      <button class="mnav__acc-btn" id="mnav-shop-toggle" aria-expanded="false" aria-controls="mnav-shop-panel">
+        <span data-i18n="nav.shop">Shop</span><i>+</i>
+      </button>
+      <div class="mnav__acc-panel" id="mnav-shop-panel">
+        <div class="mnav__acc-in">
+          <h5 data-i18n="nav.megamenu.category">Shop by category</h5>
+          <ul class="mega__list js-mega-cats"></ul>
+          <h5 data-i18n="nav.megamenu.concern">Shop by concern</h5>
+          <ul class="mega__list">
+            <li><a href="shop.html?concern=acne" data-i18n="concern.acne">Acne</a></li>
+            <li><a href="shop.html?concern=dullness" data-i18n="concern.dullness">Dullness</a></li>
+            <li><a href="shop.html?concern=dryness" data-i18n="concern.dryness">Dryness</a></li>
+            <li><a href="shop.html?concern=hairfall" data-i18n="concern.hairfall">Hairfall</a></li>
+            <li><a href="shop.html?concern=dandruff" data-i18n="concern.dandruff">Dandruff</a></li>
+            <li><a href="shop.html?concern=frizz" data-i18n="concern.frizz">Frizz</a></li>
+          </ul>
+          <a class="mnav__acc-all" href="shop.html" data-i18n="nav.shopall">Shop all products</a>
+          <a class="mega__feat js-mega-feat" href="#">
+            <span class="mega__feat-frame"><img src="" alt="" data-fallback></span>
+            <span class="mega__feat-name"></span>
+            <span class="mega__feat-price"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <a href="shop.html?group=skincare" data-i18n="nav.skincare">Skincare</a>
+    <a href="shop.html?group=haircare" data-i18n="nav.haircare">Haircare</a>
+    <a href="about.html" data-i18n="nav.story">Our Story</a>
+    <a href="contact.html" data-i18n="nav.contact">Contact</a>
   </nav>
 </div>
 
@@ -149,10 +210,11 @@
         <ul>
           <li><a href="index.html" data-i18n="nav.home">Home</a></li>
           <li><a href="shop.html" data-i18n="nav.shop">Shop</a></li>
-          <li><a href="index.html#feature" data-i18n="nav.story">Our Story</a></li>
-          <li><a href="#" data-i18n="nav.contact">Contact</a></li>
-          <li><a href="#" data-i18n="foot.faq">FAQs</a></li>
-          <li><a href="#" data-i18n="foot.privacy">Privacy Policy</a></li>
+          <li><a href="about.html" data-i18n="nav.story">Our Story</a></li>
+          <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
+          <li><a href="faq.html" data-i18n="foot.faq">FAQs</a></li>
+          <li><a href="policies.html#privacy" data-i18n="foot.privacy">Privacy Policy</a></li>
+          <li><a href="policies.html#returns" data-i18n="foot.refund">Refund &amp; Exchange</a></li>
         </ul>
       </div>
       <div>
@@ -183,6 +245,10 @@
 <button class="totop" aria-label="Back to top">
   <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
 </button>
+
+<a class="whatsapp-fab" href="[CLIENT TO CONFIRM]" data-i18n-aria="a11y.whatsapp" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm5.2 14.1c-.2.6-1.3 1.2-1.8 1.2s-1.1.2-3.6-.9a12.4 12.4 0 0 1-4.6-4.4c-.3-.5-1.1-1.7-1.1-3.2s.8-2.2 1.1-2.5a1 1 0 0 1 .8-.4h.6c.2 0 .4 0 .6.5l.9 2c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.3-.1.7a9.2 9.2 0 0 0 1.6 2 8.3 8.3 0 0 0 2.3 1.4c.3.2.5.1.7-.1l.9-1c.2-.2.4-.2.6-.1l2 1c.3.1.5.2.5.3a2 2 0 0 1 0 1.3Z"/></svg>
+</a>
 
 <div class="scrim" id="scrim"></div>
 <aside class="cart" id="cart" aria-label="Cart">
@@ -221,15 +287,27 @@
 <script src="assets/js/products.js"></script>
 <script src="assets/js/main.js"></script>
 <script>
-let activeCat = new URLSearchParams(location.search).get('cat') || 'all';
+/* "Skincare"/"Haircare" in the top nav link here with ?group=, covering
+   several categories at once. "?concern=" also arrives from the mega
+   menu's "by concern" links, but there's no concern data on products
+   yet, so it's accepted and ignored for now — see build summary. */
+const SHOP_GROUPS = {
+  skincare: ['mists', 'serums', 'soaps', 'cold-pressed-oils'],
+  haircare: ['hair-oils']
+};
+const shopParams = new URLSearchParams(location.search);
+let activeCat = shopParams.get('cat') || 'all';
+let activeGroup = shopParams.get('group');
 
 function paintShop(){
   $('#filters').innerHTML =
     [{ id:'all', en:t('shop.all'), ar:t('shop.all') }, ...CATEGORIES].map(c =>
-      `<button class="chip ${c.id === activeCat ? 'is-active' : ''}" data-c="${c.id}">${isRTL() ? c.ar : c.en}</button>`
+      `<button class="chip ${!activeGroup && c.id === activeCat ? 'is-active' : ''}" data-c="${c.id}">${isRTL() ? c.ar : c.en}</button>`
     ).join('');
 
-  const list = activeCat === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.category === activeCat);
+  let list = PRODUCTS;
+  if (activeGroup && SHOP_GROUPS[activeGroup]) list = PRODUCTS.filter(p => SHOP_GROUPS[activeGroup].includes(p.category));
+  else if (activeCat !== 'all') list = PRODUCTS.filter(p => p.category === activeCat);
   renderGrid('#grid', list);
 
   $('#foot-cats').innerHTML = CATEGORIES.map(c =>
@@ -242,6 +320,7 @@ function PAGE_INIT(){
     const b = e.target.closest('.chip');
     if (!b) return;
     activeCat = b.dataset.c;
+    activeGroup = null;
     history.replaceState(null, '', activeCat === 'all' ? 'shop.html' : `shop.html?cat=${activeCat}`);
     paintShop();
   });

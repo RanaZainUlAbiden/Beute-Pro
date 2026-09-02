@@ -1,0 +1,12 @@
+{
+  "id": "rose-water-mist",
+  "url": "https://beutepro.com/product/face-mist-rose-water/",
+  "name": "Face Mist Rose Water",
+  "price": 800,
+  "size": "NOT FOUND",
+  "description": "Beute Pro Pure Rose water face mist formulated with nature's finest rose petals steam distilled to perfection, for the purest and most aromatic flower water. Being rich in antioxidants enables it to protect the skin from oxidative stress and to keep it healthy and youthful.",
+  "ingredients": ["Rose Floral Water (Rosa Damascena)", "Aqua", "Glycerine (Glycerolum)", "EDTA (Disodium EDTA)", "Vitamin B3 (Niacinamide)", "Hyaluronic Acid", "Rice Water"],
+  "benefits": ["Helps dry skin, pimples, rashes & zits and could be used for all skin types"],
+  "usage": "Spray 2-3 times evenly across the face and neck can be used anytime during the day to refresh and moisturize the skin. Can be used for instant hydration, as a toner, before makeup as a primer, other application of makeup to set it.",
+  "notes": "New product, not previously in products.js. Benefits copy identical to neem mist on live site (short generic sentence)."
+}

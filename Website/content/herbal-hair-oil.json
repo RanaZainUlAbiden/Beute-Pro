@@ -1,0 +1,12 @@
+{
+  "id": "herbal-hair-oil",
+  "url": "https://beutepro.com/product/herbal-hair-oil/",
+  "name": "Herbal Hair Oil",
+  "price": 3000,
+  "size": "NOT FOUND",
+  "description": "NOT FOUND",
+  "ingredients": ["17 Herbs (specific herbs not itemized by manufacturer on live site)"],
+  "benefits": ["NOT FOUND"],
+  "usage": "NOT FOUND",
+  "notes": "Live product page has no description, benefit list, or usage instructions — only mentions '17 Herbs' and shows a 4.63/5 rating (28 reviews). Verified with two separate fetch passes. The prior placeholder copy in products.js named specific herbs (Amla, Bhringraj, Fenugreek, Hibiscus, Coconut Oil) that are NOT stated on the live page — these are being dropped per the no-invention rule. Flagging for client follow-up: this product needs real description/benefits/usage copy."
+}

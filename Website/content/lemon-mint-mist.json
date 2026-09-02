@@ -1,0 +1,18 @@
+{
+  "id": "lemon-mint-mist",
+  "url": "https://beutepro.com/product/face-mint-lemon-mint/",
+  "name": "Face Mist Lemon & Mint",
+  "price": 800,
+  "size": "NOT FOUND",
+  "description": "This clarifying mist blends lemon's natural astringent properties with mint's cooling effect for a fresh, matte finish. Specially formulated with natural ingredients, vitamins, extracts, and essential oils for giving facial skin instant hit of hydration boost. This citrusy concoction lightens blemishes, leaving your skin soft, supple and hydrated.",
+  "ingredients": ["Pure Lemon Extract (Citrus Limon Fruit Extract)", "Aqua", "Glycerine (Glycerolum)", "EDTA (Disodium EDTA)", "Vitamin B3 (Niacinamide)", "Hyaluronic Acid", "Rice Water"],
+  "benefits": [
+    "Removes excess oil buildup from facial skin",
+    "Balances skin pH levels",
+    "Refreshes and brightens skin with energizing lemon",
+    "Helps with sunburns, brightens skin, reduces blemishes and acne-scars, removes dirt from pores",
+    "Antibacterial, antioxidant, natural antiseptic properties"
+  ],
+  "usage": "Spray 2-3 times evenly across the face and neck can be used anytime during the day to refresh and moisturize the skin. Can be used for instant hydration, as a toner, before makeup as a primer, other application of makeup to set it.",
+  "notes": "New product, not previously in products.js. Live product slug is a typo ('face-mint-lemon-mint') — URL recorded as-is for reference, product id kept clean as lemon-mint-mist. Ingredients list on page names only lemon extract (no mint extract listed despite product name) — recorded as-is, not invented."
+}

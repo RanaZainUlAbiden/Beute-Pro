@@ -1,0 +1,18 @@
+{
+  "id": "amla-hair-oil",
+  "url": "https://beutepro.com/product/amla-hair-oil/",
+  "name": "Amla Hair Oil",
+  "price": 3000,
+  "size": "NOT FOUND",
+  "description": "Inspired by generations of South Asian haircare traditions, our Amla Oil is formulated to nourish the scalp and strengthen hair from root to tip. Rich in naturally occurring antioxidants, it helps improve shine, reduce the appearance of dryness, and leave hair looking fuller, healthier, and beautifully revitalized.",
+  "ingredients": ["NOT FOUND"],
+  "benefits": [
+    "Strengthens hair from the roots and reduces breakage",
+    "Promotes thicker, longer hair growth and slows premature greying",
+    "Adds shine and smoothness to dull, damaged strands",
+    "Helps eliminate dandruff and soothes itchy scalp",
+    "Cools the scalp and supports overall scalp health"
+  ],
+  "usage": "For external use only, apply generously to scalp and hair, leave on for at least 1 hour before rinsing. Use 2–3 times a week for best results.",
+  "notes": "New product, not previously in products.js. No ingredients list on page (single-ingredient oil, name implies amla/Indian gooseberry base)."
+}

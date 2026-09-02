@@ -135,142 +135,166 @@ function initTouchZoom(box, img, contentRect){
 }
 
 /* =============================================================
-   2. THE 360 VIEWER
-   Two modes, chosen automatically:
-
-   SPIN  — real frames found in  assets/img/spin/<id>/frame-01.jpg ...
-           drag left/right steps through them, which is what every
-           "360° view" on a retail site actually is.
-
-   TILT  — no frames yet. One photo, tilted in 3D against its shadow
-           so the visitor still gets a sense of the object. This is a
-           stand-in, and the label says so.
-
-   Drop the frames in and it switches over on its own.
+   2. THE 360° VIEWER
+   A short looping video per product at assets/video/spin/<id>.mp4.
+   preload="metadata" doubles as the existence probe — loadedmetadata
+   vs error tells PAGE_INIT whether to show the tab at all, and only
+   the header is fetched until the visitor actually opens it and the
+   video starts playing.
    ============================================================= */
 const Spin = {
-  frames:[], mode:'tilt', i:0, dragging:false, lastX:0, rot:0,
+  box:null, video:null, ready:false, dragging:false, io:null, resumeTimer:null,
 
-  async init(id){
+  init(id){
     this.box   = $('#spin');
-    this.img   = $('#spin-img');
-    this.label = $('#spin-mode');
-    this.hint  = $('#spin-hint');
-    if (!this.box) return;
+    this.video = $('#spin-video');
+    if (!this.box || !this.video) return Promise.resolve(false);
 
-    this.frames = await this.probe(id);
-    this.mode   = this.frames.length >= 8 ? 'spin' : 'tilt';
+    const video = this.video;
+    video.poster = imgSrc(id, 1);
+    if (reduced) video.removeAttribute('autoplay');   // poster frame only, ever
 
-    if (this.mode === 'spin'){
-      this.img.src = this.frames[0];
-      this.preload();
-    } else {
-      this.img.src = imgSrc(id, 1);
-      guard(this.img);
-    }
-    this.paintLabel();
-    this.bind();
-    if (this.mode === 'spin') this.hintSpin();
-  },
-
-  /* one gentle rotation the first time the tab is opened */
-  hintSpin(){
-    if (reduced) return;
-    const io = new IntersectionObserver(en => {
-      if (!en[0].isIntersecting || this.hinted) return;
-      this.hinted = true; io.disconnect();
-      let k = 0;
-      const tick = setInterval(() => {
-        if (this.dragging || k >= this.frames.length){ clearInterval(tick); return; }
-        this.i = (this.i + 1) % this.frames.length;
-        this.img.src = this.frames[this.i];
-        k++;
-      }, 85);
-    }, { threshold:.5 });
-    io.observe(this.box);
-  },
-
-  /* look for frame-01 … frame-36 and keep the run that exists */
-  probe(id){
-    const test = n => new Promise(res => {
-      const stem = `assets/img/spin/${id}/frame-${String(n).padStart(2,'0')}`;
-      const tryExt = list => {
-        if (!list.length) return res(null);
-        const src = `${stem}.${list[0]}`;
-        const im = new Image();
-        im.onload  = () => res(src);
-        im.onerror = () => tryExt(list.slice(1));
-        im.src = src;
+    return new Promise(resolve => {
+      const done = ok => {
+        video.removeEventListener('loadedmetadata', onOk);
+        video.removeEventListener('error', onErr);
+        resolve(ok);
       };
-      tryExt(['png','jpg','jpeg']);
+      const onOk  = () => done(true);
+      const onErr = () => done(false);
+      video.addEventListener('loadedmetadata', onOk, { once:true });
+      video.addEventListener('error', onErr, { once:true });
+      video.src = `assets/video/spin/${id}.mp4`;
+      video.load();
+    }).then(ok => {
+      this.ready = ok;
+      if (ok){ this.bind(); this.watch(); }
+      return ok;
     });
-    return Promise.all(Array.from({ length:36 }, (_, k) => test(k + 1)))
-                  .then(r => { const out = []; for (const s of r){ if (!s) break; out.push(s); } return out; });
   },
 
-  preload(){ this.frames.forEach(s => { const i = new Image(); i.src = s; }); },
+  tabOpen(){ return $('#panel-spin')?.classList.contains('is-active'); },
 
-  paintLabel(){
-    if (this.label) this.label.textContent = this.mode === 'spin' ? t('pdp.spinmode') : t('pdp.tiltmode');
-    if (this.hint)  this.hint.textContent  = this.mode === 'spin' ? t('pdp.draghint') : t('pdp.zoomhint');
+  /* pause off screen, resume once the tab is open and in view */
+  watch(){
+    if (reduced) return;                  // reduced motion: poster only, never autoplays
+    this.io = new IntersectionObserver(en => {
+      if (en[0].isIntersecting && this.tabOpen()) this.play();
+      else this.video.pause();
+    }, { threshold:.3 });
+    this.io.observe(this.box);
+  },
+
+  play(){ if (!this.dragging) this.video.play().catch(() => {}); },
+
+  /* called on tab switch, and after a drag/keystep ends */
+  onTabChange(){
+    if (!this.ready) return;
+    if (this.tabOpen() && !reduced) this.play();
+    else this.video.pause();
   },
 
   bind(){
-    const b = this.box;
-    const down = e => {
-      this.dragging = true; this.lastX = (e.touches ? e.touches[0] : e).clientX;
-      b.classList.add('is-dragging');
-    };
-    const up = () => {
-      this.dragging = false; b.classList.remove('is-dragging');
-      if (this.mode === 'tilt') this.setTilt(0, 0);   // ease back to square
-    };
-    const move = e => {
-      const pt = e.touches ? e.touches[0] : e;
+    const box = this.box, video = this.video;
+    let sx = 0, sy = 0, axis = null, startTime = 0;
 
-      if (this.mode === 'tilt' && !this.dragging){
-        const r = b.getBoundingClientRect();
-        return this.setTilt(((pt.clientX - r.left) / r.width - .5), ((pt.clientY - r.top) / r.height - .5));
-      }
+    const scrub = clientX => {
+      const rect = box.getBoundingClientRect();
+      const dir = isRTL() ? -1 : 1;
+      const t = startTime + ((clientX - sx) / rect.width) * video.duration * dir;
+      video.currentTime = ((t % video.duration) + video.duration) % video.duration;
+    };
+
+    const start = e => {
+      const p = e.touches ? e.touches[0] : e;
+      sx = p.clientX; sy = p.clientY; axis = null;
+      startTime = video.currentTime || 0;
+      this.dragging = true;
+      video.pause();
+      box.classList.add('is-dragging');
+    };
+
+    const end = () => {
       if (!this.dragging) return;
-      e.preventDefault?.();
-
-      if (this.mode === 'spin'){
-        const dx = pt.clientX - this.lastX;
-        // fewer frames -> longer drag per step, so 10 frames still feel smooth
-        const step = Math.max(6, Math.round(340 / this.frames.length));
-        if (Math.abs(dx) < step) return;
-        this.lastX = pt.clientX;
-        const dir = isRTL() ? -1 : 1;
-        this.i = (this.i + (dx > 0 ? -dir : dir) + this.frames.length) % this.frames.length;
-        this.img.src = this.frames[this.i];
-      } else {
-        const r = b.getBoundingClientRect();
-        this.setTilt(((pt.clientX - r.left) / r.width - .5) * 2, ((pt.clientY - r.top) / r.height - .5));
-      }
+      this.dragging = false;
+      box.classList.remove('is-dragging');
+      this.onTabChange();                 // resumes the loop, if the tab is open and visible
     };
 
-    b.addEventListener('mousedown', down);
-    b.addEventListener('touchstart', down, { passive:true });
-    addEventListener('mouseup', up);
-    addEventListener('touchend', up);
-    b.addEventListener('mouseleave', up);
-    b.addEventListener('mousemove', move);
-    b.addEventListener('touchmove', move, { passive:false });
-  },
+    const move = e => {
+      if (!this.dragging) return;
+      const p = e.touches ? e.touches[0] : e;
+      const dx = p.clientX - sx, dy = p.clientY - sy;
 
-  setTilt(x, y){
-    if (reduced) return;
-    const max = 26;
-    this.img.style.transform =
-      `perspective(1000px) rotateY(${x * max}deg) rotateX(${-y * 10}deg) translateZ(30px) scale(${1 + Math.abs(x) * .04})`;
-    this.img.style.transition = this.dragging ? 'none' : 'transform .5s cubic-bezier(.22,.61,.36,1)';
+      if (axis === null){
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+        if (axis === 'y') return end();   // vertical intent: let the page scroll instead
+      }
+      if (axis !== 'x' || !video.duration) return;
+      e.preventDefault();                 // scrubbing now, not scrolling
+      scrub(p.clientX);
+    };
+
+    box.addEventListener('mousedown', start);
+    box.addEventListener('touchstart', start, { passive:true });
+    addEventListener('mousemove', move);
+    box.addEventListener('touchmove', move, { passive:false });
+    addEventListener('mouseup', end);
+    addEventListener('touchend', end);
+
+    const nudge = delta => {
+      video.pause();
+      const t = video.currentTime + delta;
+      video.currentTime = ((t % video.duration) + video.duration) % video.duration;
+      clearTimeout(this.resumeTimer);
+      this.resumeTimer = setTimeout(() => this.onTabChange(), 650);
+    };
+    box.addEventListener('keydown', e => {
+      if (!video.duration) return;
+      const dir = isRTL() ? -1 : 1, step = video.duration / 24;
+      if (e.key === 'ArrowRight') nudge(step * dir);
+      else if (e.key === 'ArrowLeft') nudge(-step * dir);
+    });
   }
 };
 
 /* =============================================================
    3. PAGE RENDER
+   Photos: up to five, <id>-1.jpg … <id>-5.jpg. Probed once per
+   product and cached — a missing file anywhere in the run stops
+   the count there, so a single -1 photo renders as a deliberate
+   single frame rather than a rail with broken thumbnails.
    ============================================================= */
+const _photoCache = {};
+function probePhotos(id){
+  if (_photoCache[id]) return _photoCache[id];
+  const test = n => new Promise(res => {
+    const im = new Image();
+    im.onload  = () => res(true);
+    im.onerror = () => res(false);
+    im.src = imgSrc(id, n);
+  });
+  return _photoCache[id] = Promise.all([1, 2, 3, 4, 5].map(test)).then(flags => {
+    const out = [];
+    for (const ok of flags){ if (!ok) break; out.push(out.length + 1); }
+    return out.length ? out : [1];
+  });
+}
+
+function paintThumbs(id, name){
+  const th = $('#thumbs');
+  probePhotos(id).then(list => {
+    if (id !== P.id) return;              // a fast language/product change moved on
+    th.style.display = list.length > 1 ? '' : 'none';
+    th.innerHTML = list.map(n => `
+      <button class="thumb ${n === 1 ? 'is-active' : ''}" data-n="${n}">
+        <img src="${imgSrc(id, n)}" alt="${name} ${n}" data-fallback>
+      </button>`).join('');
+    guardAll(th);
+  });
+}
+
 function paintProduct(){
   const c = CATEGORIES.find(c => c.id === P.category);
   const d = L(P);
@@ -292,19 +316,10 @@ function paintProduct(){
   $('#acc-ben').innerHTML  = d.benefits.map(i => `<li>${i}</li>`).join('');
   $('#acc-use').textContent = d.usage;
 
-  // thumbnails
-  const th = $('#thumbs');
-  th.innerHTML = Array.from({ length: P.images || 1 }, (_, k) => `
-    <button class="thumb ${k === 0 ? 'is-active' : ''}" data-n="${k + 1}">
-      <img src="${imgSrc(P.id, k + 1)}" alt="${d.name} ${k + 1}" data-fallback>
-    </button>`).join('');
-  guardAll(th);
-
   $('#zoom-img').src = imgSrc(P.id, 1);
   guard($('#zoom-img'));
-
-  // the 360 tab only appears when the product is marked for it
-  $('#tab-spin').style.display = P.spin ? '' : 'none';
+  activeImg = 1;
+  paintThumbs(P.id, d.name);
 
   // related
   const rel = PRODUCTS.filter(x => x.id !== P.id)
@@ -329,6 +344,7 @@ function initPDPControls(){
   $$('.vtab').forEach(tab => tab.addEventListener('click', () => {
     $$('.vtab').forEach(x => x.classList.toggle('is-active', x === tab));
     $$('.viewer__panel').forEach(p => p.classList.toggle('is-active', p.id === tab.dataset.panel));
+    Spin.onTabChange();
   }));
 
   // quantity
@@ -360,13 +376,13 @@ function PAGE_INIT(){
   paintProduct();
   initPDPControls();
   initZoom();
-  if (P.spin) Spin.init(P.id);
+
+  Spin.init(P.id).then(ok => { $('#tab-spin').style.display = ok ? '' : 'none'; });
 }
 
 function PAGE_LANG(){
   if (!P) return;                       // language applied before the product loaded
   paintProduct();
-  Spin.paintLabel();
   // re-open the first accordion panel at its new height
   const first = $('.acc__item.is-open .acc__panel');
   if (first) first.style.maxHeight = first.scrollHeight + 'px';

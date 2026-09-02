@@ -1,0 +1,17 @@
+{
+  "id": "almond-rose-soap",
+  "url": "https://beutepro.com/product/rose-almond-soap/",
+  "name": "Rose & Almond Soap",
+  "price": 1500,
+  "size": "NOT FOUND",
+  "description": "Combining the elegance of rose with the nourishing properties of almond, this luxurious bar gently cleanses while restoring softness and radiance.",
+  "ingredients": ["NOT FOUND"],
+  "benefits": [
+    "Promotes even skin tone and a natural glow",
+    "Moisturizes and smooths rough patches",
+    "Calms sensitivity and adds a gentle floral aroma",
+    "Suitable for all skin types, including dry and mature skin"
+  ],
+  "usage": "NOT FOUND",
+  "notes": "New product, not previously in products.js. Live site name order is 'Rose & Almond Soap' but id kept as almond-rose-soap per ASSET-MAP.md filename convention."
+}

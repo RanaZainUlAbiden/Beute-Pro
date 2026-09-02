@@ -1,0 +1,18 @@
+{
+  "id": "almond-oil",
+  "url": "https://beutepro.com/product/almond-oil/",
+  "name": "Almond Oil",
+  "price": 3000,
+  "size": "NOT FOUND",
+  "description": "Our Almond Oil is a versatile everyday essential, naturally rich in vitamin E and essential fatty acids. It helps deeply nourish dry skin, restore softness, and improve the look and feel of hair, leaving it silky, smooth, and healthy looking.",
+  "ingredients": ["NOT FOUND"],
+  "benefits": [
+    "Moisturizes dry, sensitive, or flaky skin",
+    "Fades dark circles and soothes puffiness around the eyes",
+    "Strengthens hair from root to tip and adds a silky shine",
+    "Treats dandruff and calms an itchy scalp",
+    "Acts as a natural makeup remover and skin barrier enhancer"
+  ],
+  "usage": "Can be consumed orally in moderation, it is lightweight and non greasy can be applied directly to hair, scalp, and skin.",
+  "notes": "Listed under both Cold Pressed Oils and Hair Oils categories on live site; kept as cold-pressed-oils per existing products.js convention. No ingredients list on page (single-ingredient oil, self-evident)."
+}

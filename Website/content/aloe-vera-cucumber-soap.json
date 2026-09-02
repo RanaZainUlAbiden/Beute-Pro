@@ -1,0 +1,17 @@
+{
+  "id": "aloe-vera-cucumber-soap",
+  "url": "https://beutepro.com/product/aloe-vera-cucumber-soap/",
+  "name": "Aloe Vera & Cucumber Soap",
+  "price": 1500,
+  "size": "NOT FOUND",
+  "description": "Enriched with soothing aloe vera, this gentle cleansing bar delivers lightweight hydration while helping to calm the skin. Especially suited for sensitive, dry, irritated, or sun-exposed skin, it leaves the complexion feeling refreshed and comfortably hydrated.",
+  "ingredients": ["NOT FOUND"],
+  "benefits": [
+    "Calms inflammation, redness, and rashes",
+    "Provides soothing hydration without greasiness",
+    "Helps heal minor cuts or post-waxing irritation",
+    "Great for sensitive skin or after-sun care"
+  ],
+  "usage": "NOT FOUND",
+  "notes": "New product, not previously in products.js."
+}

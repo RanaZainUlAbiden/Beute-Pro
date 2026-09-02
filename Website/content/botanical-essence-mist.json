@@ -1,0 +1,17 @@
+{
+  "id": "botanical-essence-mist",
+  "url": "assets/img/products/botanical-essence-mist/botanical-essence-mist-1.png",
+  "name": "Face Mist Botanical Essence",
+  "price": 800,
+  "size": "NOT FOUND",
+  "description": "Beute Pro Botanical Essence Face Mist is full of anti-bacterial & anti-inflammatory properties, making this mist perfect for those with acne prone skin.",
+  "ingredients": ["Aloe Vera Extract (Aloe Barbadensis Leaf Extract)", "Rose Floral Water (Rosa Damascena)", "Pure Lemon & Mint Extracts (Citrus Limon & Mentha Extracts)", "Pure Cucumber Extract (Cucumis Sativus Fruit Extract)", "Pure Neem Hydrosol (Azadirachta Indica)", "Tea Tree Oil (Melaleuca Alternifolia Leaf Oil)", "Rice Water (Oryza Sativa)", "Aqua", "Glycerine (Glycerolum)", "EDTA (Disodium EDTA)", "Vitamin B3 (Niacinamide)"],
+  "benefits": [
+    "Balances and hydrates mature, dehydrated & dry skin",
+    "Soothes and nourishes depleted or irritated skin",
+    "Tones and protects skin's microbiome",
+    "Tones & gently cleanses skin"
+  ],
+  "usage": "Spray 2-3 times evenly across the face and neck can be used anytime during the day to refresh and moisturize the skin. Can be used for instant hydration, as a toner, before makeup as a primer, other application of makeup to set it.",
+  "notes": "New product, not previously in products.js. A multi-extract blend combining several of the other mist ingredients."
+}

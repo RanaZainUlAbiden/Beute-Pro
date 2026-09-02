@@ -12,21 +12,37 @@ const T = {
 
 en: {
   "topbar.mail":"support@beutepro.com",
+  "topbar.note":"Cash on delivery across Pakistan · Free shipping over Rs 3,000",
   "topbar.login":"Login / Register",
   "topbar.track":"Track Order",
   "topbar.wishlist":"Wishlist",
+  "topbar.soon":"Soon",
 
   "nav.home":"Home",
   "nav.shop":"Shop",
+  "nav.skincare":"Skincare",
+  "nav.haircare":"Haircare",
   "nav.story":"Our Story",
   "nav.journal":"Journal",
   "nav.contact":"Contact",
   "nav.menu":"Menu",
   "nav.close":"Close",
+  "nav.shopall":"Shop all products",
+  "nav.megamenu.category":"Shop by category",
+  "nav.megamenu.concern":"Shop by concern",
+  "nav.megamenu.featured":"Featured",
+
+  "concern.acne":"Acne",
+  "concern.dullness":"Dullness",
+  "concern.dryness":"Dryness",
+  "concern.hairfall":"Hairfall",
+  "concern.dandruff":"Dandruff",
+  "concern.frizz":"Frizz",
 
   "a11y.sound":"Background music",
   "a11y.cart":"Open cart",
   "a11y.search":"Search",
+  "a11y.whatsapp":"Chat on WhatsApp",
 
   "hero.badge":"Natural · Halal Certified · Cruelty Free",
 
@@ -91,6 +107,23 @@ en: {
   "feat.eyebrow":"The full range",
   "feat.title":"Chosen with care.",
   "feat.lede":"Browse everything, or narrow it down by what your skin needs today.",
+
+  /* Homepage spotlight — the scroll-scrubbed 360° video section. Picks
+     whichever product (in products.js order) has a video at
+     assets/video/spin/, so name/tagline/price/link are never hardcoded. */
+  "spot.eyebrow":"Look closer",
+  "spot.cta":"Shop this product",
+
+  /* Our floor — the factory section on the homepage.
+     cap1–3 are placeholders: the photo captions are pending from the
+     client. Replace all six (en + ar) once we know what each photo
+     shows — a caption that names what you are looking at is worth far
+     more here than a generic one. */
+  "floor.cap1":"[CAPTION PENDING]",
+  "floor.cap2":"[CAPTION PENDING]",
+  "floor.cap3":"[CAPTION PENDING]",
+  "floor.certs":"Halal certified · ISO & GMP · Paraben & sulphate free · Cruelty free",
+  "floor.gallery":"Photos from our floor in Faisalabad",
 
   "why.eyebrow":"Why Béute Pro",
   "why.title":"The short version.",
@@ -169,8 +202,6 @@ en: {
   "pdp.taphint":"Tap the photo to zoom",
   "pdp.panhint":"Drag to move · tap to exit",
   "pdp.draghint":"Drag to rotate",
-  "pdp.tiltmode":"Preview mode",
-  "pdp.spinmode":"360° mode",
   "pdp.ship":"Free delivery on orders over ₨3,000",
   "pdp.return":"30-day returns, no questions",
   "pdp.secure":"Secure checkout",
@@ -187,26 +218,98 @@ en: {
 
   "badge.bestseller":"Best seller",
   "badge.new":"New",
-  "badge.sale":"Sale"
+  "badge.sale":"Sale",
+
+  /* ---- about.html ---- */
+  "about.hero.lede":"Where heritage meets innovation, nature meets science — and every ritual becomes a chance to care for yourself, naturally.",
+  "about.brand.eyebrow":"Where it started",
+  "about.brand.title":"Born from a passion for clean, purposeful formulations.",
+  "about.why.lede":"Nine things we don't compromise on, in every batch we make.",
+  "about.b1":"Natural Ingredients",
+  "about.b2":"Organic",
+  "about.b3":"Halal",
+  "about.b4":"Paraben-Free",
+  "about.b5":"Sulphate-Free",
+  "about.b6":"Cruelty-Free",
+  "about.b7":"ISO Certified",
+  "about.b8":"GMP Certified",
+  "about.b9":"GMO-Free",
+  "about.cta.title":"See it for yourself.",
+  "about.cta.lede":"Browse the full range, or read how each bottle gets made.",
+
+  /* ---- contact.html ---- */
+  "contact.eyebrow":"Get in touch",
+  "contact.t1":"We'd love",
+  "contact.t2":"to hear from you.",
+  "contact.lede":"Questions about an order, an ingredient, or anything else — send a message and we'll get back to you.",
+  "contact.form.title":"Send us a message",
+  "contact.form.name":"Full name",
+  "contact.form.email":"Email address",
+  "contact.form.message":"Message",
+  "contact.form.submit":"Send message",
+  "contact.info.title":"Reach us through",
+  "contact.addr.label":"Address",
+  "contact.phone.label":"Phone",
+  "contact.email.label":"Email",
+  "contact.whatsapp.label":"WhatsApp",
+  "contact.toast":"Thanks — we'll be in touch soon.",
+
+  /* ---- faq.html ---- */
+  "faq.eyebrow":"Answers",
+  "faq.t1":"Questions people",
+  "faq.t2":"actually ask.",
+  "faq.lede":"Ingredients, certifications, delivery, returns — the short answers are here.",
+  "faq.eyebrow2":"Frequently asked",
+  "faq.listtitle":"Straight answers.",
+  "faq.q1":"Are Béute Pro products halal certified?",
+  "faq.q2":"Do you test on animals?",
+  "faq.q3":"What's actually in your products?",
+  "faq.q4":"What is your return policy?",
+  "faq.q5":"How long does delivery take?",
+  "faq.q6":"Which payment methods do you accept?",
+  "faq.cta.title":"Still have questions?",
+  "faq.cta.btn":"Get in touch",
+
+  /* ---- policies.html ---- */
+  "policies.eyebrow":"Good to know",
+  "policies.t1":"Privacy",
+  "policies.t2":"& policies.",
+  "policies.lede":"How we handle your data, and what happens if something needs to go back."
 },
 
 ar: {
   "topbar.mail":"support@beutepro.com",
+  "topbar.note":"الدفع عند الاستلام في جميع أنحاء باكستان · شحن مجاني للطلبات فوق ٣٬٠٠٠ روبية",
   "topbar.login":"تسجيل الدخول",
   "topbar.track":"تتبع الطلب",
   "topbar.wishlist":"المفضلة",
+  "topbar.soon":"قريبًا",
 
   "nav.home":"الرئيسية",
   "nav.shop":"المتجر",
+  "nav.skincare":"العناية بالبشرة",
+  "nav.haircare":"العناية بالشعر",
   "nav.story":"قصتنا",
   "nav.journal":"المدونة",
   "nav.contact":"تواصل معنا",
   "nav.menu":"القائمة",
   "nav.close":"إغلاق",
+  "nav.shopall":"عرض كل المنتجات",
+  "nav.megamenu.category":"تسوّقي حسب الفئة",
+  "nav.megamenu.concern":"تسوّقي حسب المشكلة",
+  "nav.megamenu.featured":"مُختارات",
+
+  "concern.acne":"حب الشباب",
+  "concern.dullness":"البهتان",
+  "concern.dryness":"الجفاف",
+  "concern.hairfall":"تساقط الشعر",
+  "concern.dandruff":"القشرة",
+  "concern.frizz":"التجعّد",
 
   "a11y.sound":"الموسيقى الخلفية",
   "a11y.cart":"فتح السلة",
   "a11y.search":"بحث",
+  "a11y.whatsapp":"تواصلي عبر واتساب",
 
   "hero.badge":"طبيعي · حلال معتمد · خالٍ من القسوة",
 
@@ -271,6 +374,15 @@ ar: {
   "feat.eyebrow":"المجموعة كاملة",
   "feat.title":"مُختارة بعناية.",
   "feat.lede":"تصفّحي كل شيء، أو اختاري ما تحتاجه بشرتك اليوم.",
+
+  "spot.eyebrow":"اقتربي أكثر",
+  "spot.cta":"تسوّقي هذا المنتج",
+
+  "floor.cap1":"[CAPTION PENDING]",
+  "floor.cap2":"[CAPTION PENDING]",
+  "floor.cap3":"[CAPTION PENDING]",
+  "floor.certs":"حلال معتمد · ISO و GMP · خالٍ من البارابين والكبريتات · خالٍ من القسوة",
+  "floor.gallery":"صور من مصنعنا في فيصل آباد",
 
   "why.eyebrow":"لماذا بيوت برو",
   "why.title":"باختصار.",
@@ -349,8 +461,6 @@ ar: {
   "pdp.taphint":"انقري على الصورة للتكبير",
   "pdp.panhint":"اسحبي للتحريك · انقري للخروج",
   "pdp.draghint":"اسحبي للتدوير",
-  "pdp.tiltmode":"وضع المعاينة",
-  "pdp.spinmode":"وضع ٣٦٠°",
   "pdp.ship":"توصيل مجاني للطلبات فوق ٣٬٠٠٠",
   "pdp.return":"إرجاع خلال ٣٠ يومًا",
   "pdp.secure":"دفع آمن",
@@ -367,7 +477,63 @@ ar: {
 
   "badge.bestseller":"الأكثر مبيعًا",
   "badge.new":"جديد",
-  "badge.sale":"تخفيض"
+  "badge.sale":"تخفيض",
+
+  /* ---- about.html ---- */
+  "about.hero.lede":"حيث يلتقي الإرث بالابتكار، والطبيعة بالعلم — لتصبح كل عادة يومية فرصة للعناية بنفسك، بطريقة طبيعية.",
+  "about.brand.eyebrow":"من أين بدأنا",
+  "about.brand.title":"وُلدنا من شغف بتركيبات نظيفة وهادفة.",
+  "about.why.lede":"تسعة أمور لا نتنازل عنها في كل دفعة نصنعها.",
+  "about.b1":"مكوّنات طبيعية",
+  "about.b2":"عضوي",
+  "about.b3":"حلال",
+  "about.b4":"خالٍ من البارابين",
+  "about.b5":"خالٍ من الكبريتات",
+  "about.b6":"خالٍ من القسوة",
+  "about.b7":"معتمد ISO",
+  "about.b8":"معتمد GMP",
+  "about.b9":"خالٍ من الكائنات المعدلة وراثيًا",
+  "about.cta.title":"شاهدي بنفسك.",
+  "about.cta.lede":"تصفّحي المجموعة كاملة، أو اقرئي كيف تُصنع كل عبوة.",
+
+  /* ---- contact.html ---- */
+  "contact.eyebrow":"تواصلي معنا",
+  "contact.t1":"يسعدنا",
+  "contact.t2":"أن نسمع منك.",
+  "contact.lede":"أسئلة عن طلب، أو مكوّن، أو أي شيء آخر — أرسلي رسالة وسنعاود التواصل معك.",
+  "contact.form.title":"أرسلي لنا رسالة",
+  "contact.form.name":"الاسم الكامل",
+  "contact.form.email":"البريد الإلكتروني",
+  "contact.form.message":"الرسالة",
+  "contact.form.submit":"إرسال الرسالة",
+  "contact.info.title":"تواصلي عبر",
+  "contact.addr.label":"العنوان",
+  "contact.phone.label":"الهاتف",
+  "contact.email.label":"البريد الإلكتروني",
+  "contact.whatsapp.label":"واتساب",
+  "contact.toast":"شكرًا لك — سنتواصل معك قريبًا.",
+
+  /* ---- faq.html ---- */
+  "faq.eyebrow":"الإجابات",
+  "faq.t1":"أسئلة",
+  "faq.t2":"يطرحها الناس فعلًا.",
+  "faq.lede":"المكوّنات، الشهادات، التوصيل، الاسترجاع — الإجابات المختصرة هنا.",
+  "faq.eyebrow2":"الأسئلة الشائعة",
+  "faq.listtitle":"إجابات واضحة.",
+  "faq.q1":"هل منتجات بيوت برو معتمدة حلال؟",
+  "faq.q2":"هل تُجرَّب منتجاتكم على الحيوانات؟",
+  "faq.q3":"ما الذي يدخل فعلًا في منتجاتكم؟",
+  "faq.q4":"ما سياسة الاسترجاع لديكم؟",
+  "faq.q5":"كم تستغرق مدة التوصيل؟",
+  "faq.q6":"ما طرق الدفع المتاحة؟",
+  "faq.cta.title":"ألا تزال لديك أسئلة؟",
+  "faq.cta.btn":"تواصلي معنا",
+
+  /* ---- policies.html ---- */
+  "policies.eyebrow":"جيد أن تعرفي",
+  "policies.t1":"الخصوصية",
+  "policies.t2":"والسياسات.",
+  "policies.lede":"كيف نتعامل مع بياناتك، وماذا يحدث إن احتجتِ لإرجاع شيء."
 }
 
 };

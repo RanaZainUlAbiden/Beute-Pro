@@ -1,0 +1,19 @@
+{
+  "id": "sesame-seed-oil",
+  "url": "https://beutepro.com/product/sesame-seed-oil/",
+  "name": "Sesame Seed Oil",
+  "price": 3000,
+  "size": "NOT FOUND",
+  "description": "Inspired by centuries of South Asian beauty rituals, our Sesame Oil is a nourishing essential for both skin and hair. Naturally rich in antioxidants, vitamins, and essential fatty acids, it helps replenish moisture, support the skin's natural barrier, and leave hair feeling soft, strong, and healthy.",
+  "ingredients": ["NOT FOUND"],
+  "benefits": [
+    "Deeply hydrates and firms the skin",
+    "Enhances scalp circulation and reduces hair fall",
+    "Alleviates joint and muscle pain when used in massage",
+    "Protects skin from pollution and sun damage",
+    "Contains natural antibacterial properties",
+    "Full of Vitamin E & Antioxidants"
+  ],
+  "usage": "Can be used for oil pulling, consumed in moderation, and applied to skin and scalp.",
+  "notes": "New product, not previously in products.js. Listed under both Cold Pressed Oils and Hair Oils on live site; placed in cold-pressed-oils category to match almond/apricot/kalonji convention. No ingredients list on page."
+}

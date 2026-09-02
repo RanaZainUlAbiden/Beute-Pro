@@ -4,65 +4,97 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Béute Pro — Natural Skincare, Made in Small Batches</title>
-<meta name="description" content="Cold-pressed oils, handcrafted soaps and botanical face mists. Halal certified, paraben free, made in small batches.">
-<link rel="icon" href="assets/img/brand/favicon.png">
+<meta name="description" content="Cold-pressed oils, handcrafted soaps and botanical face mists. Halal certified, paraben free, made in small batches in Faisalabad.">
+<link rel="icon" href="assets/img/brand/BeutePro_Favicon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
+<!-- the factory photos are the one thing on this page that waits for the
+     scroll observer. With no JS at all they must still be visible. -->
+<noscript><style>.floor__band.reveal .floor__shot{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
-<div class="progress"></div>
 
 <!-- ============ HEADER ============ -->
 <header class="site-head">
   <div class="topbar">
-    <div class="wrap topbar__in">
-      <a class="topbar__mail" href="mailto:support@beutepro.com" data-i18n="topbar.mail">support@beutepro.com</a>
-      <div class="topbar__set">
-        <a href="#" data-i18n="topbar.login">Login / Register</a>
-        <a href="#" data-i18n="topbar.track">Track Order</a>
-        <a href="#" data-i18n="topbar.wishlist">Wishlist</a>
-      </div>
+  <div class="wrap topbar__in">
+    <span class="topbar__note" data-i18n="topbar.note">Cash on delivery across Pakistan · Free shipping over Rs 3,000</span>
+    <div class="topbar__set">
+      <span class="topbar__link" aria-disabled="true"><span data-i18n="topbar.login">Login / Register</span><span class="pill-soon" data-i18n="topbar.soon">Soon</span></span>
+      <span class="topbar__link" aria-disabled="true"><span data-i18n="topbar.track">Track Order</span><span class="pill-soon" data-i18n="topbar.soon">Soon</span></span>
+      <span class="topbar__link" aria-disabled="true"><span data-i18n="topbar.wishlist">Wishlist</span><span class="pill-soon" data-i18n="topbar.soon">Soon</span></span>
     </div>
+  </div>
   </div>
 
   <div class="nav">
-    <div class="wrap nav__in">
-      <a class="nav__logo" href="index.html">
-        <img src="assets/img/brand/logo-white.png" alt="Béute Pro"
-             onerror="this.onerror=null;this.src='assets/img/brand/logo.png';this.addEventListener('error',()=>{this.outerHTML='<span class=\'nav__logo-fallback\'>B&eacute;ute Pro</span>'})">
-      </a>
+  <div class="wrap nav__in">
+    <a class="nav__logo" href="index.html">
+      <img src="assets/img/brand/logo-white.png" alt="Béute Pro"
+           onerror="this.onerror=null;this.src='assets/img/brand/logo.png';this.addEventListener('error',()=>{this.outerHTML='<span class=\'nav__logo-fallback\'>B&eacute;ute Pro</span>'})">
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="index.html" class="is-active" data-i18n="nav.home">Home</a>
 
-      <nav class="nav__links">
-        <a href="index.html" class="is-active" data-i18n="nav.home">Home</a>
-        <a href="shop.html" data-i18n="nav.shop">Shop</a>
-        <a href="#feature" data-i18n="nav.story">Our Story</a>
-        <a href="#" data-i18n="nav.journal">Journal</a>
-        <a href="#" data-i18n="nav.contact">Contact</a>
-      </nav>
-
-      <div class="nav__tools">
-        <button class="lang-btn" aria-label="Language">ع</button>
-        <button class="icon-btn sound-btn" data-i18n-aria="a11y.sound" aria-label="Background music">
-          <span class="eq"><span></span><span></span><span></span><span></span></span>
-        </button>
-        <button class="icon-btn search-btn" data-i18n-aria="a11y.search" aria-label="Search">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        </button>
-        <button class="icon-btn" data-cart-open data-i18n-aria="a11y.cart" aria-label="Open cart">
-          <svg viewBox="0 0 24 24"><path d="M6 7h12l-1.2 12H7.2z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
-          <span class="cart-count" style="display:none">0</span>
-        </button>
-        <button class="icon-btn burger" id="burger" aria-label="Menu">
-          <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-        </button>
+      <div class="nav__item has-mega" id="shop-mega-wrap">
+        <a href="shop.html" class="nav__mega-trigger" id="shop-mega-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="shop-mega"><span data-i18n="nav.shop">Shop</span><svg class="nav__caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a>
+        <div class="mega" id="shop-mega" role="menu" aria-label="Shop menu">
+          <div class="wrap mega__in">
+            <div class="mega__col">
+              <h4 data-i18n="nav.megamenu.category">Shop by category</h4>
+              <ul class="mega__list js-mega-cats" role="none"></ul>
+            </div>
+            <div class="mega__col">
+              <h4 data-i18n="nav.megamenu.concern">Shop by concern</h4>
+              <ul class="mega__list" role="none">
+                <li role="none"><a role="menuitem" href="shop.html?concern=acne" data-i18n="concern.acne">Acne</a></li>
+                <li role="none"><a role="menuitem" href="shop.html?concern=dullness" data-i18n="concern.dullness">Dullness</a></li>
+                <li role="none"><a role="menuitem" href="shop.html?concern=dryness" data-i18n="concern.dryness">Dryness</a></li>
+                <li role="none"><a role="menuitem" href="shop.html?concern=hairfall" data-i18n="concern.hairfall">Hairfall</a></li>
+                <li role="none"><a role="menuitem" href="shop.html?concern=dandruff" data-i18n="concern.dandruff">Dandruff</a></li>
+                <li role="none"><a role="menuitem" href="shop.html?concern=frizz" data-i18n="concern.frizz">Frizz</a></li>
+              </ul>
+            </div>
+            <div class="mega__col mega__col--feat">
+              <h4 data-i18n="nav.megamenu.featured">Featured</h4>
+              <a class="mega__all" role="menuitem" href="shop.html" data-i18n="nav.shopall">Shop all products</a>
+              <a class="mega__feat js-mega-feat" role="menuitem" href="#">
+                <span class="mega__feat-frame"><img src="" alt="" data-fallback></span>
+                <span class="mega__feat-name"></span>
+                <span class="mega__feat-price"></span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <a href="shop.html?group=skincare" data-i18n="nav.skincare">Skincare</a>
+      <a href="shop.html?group=haircare" data-i18n="nav.haircare">Haircare</a>
+      <a href="about.html" data-i18n="nav.story">Our Story</a>
+      <a href="contact.html" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <div class="nav__tools">
+      <button class="lang-btn" aria-label="Language">ع</button>
+      <button class="icon-btn sound-btn" data-i18n-aria="a11y.sound" aria-label="Background music">
+        <span class="eq"><span></span><span></span><span></span><span></span></span>
+      </button>
+      <button class="icon-btn search-btn" data-i18n-aria="a11y.search" aria-label="Search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <button class="icon-btn" data-cart-open data-i18n-aria="a11y.cart" aria-label="Open cart">
+        <svg viewBox="0 0 24 24"><path d="M6 7h12l-1.2 12H7.2z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        <span class="cart-count" style="display:none">0</span>
+      </button>
+      <button class="icon-btn burger" id="burger" aria-label="Menu">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
     </div>
+  </div>
   </div>
 </header>
 
-<!-- ============ MENU PANEL ============ -->
 <div class="mnav" id="mnav">
   <div class="mnav__top">
     <span class="nav__logo-fallback">Béute Pro</span>
@@ -70,46 +102,62 @@
       <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
-  <button class="mnav__search">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+  <button class="mnav__search" data-cart-close>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
     <span data-i18n="a11y.search">Search</span>
   </button>
+
   <nav class="mnav__links">
     <a href="index.html" data-i18n="nav.home">Home</a>
-    <a href="shop.html" data-i18n="nav.shop">Shop</a>
-    <a href="#feature" data-i18n="nav.story">Our Story</a>
-    <a href="#" data-i18n="nav.journal">Journal</a>
-    <a href="#" data-i18n="nav.contact">Contact</a>
+
+    <div class="mnav__acc" id="mnav-shop-acc">
+      <button class="mnav__acc-btn" id="mnav-shop-toggle" aria-expanded="false" aria-controls="mnav-shop-panel">
+        <span data-i18n="nav.shop">Shop</span><i>+</i>
+      </button>
+      <div class="mnav__acc-panel" id="mnav-shop-panel">
+        <div class="mnav__acc-in">
+          <h5 data-i18n="nav.megamenu.category">Shop by category</h5>
+          <ul class="mega__list js-mega-cats"></ul>
+          <h5 data-i18n="nav.megamenu.concern">Shop by concern</h5>
+          <ul class="mega__list">
+            <li><a href="shop.html?concern=acne" data-i18n="concern.acne">Acne</a></li>
+            <li><a href="shop.html?concern=dullness" data-i18n="concern.dullness">Dullness</a></li>
+            <li><a href="shop.html?concern=dryness" data-i18n="concern.dryness">Dryness</a></li>
+            <li><a href="shop.html?concern=hairfall" data-i18n="concern.hairfall">Hairfall</a></li>
+            <li><a href="shop.html?concern=dandruff" data-i18n="concern.dandruff">Dandruff</a></li>
+            <li><a href="shop.html?concern=frizz" data-i18n="concern.frizz">Frizz</a></li>
+          </ul>
+          <a class="mnav__acc-all" href="shop.html" data-i18n="nav.shopall">Shop all products</a>
+          <a class="mega__feat js-mega-feat" href="#">
+            <span class="mega__feat-frame"><img src="" alt="" data-fallback></span>
+            <span class="mega__feat-name"></span>
+            <span class="mega__feat-price"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <a href="shop.html?group=skincare" data-i18n="nav.skincare">Skincare</a>
+    <a href="shop.html?group=haircare" data-i18n="nav.haircare">Haircare</a>
+    <a href="about.html" data-i18n="nav.story">Our Story</a>
+    <a href="contact.html" data-i18n="nav.contact">Contact</a>
   </nav>
 </div>
 
-<!-- ============ HERO SLIDER ============ -->
+<!-- ============ HERO ============
+     Deliberately quieter than it was: no certification pill, shorter than
+     the viewport so the next section's edge shows, one entrance fade
+     instead of a four-step cascade. The bold moment is further down. -->
 <section class="hero" id="hero">
-  <div class="slides">
-
-    <article class="slide is-on" data-product="aloe-vera-mist">
-      <div class="slide__bg"><img src="assets/img/model/slide-1.jpg" alt=""></div>
-      <div class="slide__scrim"></div>
-    </article>
-
-    <article class="slide" data-product="herbal-hair-oil">
-      <div class="slide__bg"><img src="assets/img/model/slide-2.jpg" alt=""></div>
-      <div class="slide__scrim"></div>
-    </article>
-
-    <article class="slide" data-product="almond-oil">
-      <div class="slide__bg"><img src="assets/img/model/slide-3.jpg" alt=""></div>
-      <div class="slide__scrim"></div>
-    </article>
-
+  <div class="hero__bg" id="hero-bg">
+    <video class="hero__video" id="hero-video" autoplay muted loop playsinline preload="metadata" poster="assets/img/model/slide-1.jpg">
+      <source src="assets/video/hero.mp4" type="video/mp4">
+    </video>
   </div>
+  <div class="slide__scrim"></div>
 
   <div class="wrap hero__in">
     <div class="hero__copy">
-      <span class="hero__badge">
-        <svg viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-        <span data-i18n="hero.badge">Natural · Halal Certified · Cruelty Free</span>
-      </span>
       <h1 class="h-xl" data-i18n="s1.title">Skin that remembers how to glow.</h1>
       <p class="lede hero__lede" data-i18n="s1.lede">Cold-pressed oils, handcrafted soaps and botanical mists.</p>
       <div class="hero__cta">
@@ -118,72 +166,154 @@
       </div>
     </div>
   </div>
-
-  <!-- product card, follows the active slide -->
-  <a class="hero__card" id="hero-card" href="#">
-    <span class="hero__card-media"><img src="" alt="" data-fallback></span>
-    <span class="hero__card-tag"></span>
-    <span class="hero__card-name"></span>
-    <span class="hero__card-price"></span>
-  </a>
-
-  <!-- controls -->
-  <div class="hero__ui">
-    <div class="hero__arrows">
-      <button class="sarrow" id="s-prev" data-i18n-aria="s.prev" aria-label="Previous slide">
-        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
-      </button>
-      <button class="sarrow" id="s-next" data-i18n-aria="s.next" aria-label="Next slide">
-        <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-      </button>
-    </div>
-    <div class="hero__dots">
-      <button class="sdot is-on" aria-label="1"><i></i></button>
-      <button class="sdot" aria-label="2"><i></i></button>
-      <button class="sdot" aria-label="3"><i></i></button>
-    </div>
-    <span class="hero__count"><b id="slide-num">01</b> / 03</span>
-  </div>
 </section>
-
-<!-- ============ MARQUEE ============ -->
-<div class="marquee">
-  <div class="marquee__track">
-    <span>
-      <span data-i18n="marq.1">100% Natural Ingredients</span>
-      <span data-i18n="marq.2">Halal Certified</span>
-      <span data-i18n="marq.3">Paraben Free</span>
-      <span data-i18n="marq.4">Cruelty Free</span>
-      <span data-i18n="marq.5">ISO &amp; GMP Certified</span>
-      <span data-i18n="marq.6">Sulphate Free</span>
-      <span data-i18n="marq.7">Made in Small Batches</span>
-    </span>
-  </div>
-</div>
+<script>
+(function(){
+  var bg = document.getElementById('hero-bg');
+  var video = document.getElementById('hero-video');
+  if (!bg || !video) return;
+  function fallback(){ bg.classList.add('is-empty'); }
+  video.addEventListener('error', fallback, true);
+  /* this runs before main.js, so read the query directly rather than
+     leaning on the `reduced` const that main.js defines later */
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches){
+    video.removeAttribute('autoplay');
+    video.pause();
+  } else {
+    var p = video.play();
+    if (p && p.catch) p.catch(fallback);
+  }
+})();
+</script>
 
 <!-- ============ CATEGORIES ============ -->
 <section class="section">
   <div class="wrap">
-    <div class="section-head section-head--row reveal">
-      <div>
-        <p class="eyebrow" data-i18n="cat.eyebrow">Shop by category</p>
-        <h2 class="h-lg" data-split data-i18n="cat.title">Everything for skin, hair and body.</h2>
-      </div>
-      <a class="link-arrow" href="shop.html">
-        <span data-i18n="cat.all">View all products</span>
-        <svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 5h14M10 1l4 4-4 4"/></svg>
-      </a>
+    <div class="section-head section-head--row">
+      <h2 class="h-lg" data-i18n="cat.title">Everything for skin, hair and body.</h2>
+      <a class="link-arrow" href="shop.html" data-i18n="cat.all">View all products</a>
     </div>
-    <div class="cats stagger" id="cats"></div>
+    <div class="cats" id="cats"></div>
   </div>
 </section>
 
-<!-- ============ MODEL FEATURE ============ -->
-<section class="section feature" id="feature">
+<!-- ============ THE RANGE ============
+     One grid. There used to be two here — "best sellers" and "the full
+     range" — both drawing from the same eight products in products.js. -->
+<section class="section section--tight section--tint">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 class="h-lg" data-i18n="feat.title">Chosen with care.</h2>
+      <p class="lede" data-i18n="feat.lede">Browse everything, or narrow it down.</p>
+    </div>
+    <div class="grid-products" id="allproducts"></div>
+    <div class="section-foot">
+      <a class="btn btn--outline" href="shop.html" data-i18n="cat.all">View all products</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SPOTLIGHT — 360° video ============
+     Hidden until the inline script at the foot of the page confirms a
+     product has a working video at assets/video/spin/<id>.mp4 — picks
+     the first one (in products.js order) that loads, and stays hidden
+     if none do. Scroll scrubs the timeline as the section crosses the
+     viewport; drag overrides it locally, and resumes tracking on
+     release. Copy is read live from products.js, never hardcoded. -->
+<section class="section section--dark bloom bloom--tr spotlight" id="spotlight" hidden>
+  <div class="wrap spotlight__in">
+    <div class="spotlight__media" id="spotlight-media" tabindex="0" role="group" aria-label="360° view">
+      <video class="spotlight__video" id="spotlight-video" autoplay muted loop playsinline preload="metadata"></video>
+      <span class="spotlight__hint">
+        <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.6M20 12a8 8 0 0 1-13.7 5.6"/><path d="M17 3v4h-4M7 21v-4h4"/></svg>
+        <span data-i18n="pdp.draghint">Drag to rotate</span>
+      </span>
+    </div>
+    <div class="spotlight__copy">
+      <p class="eyebrow eyebrow--dash" data-i18n="spot.eyebrow">Look closer</p>
+      <h2 class="h-lg" id="spotlight-name"></h2>
+      <p class="lede" id="spotlight-tag"></p>
+      <div class="spotlight__price" id="spotlight-price"></div>
+      <a class="link-arrow link-arrow--light" id="spotlight-link" href="shop.html" data-i18n="spot.cta">Shop this product</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OUR FLOOR — the bold moment ============
+     The only full-bleed block on the page, the only mid-page dark band,
+     the tallest images. `id="feature"` lives here because shop.html and
+     product.html both link "Our Story" to index.html#feature. -->
+<section class="section floor" id="feature">
+  <div class="wrap floor__in">
+    <div class="floor__lead">
+      <h2 class="h-lg" data-i18n="story.title">Nurtured, not manufactured.</h2>
+      <div class="floor__figures">
+        <div class="floor__fig"><b>12</b><span data-i18n="st.3">Years making skincare</span></div>
+        <div class="floor__fig"><b>150</b><span data-i18n="st.4">Batch size, never mass runs</span></div>
+        <div class="floor__fig"><b>17</b><span data-i18n="st.2">Herbs in our hair oil</span></div>
+      </div>
+    </div>
+    <div class="floor__text">
+      <p data-i18n="story.body">Every product is made on our own floor in Faisalabad — formulated, filled, labelled and checked by the same team.</p>
+      <p data-i18n="story.body2">Self care should work in harmony with your body.</p>
+    </div>
+  </div>
+
+  <!-- direct child of the section, not of .wrap, so it spans the full
+       viewport width with no negative-margin trick -->
+  <div class="floor__band reveal" tabindex="0" role="group"
+       data-i18n-aria="floor.gallery" aria-label="Photos from our floor in Faisalabad">
+    <figure class="floor__shot">
+      <img src="assets/img/about/factory-1.jpg" alt="" data-fallback loading="lazy">
+      <figcaption data-i18n="floor.cap1">[CAPTION PENDING]</figcaption>
+    </figure>
+    <figure class="floor__shot">
+      <img src="assets/img/about/factory-2.jpg" alt="" data-fallback loading="lazy">
+      <figcaption data-i18n="floor.cap2">[CAPTION PENDING]</figcaption>
+    </figure>
+    <figure class="floor__shot">
+      <img src="assets/img/about/factory-3.jpg" alt="" data-fallback loading="lazy">
+      <figcaption data-i18n="floor.cap3">[CAPTION PENDING]</figcaption>
+    </figure>
+  </div>
+
+  <div class="wrap floor__foot">
+    <p class="floor__certs" data-i18n="floor.certs">Halal certified · ISO &amp; GMP · Paraben &amp; sulphate free · Cruelty free</p>
+    <a class="link-arrow link-arrow--light" href="#process" data-i18n="story.cta">Inside the workshop</a>
+  </div>
+</section>
+
+<!-- ============ HOW IT'S MADE ============ -->
+<section class="section" id="process">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="h-lg">
+        <span data-i18n="pr.t1">Eight steps from raw herb</span>
+        <span class="accent" data-i18n="pr.t2">to sealed bottle.</span>
+      </h2>
+      <p class="lede" data-i18n="pr.lede">No guesswork and no gaps.</p>
+    </div>
+
+    <div class="process">
+      <div class="pstep"><span class="pstep__num">01</span><h4 data-i18n="pr.1t">Sourcing</h4><p data-i18n="pr.1d">Herbs bought from growers we visit.</p></div>
+      <div class="pstep"><span class="pstep__num">02</span><h4 data-i18n="pr.2t">Formulation</h4><p data-i18n="pr.2d">Recipes developed in-house.</p></div>
+      <div class="pstep"><span class="pstep__num">03</span><h4 data-i18n="pr.3t">Cold Pressing</h4><p data-i18n="pr.3d">Pressed without heat.</p></div>
+      <div class="pstep"><span class="pstep__num">04</span><h4 data-i18n="pr.4t">Blending</h4><p data-i18n="pr.4d">Small-batch mixing.</p></div>
+      <div class="pstep"><span class="pstep__num">05</span><h4 data-i18n="pr.5t">Lab Testing</h4><p data-i18n="pr.5d">Purity, pH and stability.</p></div>
+      <div class="pstep"><span class="pstep__num">06</span><h4 data-i18n="pr.6t">Filling</h4><p data-i18n="pr.6d">Bottled on our own line.</p></div>
+      <div class="pstep"><span class="pstep__num">07</span><h4 data-i18n="pr.7t">Quality Check</h4><p data-i18n="pr.7d">Inspected by hand.</p></div>
+      <div class="pstep"><span class="pstep__num">08</span><h4 data-i18n="pr.8t">Delivery</h4><p data-i18n="pr.8d">Packed, shipped and tracked.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ YOUR ROUTINE ============
+     Light ground now, so the floor section keeps the only dark band.
+     The 01/02/03 markers stay — this content really is a sequence. -->
+<section class="section feature">
   <div class="wrap feature__in">
-    <div class="reveal">
-      <p class="eyebrow" data-i18n="mf.eyebrow">Made for real skin</p>
-      <h2 class="h-lg" data-split data-i18n="mf.title">A routine that fits the day you actually have.</h2>
+    <div>
+      <h2 class="h-lg" data-i18n="mf.title">A routine that fits the day you actually have.</h2>
       <p class="lede" data-i18n="mf.lede">Three steps, two minutes.</p>
 
       <div class="feature__list">
@@ -204,7 +334,7 @@
       <a class="btn btn--gold" href="shop.html" data-i18n="mf.cta">Build your routine</a>
     </div>
 
-    <div class="feature__media reveal">
+    <div class="feature__media">
       <img src="assets/img/model/feature.jpg" alt="Béute Pro skincare routine" data-fallback loading="lazy">
       <span class="feature__chip" id="feature-chip">
         <img src="" alt="" data-fallback>
@@ -214,122 +344,11 @@
   </div>
 </section>
 
-<!-- ============ BEST SELLERS ============ -->
-<section class="section section--tight">
-  <div class="wrap">
-    <div class="section-head section-head--center reveal">
-      <p class="eyebrow" data-i18n="best.eyebrow">Best sellers</p>
-      <h2 class="h-lg" data-split data-i18n="best.title">What people reorder.</h2>
-      <p class="lede" data-i18n="best.lede">The four that keep coming back to the cart.</p>
-    </div>
-    <div class="grid-products stagger" id="bestsellers"></div>
-  </div>
-</section>
-
-<!-- ============ PROCESS (dark) ============ -->
-<section class="section section--dark bloom bloom--bl">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <p class="eyebrow eyebrow--dash" data-i18n="pr.eyebrow">Our process</p>
-      <h2 class="h-lg" data-split>
-        <span data-i18n="pr.t1">Eight steps from raw herb</span>
-        <span class="accent" data-i18n="pr.t2">to sealed bottle.</span>
-      </h2>
-      <p class="lede" style="margin-top:.9rem" data-i18n="pr.lede">No guesswork and no gaps.</p>
-    </div>
-
-    <div class="process stagger">
-      <div class="pstep"><span class="pstep__num">01</span><h4 data-i18n="pr.1t">Sourcing</h4><p data-i18n="pr.1d">Herbs bought from growers we visit.</p></div>
-      <div class="pstep"><span class="pstep__num">02</span><h4 data-i18n="pr.2t">Formulation</h4><p data-i18n="pr.2d">Recipes developed in-house.</p></div>
-      <div class="pstep"><span class="pstep__num">03</span><h4 data-i18n="pr.3t">Cold Pressing</h4><p data-i18n="pr.3d">Pressed without heat.</p></div>
-      <div class="pstep"><span class="pstep__num">04</span><h4 data-i18n="pr.4t">Blending</h4><p data-i18n="pr.4d">Small-batch mixing.</p></div>
-      <div class="pstep"><span class="pstep__num">05</span><h4 data-i18n="pr.5t">Lab Testing</h4><p data-i18n="pr.5d">Purity, pH and stability.</p></div>
-      <div class="pstep"><span class="pstep__num">06</span><h4 data-i18n="pr.6t">Filling</h4><p data-i18n="pr.6d">Bottled on our own line.</p></div>
-      <div class="pstep"><span class="pstep__num">07</span><h4 data-i18n="pr.7t">Quality Check</h4><p data-i18n="pr.7d">Inspected by hand.</p></div>
-      <div class="pstep"><span class="pstep__num">08</span><h4 data-i18n="pr.8t">Delivery</h4><p data-i18n="pr.8d">Packed, shipped and tracked.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ STATS ============ -->
-<section class="section section--tight section--tint">
-  <div class="wrap">
-    <div class="stats stagger">
-      <div class="stat"><b data-count="8" data-count-pad="1">00</b><span data-i18n="st.1">Products in the range</span></div>
-      <div class="stat"><b data-count="17">0</b><span data-i18n="st.2">Herbs in our hair oil</span></div>
-      <div class="stat"><b data-count="12">0</b><span data-i18n="st.3">Years making skincare</span></div>
-      <div class="stat"><b data-count="150">0</b><span data-i18n="st.4">Batch size, never mass runs</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ FULL RANGE ============ -->
-<section class="section section--tight section--tint">
-  <div class="wrap">
-    <div class="section-head section-head--center reveal">
-      <p class="eyebrow" data-i18n="feat.eyebrow">The full range</p>
-      <h2 class="h-lg" data-split data-i18n="feat.title">Chosen with care.</h2>
-      <p class="lede" data-i18n="feat.lede">Browse everything, or narrow it down.</p>
-    </div>
-    <div class="grid-products stagger" id="allproducts"></div>
-    <div style="text-align:center;margin-top:2.6rem">
-      <a class="btn btn--outline" href="shop.html" data-i18n="cat.all">View all products</a>
-    </div>
-  </div>
-</section>
-
-<!-- ============ WHY (dark, interactive) ============ -->
-<section class="section section--dark bloom bloom--tr">
-  <div class="wrap">
-    <div class="section-head section-head--center reveal">
-      <p class="eyebrow" data-i18n="why.eyebrow">Why Béute Pro</p>
-      <h2 class="h-lg" data-split data-i18n="why.title">The short version.</h2>
-    </div>
-
-    <div class="why">
-      <article class="wcard">
-        <span class="wcard__icon"><svg viewBox="0 0 24 24"><path pathLength="1" d="M12 3c4 4 7 6 7 10a7 7 0 1 1-14 0c0-4 3-6 7-10Z"/><path pathLength="1" d="M12 10v7"/></svg></span>
-        <span class="wcard__rule"></span>
-        <h4 data-i18n="why.1t">Natural</h4>
-        <p data-i18n="why.1d">Plant-derived actives.</p>
-      </article>
-
-      <article class="wcard">
-        <span class="wcard__icon"><svg viewBox="0 0 24 24"><path pathLength="1" d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/><path pathLength="1" d="m9 12 2 2 4-4"/></svg></span>
-        <span class="wcard__rule"></span>
-        <h4 data-i18n="why.2t">Halal Certified</h4>
-        <p data-i18n="why.2d">Certified end to end.</p>
-      </article>
-
-      <article class="wcard">
-        <span class="wcard__icon"><svg viewBox="0 0 24 24"><path pathLength="1" d="M12 20s-7-4.3-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.7-7 9-7 9Z"/></svg></span>
-        <span class="wcard__rule"></span>
-        <h4 data-i18n="why.3t">Cruelty Free</h4>
-        <p data-i18n="why.3d">Never tested on animals.</p>
-      </article>
-
-      <article class="wcard">
-        <span class="wcard__icon"><svg viewBox="0 0 24 24"><circle pathLength="1" cx="12" cy="12" r="8"/><path pathLength="1" d="m8 16 8-8"/></svg></span>
-        <span class="wcard__rule"></span>
-        <h4 data-i18n="why.4t">Paraben Free</h4>
-        <p data-i18n="why.4d">No parabens or sulphates.</p>
-      </article>
-
-      <article class="wcard">
-        <span class="wcard__icon"><svg viewBox="0 0 24 24"><path pathLength="1" d="M12 3l2.4 5 5.6.8-4 3.9 1 5.5-5-2.6-5 2.6 1-5.5-4-3.9 5.6-.8z"/></svg></span>
-        <span class="wcard__rule"></span>
-        <h4 data-i18n="why.5t">ISO &amp; GMP</h4>
-        <p data-i18n="why.5d">Audited quality standards.</p>
-      </article>
-    </div>
-  </div>
-</section>
-
 <!-- ============ NEWSLETTER ============ -->
 <section class="section section--tight">
   <div class="wrap">
-    <div class="news reveal">
-      <h2 class="h-md" data-split data-i18n="news.title">Ten percent off, and the honest emails.</h2>
+    <div class="news">
+      <h2 class="h-md" data-i18n="news.title">Ten percent off, and the honest emails.</h2>
       <p class="lede" style="margin:.9rem auto 0" data-i18n="news.lede">New batches, restocks and the occasional note.</p>
       <form class="news__form" id="news-form">
         <input type="email" required placeholder="Your email address" data-i18n-ph="news.placeholder">
@@ -346,7 +365,7 @@
     <div class="footer__grid">
       <div>
         <img class="footer__logo" src="assets/img/brand/logo-white.png" alt="Béute Pro"
-             onerror="this.outerHTML='<div class=\'nav__logo-fallback\' style=\'margin-bottom:1rem\'>B&eacute;ute Pro</div>'">
+             onerror="this.outerHTML='<div class=\'nav__logo-fallback\' style=\'margin-bottom:1.2rem\'>B&eacute;ute Pro</div>'">
         <p class="footer__about" data-i18n="foot.about">At Béute Pro we believe true beauty is nurtured, not manufactured.</p>
       </div>
       <div>
@@ -354,11 +373,11 @@
         <ul>
           <li><a href="index.html" data-i18n="nav.home">Home</a></li>
           <li><a href="shop.html" data-i18n="nav.shop">Shop</a></li>
-          <li><a href="#feature" data-i18n="nav.story">Our Story</a></li>
-          <li><a href="#" data-i18n="nav.contact">Contact</a></li>
-          <li><a href="#" data-i18n="foot.faq">FAQs</a></li>
-          <li><a href="#" data-i18n="foot.privacy">Privacy Policy</a></li>
-          <li><a href="#" data-i18n="foot.refund">Refund &amp; Exchange</a></li>
+          <li><a href="about.html" data-i18n="nav.story">Our Story</a></li>
+          <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
+          <li><a href="faq.html" data-i18n="foot.faq">FAQs</a></li>
+          <li><a href="policies.html#privacy" data-i18n="foot.privacy">Privacy Policy</a></li>
+          <li><a href="policies.html#returns" data-i18n="foot.refund">Refund &amp; Exchange</a></li>
         </ul>
       </div>
       <div>
@@ -389,6 +408,10 @@
 <button class="totop" aria-label="Back to top">
   <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
 </button>
+
+<a class="whatsapp-fab" href="[CLIENT TO CONFIRM]" data-i18n-aria="a11y.whatsapp" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm5.2 14.1c-.2.6-1.3 1.2-1.8 1.2s-1.1.2-3.6-.9a12.4 12.4 0 0 1-4.6-4.4c-.3-.5-1.1-1.7-1.1-3.2s.8-2.2 1.1-2.5a1 1 0 0 1 .8-.4h.6c.2 0 .4 0 .6.5l.9 2c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.3-.1.7a9.2 9.2 0 0 0 1.6 2 8.3 8.3 0 0 0 2.3 1.4c.3.2.5.1.7-.1l.9-1c.2-.2.4-.2.6-.1l2 1c.3.1.5.2.5.3a2 2 0 0 1 0 1.3Z"/></svg>
+</a>
 
 <!-- ============ CART ============ -->
 <div class="scrim" id="scrim"></div>
@@ -427,7 +450,6 @@
 <script src="assets/js/i18n.js"></script>
 <script src="assets/js/products.js"></script>
 <script src="assets/js/main.js"></script>
-<script src="assets/js/slider.js"></script>
 <script src="assets/js/motion.js"></script>
 <script>
 function paintHome(){
@@ -435,16 +457,13 @@ function paintHome(){
     <a class="cat" href="shop.html?cat=${c.id}">
       <span class="cat__frame"><img src="${catSrc(c.id)}" alt="${isRTL()?c.ar:c.en}" data-fallback loading="lazy"></span>
       <h3 class="cat__name">${isRTL()?c.ar:c.en}</h3>
-      <span class="cat__go">${t('cat.shop')} &rarr;</span>
+      <span class="cat__go">${t('cat.shop')}</span>
     </a>`).join('');
   guardAll($('#cats'));
 
   $('#foot-cats').innerHTML = CATEGORIES.map(c =>
     `<li><a href="shop.html?cat=${c.id}">${isRTL()?c.ar:c.en}</a></li>`).join('');
 
-  const picked = PRODUCTS.filter(p => p.badge === 'bestseller');
-  for (const p of PRODUCTS){ if (picked.length >= 4) break; if (!picked.includes(p)) picked.push(p); }
-  renderGrid('#bestsellers', picked.slice(0, 4));
   renderGrid('#allproducts', PRODUCTS.slice(0, 8));
 
   // the product chip sitting on the model shot
@@ -456,8 +475,145 @@ function paintHome(){
     chip.querySelector('span > span').textContent = money(p.price);
   }
 }
-function PAGE_INIT(){ paintHome(); }
-function PAGE_LANG(){ paintHome(); }
+
+/* =============================================================
+   SPOTLIGHT — the scroll-scrubbed 360° video section.
+   Lives here (not in main.js) because it is homepage-only.
+   ============================================================= */
+const Spotlight = {
+  el:null, media:null, video:null, product:null,
+  dragging:false, axis:null, sx:0, sy:0, startTime:0, visible:false,
+
+  async init(){
+    this.el    = $('#spotlight');
+    this.media = $('#spotlight-media');
+    this.video = $('#spotlight-video');
+    if (!this.el || !this.video) return;
+
+    this.product = await this.findProduct();
+    if (!this.product){ this.el.hidden = true; return; }
+
+    this.el.hidden = false;
+    this.video.poster = imgSrc(this.product.id, 1);
+    if (reduced) this.video.removeAttribute('autoplay');   // poster frame only, ever
+    this.video.src = `assets/video/spin/${this.product.id}.mp4`;
+
+    this.paintCopy();
+    this.bindDrag();
+    this.bindScroll();
+  },
+
+  /* the first product, in products.js order, with a real video file.
+     A throwaway <video> per candidate — preload="metadata" only pulls
+     the header, so testing the full range costs almost nothing. */
+  findProduct(){
+    const probe = pr => new Promise(res => {
+      const v = document.createElement('video');
+      v.preload = 'metadata'; v.muted = true;
+      v.onloadedmetadata = () => res(true);
+      v.onerror = () => res(false);
+      v.src = `assets/video/spin/${pr.id}.mp4`;
+    });
+    return Promise.all(PRODUCTS.map(probe)).then(flags => {
+      const i = flags.findIndex(Boolean);
+      return i === -1 ? null : PRODUCTS[i];
+    });
+  },
+
+  paintCopy(){
+    if (!this.product) return;
+    const d = L(this.product);
+    $('#spotlight-name').textContent  = d.name;
+    $('#spotlight-tag').textContent   = d.tagline;
+    $('#spotlight-price').textContent = money(this.product.price);
+    $('#spotlight-link').href = `product.html?id=${this.product.id}`;
+    this.media.setAttribute('aria-label', `${d.name} — ${t('pdp.draghint')}`);
+  },
+
+  bindDrag(){
+    const box = this.media, video = this.video;
+    const scrub = clientX => {
+      if (!video.duration) return;
+      const rect = box.getBoundingClientRect();
+      const dir = isRTL() ? -1 : 1;
+      const time = this.startTime + ((clientX - this.sx) / rect.width) * video.duration * dir;
+      video.currentTime = ((time % video.duration) + video.duration) % video.duration;
+    };
+    const start = e => {
+      const p = e.touches ? e.touches[0] : e;
+      this.sx = p.clientX; this.sy = p.clientY; this.axis = null;
+      this.startTime = video.currentTime || 0;
+      this.dragging = true;
+      box.classList.add('is-dragging');
+    };
+    const end = () => {
+      if (!this.dragging) return;
+      this.dragging = false;
+      box.classList.remove('is-dragging');
+      updateSpotlightScroll();          // resync with the scroll position
+    };
+    const move = e => {
+      if (!this.dragging) return;
+      const p = e.touches ? e.touches[0] : e;
+      const dx = p.clientX - this.sx, dy = p.clientY - this.sy;
+      if (this.axis === null){
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        this.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+        if (this.axis === 'y') return end();   // vertical intent: let the page scroll instead
+      }
+      if (this.axis !== 'x') return;
+      e.preventDefault();
+      scrub(p.clientX);
+    };
+
+    box.addEventListener('mousedown', start);
+    box.addEventListener('touchstart', start, { passive:true });
+    addEventListener('mousemove', move);
+    box.addEventListener('touchmove', move, { passive:false });
+    addEventListener('mouseup', end);
+    addEventListener('touchend', end);
+
+    box.addEventListener('keydown', e => {
+      if (!video.duration) return;
+      const dir = isRTL() ? -1 : 1, step = video.duration / 24;
+      let time = video.currentTime;
+      if (e.key === 'ArrowRight') time += step * dir;
+      else if (e.key === 'ArrowLeft') time -= step * dir;
+      else return;
+      video.currentTime = ((time % video.duration) + video.duration) % video.duration;
+    });
+  },
+
+  /* scroll position drives the timeline while the section is on
+     screen; off screen, the listener does no work at all */
+  bindScroll(){
+    if (reduced) return;                // reduced motion: poster frame, no scroll binding
+    const io = new IntersectionObserver(en => {
+      this.visible = en[0].isIntersecting;
+      if (this.visible) updateSpotlightScroll();
+    }, { rootMargin:'20% 0px' });
+    io.observe(this.el);
+
+    let ticking = false;
+    addEventListener('scroll', () => {
+      if (ticking || !this.visible) return;
+      ticking = true;
+      requestAnimationFrame(() => { updateSpotlightScroll(); ticking = false; });
+    }, { passive:true });
+  }
+};
+
+function updateSpotlightScroll(){
+  if (!Spotlight.video?.duration || Spotlight.dragging || reduced) return;
+  const r = Spotlight.el.getBoundingClientRect();
+  const total = r.height + innerHeight;
+  const traveled = innerHeight - r.top;
+  const progress = Math.min(1, Math.max(0, traveled / total));
+  Spotlight.video.currentTime = progress * Spotlight.video.duration;
+}
+
+function PAGE_INIT(){ paintHome(); Spotlight.init(); }
+function PAGE_LANG(){ paintHome(); Spotlight.paintCopy(); }
 </script>
 </body>
 </html>
