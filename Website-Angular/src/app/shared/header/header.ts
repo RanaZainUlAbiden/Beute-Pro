@@ -24,16 +24,6 @@ export const CONCERNS = [
   'frizz',
 ] as const;
 
-/* =============================================================
-   HEADER — topbar, primary nav, Shop mega menu, mobile panel
-
-   The desktop dropdown and the mobile accordion share one
-   category list and one featured product, both read live from
-   core/data/products.ts. Keeping that in a single component is
-   what stops the two from silently drifting apart — the same
-   reason the static site rendered them from one script rather
-   than pasting the markup into all seven pages.
-   ============================================================= */
 @Component({
   selector: 'app-header',
   templateUrl: './header.html',
@@ -83,6 +73,7 @@ export class Header {
 
   /* ---- Shop mega menu (desktop) ---- */
   protected readonly megaOpen = signal(false);
+  private closeTimer: ReturnType<typeof setTimeout> | undefined;
 
   /* ---- mobile panel ---- */
   protected readonly menuOpen = signal(false);
@@ -106,7 +97,8 @@ export class Header {
       } else {
         this.stuck.set(y > 60);
       }
-      this.hidden.set(y > 320 && y > this.lastY && !this.menuOpen());
+      // ★ FIX: keep header visible when mega menu is open ★
+      this.hidden.set(y > 320 && y > this.lastY && !this.menuOpen() && !this.megaOpen());
       this.lastY = y;
     });
 
@@ -119,16 +111,29 @@ export class Header {
   }
 
   protected openMega(): void {
+    // Cancel any pending close timer
+    clearTimeout(this.closeTimer);
     this.megaOpen.set(true);
   }
 
-  protected closeMega(returnFocus = false): void {
-    this.megaOpen.set(false);
-    if (returnFocus) this.trigger().nativeElement.focus();
+  protected closeMega(returnFocus = false, delay = 300): void {
+    // Delay the close to allow moving the mouse from the trigger into the panel
+    clearTimeout(this.closeTimer);
+    this.closeTimer = setTimeout(() => {
+      this.megaOpen.set(false);
+      if (returnFocus) this.trigger().nativeElement.focus();
+    }, delay);
+  }
+
+  protected cancelClose(): void {
+    clearTimeout(this.closeTimer);
+    this.megaOpen.set(true);
   }
 
   protected onMegaFocusOut(e: FocusEvent, wrap: HTMLElement): void {
-    if (!wrap.contains(e.relatedTarget as Node | null)) this.closeMega();
+    if (!wrap.contains(e.relatedTarget as Node | null)) {
+      this.closeMega(false, 0);
+    }
   }
 
   protected onMegaKeydown(e: KeyboardEvent): void {
@@ -139,7 +144,7 @@ export class Header {
     const i = list.indexOf(document.activeElement as HTMLAnchorElement);
 
     if (e.key === 'Escape') {
-      this.closeMega(true);
+      this.closeMega(true, 0);
       return;
     }
     if (e.key === 'ArrowDown') {
