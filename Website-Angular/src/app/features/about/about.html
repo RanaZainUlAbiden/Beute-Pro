@@ -1,0 +1,70 @@
+<!-- ============ PAGE HERO (dark) ============ -->
+<section class="pagehero">
+  <div class="pagehero__bg" [class.is-empty]="heroEmpty()"><img src="/assets/img/about/factory-2.jpg" alt="" (error)="heroEmpty.set(true)"></div>
+  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
+  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
+  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
+  <div class="wrap pagehero__in">
+    <p class="crumb">
+      <a routerLink="/">{{ i18n.t('nav.home') }}</a>
+      &nbsp;&rsaquo;&nbsp;
+      <span>{{ i18n.t('nav.story') }}</span>
+    </p>
+    <p class="eyebrow eyebrow--dash">{{ i18n.t('story.eyebrow') }}</p>
+    <h1 class="h-xl" splitHeading [text]="i18n.t('story.title')"></h1>
+    <p class="lede">{{ i18n.t('about.hero.lede') }}</p>
+  </div>
+</section>
+
+<!-- ============ BRAND STORY ============
+     Sourced from beutepro.com/who-we-are/. Long body copy stays inline
+     English for now (see build summary) — headings are i18n keys. -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow eyebrow--dash">{{ i18n.t('about.brand.eyebrow') }}</p>
+      <h2 class="h-lg" splitHeading [text]="i18n.t('about.brand.title')"></h2>
+    </div>
+    <div dir="ltr" style="max-width:62ch">
+      <p class="lede" style="margin-bottom:1.1rem">Béute Pro draws on South Asian beauty traditions — neem, turmeric, aloe vera, rice, amla and rose — combined with modern cosmetic science to make self care that works with your skin, not against it.</p>
+      <p class="lede">Clean beauty isn't a trend to us. It's a standard: thoughtful ingredient selection, responsible formulation, and an unwavering commitment to transparency about what actually goes into every bottle.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY BÉUTE PRO (dark) ============ -->
+<section class="section section--dark bloom bloom--tr">
+  <div class="wrap">
+    <div class="section-head section-head--center reveal">
+      <p class="eyebrow eyebrow--dash">{{ i18n.t('why.eyebrow') }}</p>
+      <h2 class="h-lg" splitHeading [segments]="whyTitle()"></h2>
+      <p class="lede" style="margin-top:.9rem">{{ i18n.t('about.why.lede') }}</p>
+    </div>
+
+    <div class="pill-list stagger" style="justify-content:center">
+      @for (key of badges; track key) {
+      <span class="chip">{{ i18n.t(key) }}</span>
+      }
+    </div>
+
+    <div class="floor__figures stagger" style="margin-top:clamp(2.4rem,5vw,3.6rem)">
+      <div class="floor__fig"><b>12</b><span>{{ i18n.t('st.3') }}</span></div>
+      <div class="floor__fig"><b>150</b><span>{{ i18n.t('st.4') }}</span></div>
+      <div class="floor__fig"><b>17</b><span>{{ i18n.t('st.2') }}</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLOSING CTA ============ -->
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="section-head section-head--center reveal">
+      <h2 class="h-lg" splitHeading [text]="i18n.t('about.cta.title')"></h2>
+      <p class="lede">{{ i18n.t('about.cta.lede') }}</p>
+    </div>
+    <div class="section-foot" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn--gold" routerLink="/shop">{{ i18n.t('hero.cta1') }}</a>
+      <a class="btn btn--outline" routerLink="/" fragment="process">{{ i18n.t('hero.cta2') }}</a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,30 @@
+@if (layout.progress()) {<app-progress-bar />}
+
+<app-header />
+
+<router-outlet />
+
+<app-footer />
+
+<app-back-to-top />
+
+<app-whatsapp-button />
+
+<app-cart-drawer />
+
+<app-toast />
+
+<!-- The music now starts on its own, so the ask-first card is unused;
+     `.sound-prompt{display:none}` in styles.scss keeps it out of the
+     page. Kept, with its strings, in case the prompt is ever wanted. -->
+<div class="sound-prompt" id="sound-prompt">
+  <p>{{ i18n.t('sound.ask') }}</p>
+  <div class="sound-prompt__row">
+    <button class="btn btn--green btn--sm" id="sound-yes">{{ i18n.t('sound.yes') }}</button>
+    <button class="btn btn--outline btn--sm" id="sound-no">{{ i18n.t('sound.no') }}</button>
+  </div>
+</div>
+
+<audio #audioEl id="bp-audio" loop preload="none">
+  <source src="/assets/audio/ambient.mp3" type="audio/mpeg">
+</audio>

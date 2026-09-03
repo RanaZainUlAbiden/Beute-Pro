@@ -1,0 +1,39 @@
+<div class="scrim" id="scrim" [class.is-open]="cart.isOpen()" (click)="cart.close()"></div>
+<aside class="cart" id="cart" aria-label="Cart" [class.is-open]="cart.isOpen()">
+  <div class="cart__head">
+    <h3>{{ i18n.t('cart.title') }}</h3>
+    <button class="icon-btn" aria-label="Close" (click)="cart.close()">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="cart__items" id="cart-items">
+    @if (cart.rows().length === 0) {
+      <div class="cart__empty">
+        <svg viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M6 6 5 2H2"/></svg>
+        <p>{{ i18n.t('cart.empty') }}</p>
+        <a class="btn btn--outline btn--sm" routerLink="/shop" (click)="cart.close()">{{ i18n.t('cart.emptycta') }}</a>
+      </div>
+    } @else {
+      @for (row of cart.rows(); track row.id) {
+        <div class="citem">
+          <img class="citem__img" [src]="imgSrc(row.product.id)" [alt]="i18n.copy(row.product).name" data-fallback>
+          <div>
+            <div class="citem__name">{{ i18n.copy(row.product).name }}</div>
+            <div class="citem__price">{{ i18n.money(row.product.price) }}</div>
+            <div class="qty">
+              <button aria-label="−" (click)="cart.step(row.id, -1)">−</button>
+              <span>{{ row.qty }}</span>
+              <button aria-label="+" (click)="cart.step(row.id, 1)">+</button>
+            </div>
+          </div>
+          <button class="citem__x" [attr.aria-label]="i18n.t('cart.remove')" (click)="cart.remove(row.id)">×</button>
+        </div>
+      }
+    }
+  </div>
+  <div class="cart__foot" id="cart-foot" [style.display]="cart.rows().length ? 'block' : 'none'">
+    <div class="cart__total"><span>{{ i18n.t('cart.subtotal') }}</span><b id="cart-total">{{ i18n.money(cart.total()) }}</b></div>
+    <a class="btn btn--green btn--full" href="#">{{ i18n.t('cart.checkout') }}</a>
+    <button class="btn btn--outline btn--full" style="margin-top:.6rem" (click)="cart.close()">{{ i18n.t('cart.continue') }}</button>
+  </div>
+</aside>

@@ -1,0 +1,2 @@
+@for (row of rows(); track $index) {@if (row.wrap) {<span [class]="row.class">@for (w of row.words; track $index) {<span class="word"><span [style.transition-delay.ms]="w.delay">{{ w.text }}</span></span> }</span>
+} @else {@for (w of row.words; track $index) {<span class="word"><span [style.transition-delay.ms]="w.delay">{{ w.text }}</span></span> }}}

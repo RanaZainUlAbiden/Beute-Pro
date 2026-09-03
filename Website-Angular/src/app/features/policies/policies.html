@@ -1,0 +1,105 @@
+<!-- ============ PAGE HERO (dark) ============ -->
+<section class="pagehero">
+  <div class="pagehero__bg" [class.is-empty]="heroEmpty()"><img src="/assets/img/model/policies-hero.jpg" alt="" (error)="heroEmpty.set(true)"></div>
+  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
+  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
+  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
+  <div class="wrap pagehero__in">
+    <p class="crumb">
+      <a routerLink="/">{{ i18n.t('nav.home') }}</a>
+      &nbsp;&rsaquo;&nbsp;
+      <span>{{ i18n.t('policies.t1') }}</span>
+    </p>
+    <p class="eyebrow eyebrow--dash">{{ i18n.t('policies.eyebrow') }}</p>
+    <h1 class="h-xl" splitHeading [segments]="heroTitle()"></h1>
+    <p class="lede">{{ i18n.t('policies.lede') }}</p>
+  </div>
+</section>
+
+<!-- ============ QUICK NAV ============ -->
+<section class="section section--tight" style="padding-bottom:0">
+  <div class="wrap">
+    <div class="pill-list" style="justify-content:center">
+      <a class="chip" routerLink="/policies" fragment="privacy">{{ i18n.t('foot.privacy') }}</a>
+      <a class="chip" routerLink="/policies" fragment="returns">{{ i18n.t('foot.refund') }}</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRIVACY POLICY ============
+     Adapted from the live beutepro.com/privacy-policy/ (WordPress default
+     privacy-policy boilerplate). Content specific to WordPress mechanics
+     this site doesn't have — comments, Gravatar, login cookies — is
+     dropped; what's kept is rewritten to describe what this site actually
+     does. Long body copy stays inline English for now. -->
+<section class="section" id="privacy">
+  <div class="wrap">
+    <div class="prose" dir="ltr">
+      <h2 class="h-lg">{{ i18n.t('foot.privacy') }}</h2>
+
+      <h3>Who we are</h3>
+      <p>Our website address is <a href="https://beutepro.com">beutepro.com</a>. Béute Pro is a skincare brand based in Pakistan; products are formulated and filled on our own floor in Faisalabad.</p>
+
+      <h3>Information we collect</h3>
+      <p>When you use the contact form on this site, we collect the name, email address and message you submit, so we can reply to you. If you subscribe to our newsletter, we collect your email address for that purpose only.</p>
+
+      <h3>Cookies &amp; local storage</h3>
+      <p>This site doesn't use tracking cookies. Your language preference, background-music setting and shopping cart contents are saved in your browser's local storage, on your device only, so they're remembered on your next visit. Clearing your browser data clears them too.</p>
+
+      <h3>Third-party services</h3>
+      <p>Page fonts are served by Google Fonts. Loading them may send your device's IP address and browser information to Google, under <a href="https://policies.google.com/privacy">Google's own privacy policy</a>. [CLIENT TO CONFIRM] whether analytics, ad pixels or other third-party trackers are added later.</p>
+
+      <h3>How we use your information</h3>
+      <p>We use the information you send us to respond to your enquiry or fulfil your order, and nothing else. We never pass your email address on to anyone else.</p>
+
+      <h3>Your rights</h3>
+      <p>You can ask us what information we hold about you, or ask us to correct or delete it, at any time — except where we're required to keep it for legitimate administrative, legal or security reasons.</p>
+
+      <h3>Contact</h3>
+      <p>Questions about this policy can be sent to <a href="mailto:support@beutepro.com">support&#64;beutepro.com</a>.</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><hr class="rule"></div>
+
+<!-- ============ REFUND & EXCHANGE POLICY ============
+     Adapted from the live beutepro.com/refund_returns_policy/. The
+     30-day window, condition/packaging/receipt requirements, sale-item
+     exclusion and defective-only exchange rule are all sourced from that
+     page — real client commitments, not invented. Generic non-skincare
+     boilerplate (books, CDs, downloadable software) is dropped as
+     inapplicable to this catalog. The refund-processing time was vague
+     in the source ("within a certain amount of days") and is marked
+     [CLIENT TO CONFIRM] rather than guessed. -->
+<section class="section" id="returns">
+  <div class="wrap">
+    <div class="prose" dir="ltr">
+      <h2 class="h-lg">{{ i18n.t('foot.refund') }}</h2>
+
+      <p>Our refund and returns policy lasts 30 days from the date of purchase. If more than 30 days have passed, we can no longer offer a full refund or exchange.</p>
+
+      <h3>Eligibility</h3>
+      <ul>
+        <li>The item must be unused and in the same condition you received it, in its original packaging.</li>
+        <li>A receipt or proof of purchase is required.</li>
+        <li>For hygiene reasons, an opened or used soap, oil or mist can only be returned if it arrived defective or damaged.</li>
+      </ul>
+
+      <h3>Sale items</h3>
+      <p>Only regular-priced items can be refunded. Sale items are final sale.</p>
+
+      <h3>Refunds</h3>
+      <p>Once your return is received and inspected, we'll email you to confirm whether it's approved. Approved refunds are credited to your original payment method [CLIENT TO CONFIRM — number of business days]. Return shipping costs are the customer's responsibility unless the item arrived defective or damaged, in which case we cover it.</p>
+
+      <h3>Exchanges</h3>
+      <p>We only replace items that arrive defective or damaged. Contact us at <a href="mailto:support@beutepro.com">support&#64;beutepro.com</a> before sending anything back.</p>
+
+      <h3>Gifts</h3>
+      <p>If the item was marked as a gift when purchased and shipped directly to you, you'll receive store credit for the value of the return. If it wasn't marked as a gift, the refund goes to the original purchaser.</p>
+
+      <h3>Questions</h3>
+      <p>Email <a href="mailto:support@beutepro.com">support&#64;beutepro.com</a> any time.</p>
+    </div>
+  </div>
+</section>

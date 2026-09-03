@@ -1,0 +1,14 @@
+<article class="pcard" [attr.data-id]="product().id" [attr.data-cat]="product().category">
+  <a class="pcard__stage" [routerLink]="['/product', product().id]" [attr.aria-label]="i18n.copy(product()).name">
+    @if (product().badge; as badge) {<span class="pcard__badge pcard__badge--{{ badge }}">{{ badgeLabel() }}</span>}
+    <img class="pcard__img" [src]="imgSrc(product().id)" [alt]="i18n.copy(product()).name" data-fallback loading="lazy">
+    <span class="pcard__quick">
+      <span class="btn btn--green btn--sm btn--full" (click)="add($event)">{{ i18n.t('pdp.add') }}</span>
+    </span>
+  </a>
+  <div class="pcard__body">
+    <span class="pcard__cat">{{ categoryName() }}</span>
+    <h3 class="pcard__name"><a [routerLink]="['/product', product().id]">{{ i18n.copy(product()).name }}</a></h3>
+    <div class="pcard__price">@if (product().oldPrice; as old) {<del>{{ i18n.money(old) }}</del><ins>{{ i18n.money(product().price) }}</ins>} @else {<ng-container>{{ i18n.money(product().price) }}</ng-container>}</div>
+  </div>
+</article>

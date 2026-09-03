@@ -1,0 +1,227 @@
+<!-- ============ HERO ============
+     Deliberately quieter than it was: no certification pill, shorter than
+     the viewport so the next section's edge shows, one entrance fade
+     instead of a four-step cascade. The bold moment is further down. -->
+<section class="hero" id="hero">
+  <div class="hero__bg" id="hero-bg" [class.is-empty]="heroEmpty()">
+    <video class="hero__video" id="hero-video" #heroVideo autoplay muted loop playsinline preload="metadata" poster="/assets/img/model/slide-1.jpg">
+      <source src="/assets/video/hero.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="slide__scrim"></div>
+
+  <div class="wrap hero__in">
+    <div class="hero__copy">
+      <h1 class="h-xl">{{ i18n.t('s1.title') }}</h1>
+      <p class="lede hero__lede">{{ i18n.t('s1.lede') }}</p>
+      <div class="hero__cta">
+        <a class="btn btn--gold" routerLink="/shop">{{ i18n.t('hero.cta1') }}</a>
+        <a class="btn btn--light" routerLink="/" fragment="feature">{{ i18n.t('hero.cta2') }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATEGORIES ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head section-head--row">
+      <h2 class="h-lg">{{ i18n.t('cat.title') }}</h2>
+      <a class="link-arrow" routerLink="/shop">{{ i18n.t('cat.all') }}</a>
+    </div>
+    <div class="cats" id="cats">
+      @for (c of categories; track c.id) {
+      <a class="cat" [routerLink]="['/shop', c.id]">
+        <span class="cat__frame"><img [src]="catSrc(c.id)" [alt]="i18n.catName(c)" data-fallback loading="lazy"></span>
+        <h3 class="cat__name">{{ i18n.catName(c) }}</h3>
+        <span class="cat__go">{{ i18n.t('cat.shop') }}</span>
+      </a>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE RANGE ============
+     One grid. There used to be two here — "best sellers" and "the full
+     range" — both drawing from the same products in products.ts. -->
+<section class="section section--tight section--tint">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <h2 class="h-lg">{{ i18n.t('feat.title') }}</h2>
+      <p class="lede">{{ i18n.t('feat.lede') }}</p>
+    </div>
+    <div class="grid-products" id="allproducts">
+      @for (p of range; track p.id) {
+      <app-product-card [product]="p" />
+      }
+    </div>
+    <div class="section-foot">
+      <a class="btn btn--outline" routerLink="/shop">{{ i18n.t('cat.all') }}</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SPOTLIGHT — 360° video ============
+     Rendered only once a product with a working video at
+     assets/video/spin/<id>.mp4 has been found — the first one in
+     products.ts order that loads — and skipped entirely if none do.
+     Scroll scrubs the timeline as the section crosses the viewport;
+     drag overrides it locally and resumes tracking on release. Copy is
+     read live from products.ts, never hardcoded. -->
+@if (spotProduct(); as spot) {
+<section class="section section--dark bloom bloom--tr spotlight" id="spotlight" #spotlight>
+  <div class="wrap spotlight__in">
+    <div class="spotlight__media" id="spotlight-media" #spotMedia tabindex="0" role="group"
+         [class.is-dragging]="spotDragging()"
+         [attr.aria-label]="spotAria()"
+         (mousedown)="spotStart($event)"
+         (touchstart)="spotStart($event)"
+         (touchmove)="spotMove($event)"
+         (keydown)="spotKeydown($event)">
+      <video class="spotlight__video" id="spotlight-video" #spotVideo autoplay muted loop playsinline preload="metadata"></video>
+      <span class="spotlight__hint">
+        <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.6M20 12a8 8 0 0 1-13.7 5.6"/><path d="M17 3v4h-4M7 21v-4h4"/></svg>
+        <span>{{ i18n.t('pdp.draghint') }}</span>
+      </span>
+    </div>
+    <div class="spotlight__copy">
+      <p class="eyebrow eyebrow--dash">{{ i18n.t('spot.eyebrow') }}</p>
+      <h2 class="h-lg" id="spotlight-name">{{ i18n.copy(spot).name }}</h2>
+      <p class="lede" id="spotlight-tag">{{ i18n.copy(spot).tagline }}</p>
+      <div class="spotlight__price" id="spotlight-price">{{ i18n.money(spot.price) }}</div>
+      <a class="link-arrow link-arrow--light" id="spotlight-link" [routerLink]="['/product', spot.id]">{{ i18n.t('spot.cta') }}</a>
+    </div>
+  </div>
+</section>
+}
+
+<!-- ============ OUR FLOOR — the bold moment ============
+     The only full-bleed block on the page, the only mid-page dark band,
+     the tallest images. `id="feature"` lives here because the Our Story
+     links elsewhere on the site point at it. -->
+<section class="section floor" id="feature">
+  <div class="wrap floor__in">
+    <div class="floor__lead">
+      <h2 class="h-lg">{{ i18n.t('story.title') }}</h2>
+      <div class="floor__figures">
+        <div class="floor__fig"><b>12</b><span>{{ i18n.t('st.3') }}</span></div>
+        <div class="floor__fig"><b>150</b><span>{{ i18n.t('st.4') }}</span></div>
+        <div class="floor__fig"><b>17</b><span>{{ i18n.t('st.2') }}</span></div>
+      </div>
+    </div>
+    <div class="floor__text">
+      <p>{{ i18n.t('story.body') }}</p>
+      <p>{{ i18n.t('story.body2') }}</p>
+    </div>
+  </div>
+
+  <!-- direct child of the section, not of .wrap, so it spans the full
+       viewport width with no negative-margin trick -->
+  <div class="floor__band reveal" tabindex="0" role="group" [attr.aria-label]="i18n.t('floor.gallery')">
+    <figure class="floor__shot">
+      <img src="/assets/img/about/factory-1.jpg" alt="" data-fallback loading="lazy">
+      <figcaption>{{ i18n.t('floor.cap1') }}</figcaption>
+    </figure>
+    <figure class="floor__shot">
+      <img src="/assets/img/about/factory-2.jpg" alt="" data-fallback loading="lazy">
+      <figcaption>{{ i18n.t('floor.cap2') }}</figcaption>
+    </figure>
+    <figure class="floor__shot">
+      <img src="/assets/img/about/factory-3.jpg" alt="" data-fallback loading="lazy">
+      <figcaption>{{ i18n.t('floor.cap3') }}</figcaption>
+    </figure>
+  </div>
+
+  <div class="wrap floor__foot">
+    <p class="floor__certs">{{ i18n.t('floor.certs') }}</p>
+    <a class="link-arrow link-arrow--light" routerLink="/" fragment="process">{{ i18n.t('story.cta') }}</a>
+  </div>
+</section>
+
+<!-- ============ HOW IT'S MADE ============ -->
+<section class="section" id="process">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="h-lg">
+        <span>{{ i18n.t('pr.t1') }}</span>
+        <span class="accent">{{ i18n.t('pr.t2') }}</span>
+      </h2>
+      <p class="lede">{{ i18n.t('pr.lede') }}</p>
+    </div>
+
+    <div class="process">
+      <div class="pstep"><span class="pstep__num">01</span><h4>{{ i18n.t('pr.1t') }}</h4><p>{{ i18n.t('pr.1d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">02</span><h4>{{ i18n.t('pr.2t') }}</h4><p>{{ i18n.t('pr.2d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">03</span><h4>{{ i18n.t('pr.3t') }}</h4><p>{{ i18n.t('pr.3d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">04</span><h4>{{ i18n.t('pr.4t') }}</h4><p>{{ i18n.t('pr.4d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">05</span><h4>{{ i18n.t('pr.5t') }}</h4><p>{{ i18n.t('pr.5d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">06</span><h4>{{ i18n.t('pr.6t') }}</h4><p>{{ i18n.t('pr.6d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">07</span><h4>{{ i18n.t('pr.7t') }}</h4><p>{{ i18n.t('pr.7d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">08</span><h4>{{ i18n.t('pr.8t') }}</h4><p>{{ i18n.t('pr.8d') }}</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ YOUR ROUTINE ============
+     Light ground now, so the floor section keeps the only dark band.
+     The 01/02/03 markers stay — this content really is a sequence. -->
+<section class="section feature">
+  <div class="wrap feature__in">
+    <div>
+      <h2 class="h-lg">{{ i18n.t('mf.title') }}</h2>
+      <p class="lede">{{ i18n.t('mf.lede') }}</p>
+
+      <div class="feature__list">
+        <div class="feature__item">
+          <span class="feature__num">01</span>
+          <div><b>{{ i18n.t('mf.1t') }}</b><p>{{ i18n.t('mf.1d') }}</p></div>
+        </div>
+        <div class="feature__item">
+          <span class="feature__num">02</span>
+          <div><b>{{ i18n.t('mf.2t') }}</b><p>{{ i18n.t('mf.2d') }}</p></div>
+        </div>
+        <div class="feature__item">
+          <span class="feature__num">03</span>
+          <div><b>{{ i18n.t('mf.3t') }}</b><p>{{ i18n.t('mf.3d') }}</p></div>
+        </div>
+      </div>
+
+      <a class="btn btn--gold" routerLink="/shop">{{ i18n.t('mf.cta') }}</a>
+    </div>
+
+    <div class="feature__media">
+      <img src="/assets/img/model/feature.jpg" alt="Béute Pro skincare routine" data-fallback loading="lazy">
+      <!-- The static page renders the price alone here, and its spotlight
+           section never appears at all. Both are the same bug, in one
+           line of index.html's paintHome():
+             chip.querySelector('span > span')
+           resolves to the OUTER span (its parent #feature-chip is itself
+           a span), so writing the price into it wipes the <b> holding the
+           name. paintHome() runs twice — applyLang() fires lang:change
+           before PAGE_INIT — so the second pass finds no <b>, throws, and
+           takes Spotlight.init() down with it. Fixing it is one selector:
+             chip.querySelector('b + span')
+           This port renders what the markup was written to render. See
+           the build summary. -->
+      <span class="feature__chip" id="feature-chip">
+        <img [src]="imgSrc(chip.id, 1)" [alt]="i18n.copy(chip).name" data-fallback>
+        <span><b>{{ i18n.copy(chip).name }}</b><span>{{ i18n.money(chip.price) }}</span></span>
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEWSLETTER ============ -->
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="news">
+      <h2 class="h-md">{{ i18n.t('news.title') }}</h2>
+      <p class="lede" style="margin:.9rem auto 0">{{ i18n.t('news.lede') }}</p>
+      <form class="news__form" id="news-form" (submit)="subscribe($event)">
+        <input type="email" required [placeholder]="i18n.t('news.placeholder')" [value]="email()" (input)="email.set($any($event.target).value)">
+        <button class="btn btn--gold" type="submit">{{ i18n.t('news.btn') }}</button>
+      </form>
+      <p class="news__note">{{ i18n.t('news.note') }}</p>
+    </div>
+  </div>
+</section>

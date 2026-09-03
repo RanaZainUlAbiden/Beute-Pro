@@ -1,0 +1,57 @@
+<!-- ============ PAGE HERO (dark) ============ -->
+<section class="pagehero">
+  <div class="pagehero__bg" [class.is-empty]="heroEmpty()"><img src="/assets/img/model/shop-hero.jpg" alt="" (error)="heroEmpty.set(true)"></div>
+  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
+  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
+  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
+  <div class="wrap pagehero__in">
+    <p class="crumb">
+      <a routerLink="/">{{ i18n.t('nav.home') }}</a>
+      &nbsp;&rsaquo;&nbsp;
+      <span>{{ i18n.t('nav.shop') }}</span>
+    </p>
+    <p class="eyebrow eyebrow--dash">{{ i18n.t('shop.eyebrow') }}</p>
+    <h1 class="h-xl" splitHeading [segments]="heroTitle()"></h1>
+    <p class="lede">{{ i18n.t('shop.hero') }}</p>
+  </div>
+</section>
+
+<!-- ============ GRID ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="filters" id="filters">
+      <button class="chip" [class.is-active]="isChipActive('all')" (click)="pick('all')">{{ i18n.t('shop.all') }}</button>
+      @for (c of categories; track c.id) {
+      <button class="chip" [class.is-active]="isChipActive(c.id)" (click)="pick(c.id)">{{ i18n.catName(c) }}</button>
+      }
+    </div>
+    <div class="grid-products stagger" id="grid" [staggerKey]="gridKey()">
+      @for (p of list(); track p.id) {
+      <app-product-card [product]="p" />
+      }
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ PROCESS (dark) ============ -->
+<section class="section section--dark bloom bloom--tr">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow eyebrow--dash">{{ i18n.t('pr.eyebrow') }}</p>
+      <h2 class="h-lg" splitHeading [segments]="processTitle()"></h2>
+      <p class="lede" style="margin-top:.9rem">{{ i18n.t('pr.lede') }}</p>
+    </div>
+
+    <div class="process stagger">
+      <div class="pstep"><span class="pstep__num">01</span><h4>{{ i18n.t('pr.1t') }}</h4><p>{{ i18n.t('pr.1d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">02</span><h4>{{ i18n.t('pr.2t') }}</h4><p>{{ i18n.t('pr.2d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">03</span><h4>{{ i18n.t('pr.3t') }}</h4><p>{{ i18n.t('pr.3d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">04</span><h4>{{ i18n.t('pr.4t') }}</h4><p>{{ i18n.t('pr.4d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">05</span><h4>{{ i18n.t('pr.5t') }}</h4><p>{{ i18n.t('pr.5d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">06</span><h4>{{ i18n.t('pr.6t') }}</h4><p>{{ i18n.t('pr.6d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">07</span><h4>{{ i18n.t('pr.7t') }}</h4><p>{{ i18n.t('pr.7d') }}</p></div>
+      <div class="pstep"><span class="pstep__num">08</span><h4>{{ i18n.t('pr.8t') }}</h4><p>{{ i18n.t('pr.8d') }}</p></div>
+    </div>
+  </div>
+</section>
