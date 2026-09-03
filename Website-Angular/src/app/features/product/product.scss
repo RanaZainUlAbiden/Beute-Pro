@@ -1,1 +1,386 @@
-/* All styling for this page is global — see src/styles.scss. */
+/* =========================================================
+   PRODUCT PAGE — styles moved from global
+   ========================================================= */
+
+/* ---------- layout ---------- */
+.pdp{
+  display:grid;
+  grid-template-columns:1.05fr 1fr;
+  gap:clamp(1.8rem,5vw,4.2rem);
+  align-items:start
+}
+.pdp > *{min-width:0}
+.pdp .crumb{color:var(--green-soft)}
+.pdp .crumb a:hover{color:var(--green)}
+
+/* ---------- viewer tabs ---------- */
+.viewer__tabs{
+  display:flex;
+  gap:.45rem;
+  margin-bottom:.9rem;
+  flex-wrap:wrap
+}
+.vtab{
+  padding:.55rem 1.1rem;
+  border-radius:var(--r);
+  border:1.5px solid var(--ivory-3);
+  background:var(--white);
+  font-size:clamp(.7rem,1.3vw,.76rem);
+  font-weight:600;
+  display:inline-flex;
+  align-items:center;
+  gap:.45rem;
+  transition:all .3s var(--ease);
+  white-space:nowrap
+}
+.vtab svg{
+  width:14px;
+  height:14px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:1.7;
+  flex:0 0 auto
+}
+.vtab.is-active{
+  background:var(--green);
+  border-color:var(--green);
+  color:var(--ivory)
+}
+.viewer__panel{display:none}
+.viewer__panel.is-active{display:block}
+
+/* ---------- zoom (photos) ---------- */
+.zoom{
+  position:relative;
+  aspect-ratio:1/1;
+  cursor:crosshair
+}
+.zoom__frame{
+  position:absolute;
+  inset:0;
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  background:var(--white);
+  border:1px solid var(--ivory-3)
+}
+.zoom__img{
+  position:absolute;
+  inset:var(--media-pad-lg);
+  object-fit:contain
+}
+.zoom__lens{
+  position:absolute;
+  width:150px;
+  height:150px;
+  pointer-events:none;
+  border:1.5px solid var(--gold);
+  background:rgba(201,164,76,.12);
+  opacity:0;
+  transition:opacity .2s;
+  border-radius:4px
+}
+.zoom.is-zooming .zoom__lens{opacity:1}
+.zoom__hint{
+  position:absolute;
+  bottom:.85rem;
+  inset-inline-start:.85rem;
+  z-index:2;
+  font-size:.68rem;
+  font-weight:600;
+  color:var(--green-soft);
+  display:flex;
+  align-items:center;
+  gap:.4rem;
+  transition:opacity .25s
+}
+.zoom.is-zooming .zoom__hint{opacity:0}
+@media(hover:none){.zoom.is-zooming .zoom__hint{opacity:1}}
+.zoom__hint svg{
+  width:14px;
+  height:14px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:1.7;
+  flex:0 0 auto
+}
+.zoom__pane{
+  position:absolute;
+  top:0;
+  inset-inline-start:calc(100% + 1rem);
+  z-index:40;
+  width:min(420px,38vw);
+  aspect-ratio:1;
+  border-radius:var(--r-lg);
+  background-color:var(--white);
+  background-repeat:no-repeat;
+  box-shadow:var(--shadow-lg);
+  border:1px solid var(--ivory-3);
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .22s
+}
+.zoom.is-zooming .zoom__pane{opacity:1;visibility:visible}
+
+/* ---------- thumbs ---------- */
+.thumbs{
+  display:flex;
+  gap:.55rem;
+  margin-top:.8rem;
+  flex-wrap:wrap
+}
+.thumb{
+  width:clamp(54px,9vw,74px);
+  aspect-ratio:1;
+  border-radius:var(--r);
+  overflow:hidden;
+  background:var(--white);
+  border:1.5px solid var(--ivory-3);
+  transition:border-color .3s,transform .3s
+}
+.thumb img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  padding:5px
+}
+.thumb.is-active{border-color:var(--gold)}
+.thumb:hover{transform:translateY(-2px)}
+
+/* ---------- 360° spin ---------- */
+.spin{
+  position:relative;
+  aspect-ratio:1/1;
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  background:var(--ivory);          /* ← changed from white to ivory */
+  cursor:grab;
+  touch-action:pan-y
+}
+.spin.is-dragging{cursor:grabbing}
+.spin:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:-3px
+}
+
+/* --- FIX: video fills viewer, background blends with page --- */
+.spin .spin__video{
+    width:100% !important;
+    height:100% !important;
+  position:absolute !important;
+  inset:0 !important;
+  object-fit:contain !important;    /* shows entire video, no crop */
+  object-position:center !important;
+  background:var(--ivory) !important;  /* ← changed from white to ivory */
+}
+
+.spin__ui{
+  position:absolute;
+  bottom:.9rem;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:3;
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  white-space:nowrap;
+  padding:.5rem 1rem;
+  border-radius:var(--r);
+  background:var(--green);
+  color:var(--ivory);
+  font-size:.68rem;
+  font-weight:600
+}
+.spin__ui svg{
+  width:15px;
+  height:15px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:1.8;
+  flex:0 0 auto
+}
+
+/* ---------- buy box ---------- */
+.buy__cat{
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:.7rem;
+  display:block
+}
+.buy h1{
+  font-size:clamp(1.7rem,3.4vw,2.6rem);
+  margin-bottom:.5rem;
+  font-weight:800
+}
+.buy__tag{
+  font-size:clamp(1rem,1.6vw,1.14rem);
+  color:var(--green-soft);
+  margin:0 0 1.2rem
+}
+.buy__price{
+  display:flex;
+  align-items:baseline;
+  gap:.7rem;
+  margin-bottom:.3rem;
+  flex-wrap:wrap
+}
+.buy__price strong{
+  font-size:clamp(1.6rem,3vw,2.1rem);
+  font-weight:800;
+  letter-spacing:-.02em
+}
+.buy__price del{
+  color:var(--green-soft);
+  opacity:.7
+}
+.buy__size{
+  font-size:.8rem;
+  color:var(--green-soft)
+}
+.buy__desc{
+  margin:1.5rem 0;
+  padding-block:1.5rem;
+  border-block:1px solid var(--ivory-3);
+  color:var(--green-soft)
+}
+.buy__row{
+  display:flex;
+  gap:.7rem;
+  align-items:stretch;
+  margin-bottom:.7rem;
+  flex-wrap:wrap
+}
+.qty--lg{
+  border-radius:var(--r);
+  border:1.5px solid var(--ivory-3);
+  background:var(--white);
+  padding-inline:.3rem;
+  flex:0 0 auto
+}
+.qty--lg button{
+  width:40px;
+  height:50px;
+  font-size:1.05rem
+}
+.qty--lg span{
+  min-width:28px;
+  font-size:1rem
+}
+.buy__row .btn{flex:1 1 200px;min-width:0}
+.buy__meta{
+  display:flex;
+  flex-direction:column;
+  gap:.65rem;
+  margin-top:1.5rem
+}
+.buy__meta div{
+  display:flex;
+  gap:.7rem;
+  align-items:center;
+  font-size:.88rem;
+  color:var(--green-soft)
+}
+.buy__meta svg{
+  width:17px;
+  height:17px;
+  stroke:var(--gold);
+  fill:none;
+  stroke-width:1.7;
+  flex:0 0 auto
+}
+
+/* ---------- accordion ---------- */
+.acc{
+  margin-top:1.9rem;
+  border-top:1px solid var(--ivory-3)
+}
+.acc__item{border-bottom:1px solid var(--ivory-3)}
+.acc__btn{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  padding-block:1.05rem;
+  text-align:start;
+  font-size:.86rem;
+  font-weight:700
+}
+.acc__btn i{
+  font-style:normal;
+  color:var(--gold);
+  font-size:1.2rem;
+  transition:transform .38s var(--ease);
+  flex:0 0 auto
+}
+.acc__item.is-open .acc__btn i{transform:rotate(45deg)}
+.acc__panel{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .45s var(--ease)
+}
+.acc__panel-in{
+  padding-bottom:1.25rem;
+  color:var(--green-soft);
+  font-size:.92rem
+}
+.acc__panel ul{
+  margin:0;
+  padding-inline-start:1.1rem;
+  display:flex;
+  flex-direction:column;
+  gap:.35rem
+}
+
+/* ---------- responsive overrides ---------- */
+@media(max-width:1300px){ .zoom__pane{width:min(350px,33vw)} }
+
+@media(max-width:1024px){
+  .pdp{grid-template-columns:1fr}
+  .zoom__pane{display:none}
+  .zoom{cursor:zoom-in}
+  .zoom__img{transition:transform .35s var(--ease)}
+  .zoom.is-zooming .zoom__img{transform:scale(2.4)}
+  .zoom.is-pinned{cursor:zoom-out;touch-action:none}
+  .zoom.is-pinned .zoom__img{
+    transition:transform-origin .12s linear,transform .3s var(--ease)
+  }
+  .zoom.is-pinned .zoom__hint{opacity:1}
+  .zoom.is-pinned .zoom__frame{border-color:var(--gold)}
+}
+
+@media(max-width:680px){
+  /* override any global media-pad for product */
+  :root{--media-pad:6%}
+}
+
+@media(max-width:540px){
+  .pdp{gap:1.4rem}
+  .zoom__frame{border-radius:var(--r)}
+  .thumbs{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:.5rem;
+    margin-top:.6rem
+  }
+  .thumb{width:auto}
+  .zoom__hint{
+    inset-inline-start:50%;
+    transform:translateX(-50%);
+    bottom:.6rem;
+    background:var(--white);
+    border:1px solid var(--ivory-3);
+    padding:.4rem .8rem;
+    border-radius:999px;
+    white-space:nowrap
+  }
+  .viewer__tabs{margin-bottom:.7rem}
+  .buy h1{margin-top:.2rem}
+  .viewer__tabs .vtab{flex:1 1 auto;justify-content:center}
+}
+
+@media(max-width:430px){
+  :root{--media-pad:7%}
+}
