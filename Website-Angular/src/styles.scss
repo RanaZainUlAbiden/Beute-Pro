@@ -437,7 +437,7 @@ html[dir="rtl"] .hero__copy .hero__lede{
 .pcard{position:relative;min-width:0}
 .pcard__stage{
   position:relative;display:block;aspect-ratio:1/1;border-radius:var(--r-lg);
-  background:var(--white);border:1px solid var(--ivory-3);overflow:hidden;
+  background:transparent;border:1px solid var(--ivory-3);overflow:hidden;
   transition:border-color .35s var(--ease)
 }
 .pcard:hover .pcard__stage,.pcard:focus-within .pcard__stage{border-color:var(--gold)}
