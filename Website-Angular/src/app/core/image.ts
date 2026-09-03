@@ -25,7 +25,7 @@ export const PLACEHOLDER =
 /* PNG first (transparent cut-outs), then JPG, then the stand-in —
    see ImgFallbackDirective for the walk down that chain. */
 export function imgSrc(id: string, n = 1): string {
-  return `/assets/img/products/${id}-${n}.png`;
+  return `/assets/img/products/${id}/${id}-${n}.png`;
 }
 
 export function catSrc(id: string): string {
