@@ -466,34 +466,21 @@ html[dir="rtl"] .slide__scrim{
    PRODUCT CARD (global, used in shop & related)
    ========================================================= */
 .grid-products{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(.85rem,1.8vw,1.7rem)}
-.pcard{position:relative;min-width:0}
-.pcard__stage{
-  position:relative;display:block;aspect-ratio:1/1;border-radius:var(--r-lg);
-  background:transparent;border:1px solid var(--ivory-3);overflow:hidden;
-  transition:border-color .35s var(--ease)
-}
-.pcard:hover .pcard__stage,.pcard:focus-within .pcard__stage{border-color:var(--gold)}
-.pcard__img{
-  position:absolute;inset:var(--media-pad);width:auto;height:auto;
-  object-fit:contain;object-position:center center;
-  margin-inline-start:-15px;margin-top:20px;
-}
+.pcard{position:relative;min-width:0;transition:transform .4s var(--ease-out)}
+.pcard:hover{transform:translateY(-6px)}
+.pcard__stage{position:relative;display:block;aspect-ratio:1/1;border-radius:var(--r-lg);background:transparent;border:1px solid var(--ivory-3);overflow:hidden;transition:border-color .35s var(--ease),box-shadow .4s var(--ease-out)}
+.pcard:hover .pcard__stage,.pcard:focus-within .pcard__stage{border-color:var(--gold);box-shadow:0 18px 40px -12px rgba(0,0,0,.12)}
+.pcard__img{position:absolute;inset:var(--media-pad);width:auto;height:auto;object-fit:contain;object-position:center center;margin-inline-start:-15px;margin-top:20px;transition:transform .6s var(--ease-out)}
+.pcard:hover .pcard__img{transform:scale(1.07)}
 .pcard__img.is-placeholder{inset:16%}
-.pcard__badge{
-  position:absolute;top:.8rem;inset-inline-start:.8rem;z-index:3;
-  padding:.3rem .75rem;border-radius:var(--r);
-  font-size:clamp(.56rem,1.2vw,.64rem);font-weight:800;letter-spacing:.08em;text-transform:uppercase;
-  background:var(--green);color:var(--ivory)
-}
+.pcard__badge{position:absolute;top:.8rem;inset-inline-start:.8rem;z-index:3;padding:.3rem .75rem;border-radius:var(--r);font-size:clamp(.56rem,1.2vw,.64rem);font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:var(--green);color:var(--ivory);transition:transform .35s var(--ease-out)}
+.pcard:hover .pcard__badge{transform:scale(1.08)}
 .pcard__badge--sale{background:#A8443C;color:#fff}
 .pcard__badge--new{background:var(--gold);color:var(--green)}
-.pcard__quick{
-  position:absolute;left:50%;bottom:0;transform:translate(-50%,120%);z-index:3;
-  width:calc(100% - 1.5rem);opacity:0;
-  transition:transform .45s var(--ease-out),opacity .4s
-}
+.pcard__quick{position:absolute;left:50%;bottom:0;transform:translate(-50%,120%);z-index:3;width:calc(100% - 1.5rem);opacity:0;transition:transform .45s var(--ease-out),opacity .4s}
 .pcard:hover .pcard__quick,.pcard:focus-within .pcard__quick{transform:translate(-50%,-.85rem);opacity:1}
-.pcard__body{padding-top:1rem;text-align:center}
+.pcard__body{padding-top:1rem;text-align:center;transition:transform .4s var(--ease-out)}
+.pcard:hover .pcard__body{transform:translateY(-2px)}
 .pcard__cat{font-size:clamp(.58rem,1.2vw,.66rem);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:.35rem}
 .pcard__name{font-size:clamp(.92rem,1.5vw,1.1rem);font-weight:700;line-height:1.32;margin:0 0 .35rem;letter-spacing:-.01em}
 .pcard__name a{transition:color .3s}
@@ -502,9 +489,6 @@ html[dir="rtl"] .slide__scrim{
 .pcard__price del{color:var(--green-soft);opacity:.65;margin-inline-end:.4rem;font-size:.86em;font-weight:500}
 .pcard__price ins{text-decoration:none;color:#A8443C}
 
-/* =========================================================
-   MODEL FEATURE (homepage)
-   ========================================================= */
 .feature{background:var(--ivory-2);position:relative;overflow:hidden}
 .feature__in{
   display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,4.5rem);
