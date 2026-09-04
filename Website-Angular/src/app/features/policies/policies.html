@@ -10,7 +10,7 @@
       &nbsp;&rsaquo;&nbsp;
       <span>{{ i18n.t('policies.t1') }}</span>
     </p>
-    <p class="eyebrow eyebrow--dash">{{ i18n.t('policies.eyebrow') }}</p>
+    <p class="eyebrow">{{ i18n.t('policies.eyebrow') }}</p>
     <h1 class="h-xl" splitHeading [segments]="heroTitle()"></h1>
     <p class="lede">{{ i18n.t('policies.lede') }}</p>
   </div>
@@ -34,8 +34,10 @@
      does. Long body copy stays inline English for now. -->
 <section class="section" id="privacy">
   <div class="wrap">
+    <!-- the heading is translated, so it stays in the page direction;
+         only the English body copy below is pinned to ltr -->
+    <h2 class="h-lg prose__title">{{ i18n.t('foot.privacy') }}</h2>
     <div class="prose" dir="ltr">
-      <h2 class="h-lg">{{ i18n.t('foot.privacy') }}</h2>
 
       <h3>Who we are</h3>
       <p>Our website address is <a href="https://beutepro.com">beutepro.com</a>. Béute Pro is a skincare brand based in Pakistan; products are formulated and filled on our own floor in Faisalabad.</p>
@@ -47,7 +49,7 @@
       <p>This site doesn't use tracking cookies. Your language preference, background-music setting and shopping cart contents are saved in your browser's local storage, on your device only, so they're remembered on your next visit. Clearing your browser data clears them too.</p>
 
       <h3>Third-party services</h3>
-      <p>Page fonts are served by Google Fonts. Loading them may send your device's IP address and browser information to Google, under <a href="https://policies.google.com/privacy">Google's own privacy policy</a>. [CLIENT TO CONFIRM] whether analytics, ad pixels or other third-party trackers are added later.</p>
+      <p>Page fonts are served by Google Fonts. Loading them may send your device's IP address and browser information to Google, under <a href="https://policies.google.com/privacy">Google's own privacy policy</a>. That is the only third party this site contacts: there are no analytics scripts, advertising pixels or other trackers on any page.</p>
 
       <h3>How we use your information</h3>
       <p>We use the information you send us to respond to your enquiry or fulfil your order, and nothing else. We never pass your email address on to anyone else.</p>
@@ -74,8 +76,10 @@
      [CLIENT TO CONFIRM] rather than guessed. -->
 <section class="section" id="returns">
   <div class="wrap">
+    <!-- the heading is translated, so it stays in the page direction;
+         only the English body copy below is pinned to ltr -->
+    <h2 class="h-lg prose__title">{{ i18n.t('foot.refund') }}</h2>
     <div class="prose" dir="ltr">
-      <h2 class="h-lg">{{ i18n.t('foot.refund') }}</h2>
 
       <p>Our refund and returns policy lasts 30 days from the date of purchase. If more than 30 days have passed, we can no longer offer a full refund or exchange.</p>
 

@@ -14,7 +14,6 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -54,7 +53,6 @@ export class ProductPage implements OnDestroy {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly zone = inject(NgZone);
   private readonly route = inject(ActivatedRoute);
-  private readonly title = inject(Title);
   protected readonly i18n = inject(I18nService);
   protected readonly cart = inject(CartService);
   private readonly motion = inject(MotionService);
@@ -116,9 +114,8 @@ export class ProductPage implements OnDestroy {
   private resumeTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor() {
-    effect(() => {
-      this.title.setTitle(`${this.copy().name} — Béute Pro`);
-    });
+    // the tab title is the brand name on every page, set from the route —
+    // the product name is not appended to it
 
     // a new product resets the viewer and re-probes its photos
     effect(() => {

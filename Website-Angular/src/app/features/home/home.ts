@@ -25,7 +25,8 @@ import { I18nService } from '../../core/services/i18n.service';
 import { MotionService } from '../../core/services/motion.service';
 import { ScrollService } from '../../core/services/scroll.service';
 import { ToastService } from '../../core/services/toast.service';
-import { ProductCard } from '../../shared/product-card/product-card';
+import { PageHero } from '../../shared/page-hero/page-hero';
+import { ProductCarousel } from './product-carousel/product-carousel';
 
 /** The product that floats over the routine photo. */
 const ROUTINE_CHIP_ID = 'aloe-vera-mist';
@@ -35,7 +36,13 @@ const ROUTINE_CHIP_ID = 'aloe-vera-mist';
   templateUrl: './home.html',
   styleUrl: './home.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ImgFallbackDirective, RevealDirective, ProductCard],
+  imports: [
+    RouterLink,
+    ImgFallbackDirective,
+    RevealDirective,
+    PageHero,
+    ProductCarousel,
+  ],
 })
 export class Home implements OnDestroy {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -48,14 +55,8 @@ export class Home implements OnDestroy {
   protected readonly catSrc = catSrc;
   protected readonly imgSrc = imgSrc;
   protected readonly categories = CATEGORIES;
-  protected readonly range = PRODUCTS.slice(0, 8);
   protected readonly chip: Product =
     PRODUCTS.find((p) => p.id === ROUTINE_CHIP_ID) ?? PRODUCTS[0];
-
-  /* ---------- hero ---------- */
-  private readonly heroVideo =
-    viewChild.required<ElementRef<HTMLVideoElement>>('heroVideo');
-  protected readonly heroEmpty = signal(false);
 
   /* ---------- spotlight ---------- */
   private readonly spotEl = viewChild<ElementRef<HTMLElement>>('spotlight');
@@ -83,7 +84,6 @@ export class Home implements OnDestroy {
 
   constructor() {
     afterNextRender(() => {
-      this.initHero();
       void this.initSpotlight();
 
       // a drag that started on the media keeps tracking once the pointer
@@ -118,23 +118,6 @@ export class Home implements OnDestroy {
     removeEventListener('mousemove', this.onWindowMove);
     removeEventListener('mouseup', this.onWindowUp);
     removeEventListener('touchend', this.onWindowUp);
-  }
-
-  /* =============================================================
-     HERO
-     ============================================================= */
-  private initHero(): void {
-    const video = this.heroVideo().nativeElement;
-    const fallback = () => this.heroEmpty.set(true);
-    // capture, because a <source> element's error does not bubble
-    video.addEventListener('error', fallback, true);
-
-    if (this.motion.reduced) {
-      video.removeAttribute('autoplay');
-      video.pause();
-    } else {
-      video.play()?.catch(fallback);
-    }
   }
 
   /* =============================================================

@@ -1,0 +1,47 @@
+<section class="section section--tight pcarousel" aria-labelledby="pcarousel-title">
+  <div class="wrap pcarousel__in">
+
+    <!-- pinned beside the row on desktop, above it below 900px -->
+    <div class="pcarousel__head">
+      <p class="eyebrow">{{ i18n.t('best.eyebrow') }}</p>
+      <h2 class="h-lg" id="pcarousel-title">{{ i18n.t('best.title') }}</h2>
+      <a class="link-arrow pcarousel__all" routerLink="/shop">{{ i18n.t('cat.all') }}</a>
+
+      <div class="pcarousel__nav">
+        <button class="pcarousel__btn" type="button"
+                [disabled]="atStart()"
+                [attr.aria-label]="i18n.t('carousel.prev')"
+                (click)="step(-1)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+        </button>
+        <button class="pcarousel__btn" type="button"
+                [disabled]="atEnd()"
+                [attr.aria-label]="i18n.t('carousel.next')"
+                (click)="step(1)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- the row itself: the browser scrolls and snaps it, we only listen -->
+    <div class="pcarousel__viewport" #viewport
+         tabindex="0" role="group"
+         [attr.aria-label]="i18n.t('carousel.row')"
+         (keydown)="onKeydown($event)">
+      <ul class="pcarousel__track">
+        @for (p of items; track p.id) {
+        <li class="pcarousel__item">
+          <app-product-card [product]="p" />
+        </li>
+        }
+      </ul>
+    </div>
+
+    <div class="pcarousel__progress" aria-hidden="true">
+      <span class="pcarousel__thumb"
+            [style.width]="thumbWidth()"
+            [style.inset-inline-start]="thumbOffset()"></span>
+    </div>
+
+  </div>
+</section>

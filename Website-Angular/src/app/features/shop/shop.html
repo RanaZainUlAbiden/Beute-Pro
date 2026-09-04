@@ -1,20 +1,18 @@
-<!-- ============ PAGE HERO (dark) ============ -->
-<section class="pagehero">
-  <div class="pagehero__bg" [class.is-empty]="heroEmpty()"><img src="/assets/img/model/shop-hero.jpg" alt="" (error)="heroEmpty.set(true)"></div>
-  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-  <div class="wrap pagehero__in">
-    <p class="crumb">
-      <a routerLink="/">{{ i18n.t('nav.home') }}</a>
-      &nbsp;&rsaquo;&nbsp;
-      <span>{{ i18n.t('nav.shop') }}</span>
-    </p>
-    <p class="eyebrow">{{ i18n.t('shop.eyebrow') }}</p>
-    <h1 class="h-xl" splitHeading [segments]="heroTitle()"></h1>
-    <p class="lede">{{ i18n.t('shop.hero') }}</p>
-  </div>
-</section>
+<!-- ============ PAGE HERO ============
+     The same full-viewport hero the homepage uses — shared markup and
+     styles in app-page-hero, only the photo and the words differ. -->
+<app-page-hero
+  image="/assets/img/shop.jpg"
+  focus="center 32%"
+  [eyebrow]="i18n.t('shop.eyebrow')"
+  [segments]="heroTitle()"
+  [copy]="i18n.t('shop.hero')">
+  <p class="crumb" heroTop>
+    <a routerLink="/">{{ i18n.t('nav.home') }}</a>
+    &nbsp;&rsaquo;&nbsp;
+    <span>{{ i18n.t('nav.shop') }}</span>
+  </p>
+</app-page-hero>
 
 <!-- ============ GRID ============ -->
 <section class="section">
@@ -38,7 +36,7 @@
 <section class="section section--dark bloom bloom--tr">
   <div class="wrap">
     <div class="section-head reveal">
-      <p class="eyebrow eyebrow--dash">{{ i18n.t('pr.eyebrow') }}</p>
+      <p class="eyebrow">{{ i18n.t('pr.eyebrow') }}</p>
       <h2 class="h-lg" splitHeading [segments]="processTitle()"></h2>
       <p class="lede" style="margin-top:.9rem">{{ i18n.t('pr.lede') }}</p>
     </div>

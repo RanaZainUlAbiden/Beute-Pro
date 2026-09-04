@@ -14,7 +14,7 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    title: 'Béute Pro — Natural Skincare, Made in Small Batches',
+    title: 'Béute Pro',
     data: {
       noHero: false,
       progress: false,
@@ -25,25 +25,25 @@ export const routes: Routes = [
   },
   {
     path: 'shop',
-    title: 'Shop — Béute Pro',
+    title: 'Béute Pro',
     data: { noHero: false, progress: true } satisfies PageData,
     loadComponent: () => import('./features/shop/shop').then((m) => m.Shop),
   },
   {
     path: 'shop/:category',
-    title: 'Shop — Béute Pro',
+    title: 'Béute Pro',
     data: { noHero: false, progress: true } satisfies PageData,
     loadComponent: () => import('./features/shop/shop').then((m) => m.Shop),
   },
   {
-    // no `title` here: the product component sets it from the product name
     path: 'product/:id',
+    title: 'Béute Pro',
     data: { noHero: true, progress: true } satisfies PageData,
     loadComponent: () => import('./features/product/product').then((m) => m.ProductPage),
   },
   {
     path: 'about',
-    title: 'Our Story — Béute Pro',
+    title: 'Béute Pro',
     data: {
       noHero: true,
       progress: true,
@@ -54,9 +54,10 @@ export const routes: Routes = [
   },
   {
     path: 'contact',
-    title: 'Contact — Béute Pro',
+    title: 'Béute Pro',
     data: {
-      noHero: true,
+      // full-viewport hero: the header overlays it, as on home and shop
+      noHero: false,
       progress: true,
       description:
         'Get in touch with Béute Pro — questions about an order, an ingredient, or anything else.',
@@ -65,7 +66,7 @@ export const routes: Routes = [
   },
   {
     path: 'faq',
-    title: 'FAQ — Béute Pro',
+    title: 'Béute Pro',
     data: {
       noHero: true,
       progress: true,
@@ -76,7 +77,7 @@ export const routes: Routes = [
   },
   {
     path: 'policies',
-    title: 'Privacy & Policies — Béute Pro',
+    title: 'Béute Pro',
     data: {
       noHero: true,
       progress: true,

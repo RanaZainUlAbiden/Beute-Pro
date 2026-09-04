@@ -1,26 +1,19 @@
 <!-- ============ HERO ============
-     Deliberately quieter than it was: no certification pill, shorter than
-     the viewport so the next section's edge shows, one entrance fade
-     instead of a four-step cascade. The bold moment is further down. -->
-<section class="hero" id="hero">
-  <div class="hero__bg" id="hero-bg" [class.is-empty]="heroEmpty()">
-    <video class="hero__video" id="hero-video" #heroVideo autoplay muted loop playsinline preload="metadata" poster="/assets/img/model/slide-1.jpg">
-      <source src="/assets/video/hero.mp4" type="video/mp4">
-    </video>
+     The shared full-viewport hero, also used by shop and contact. The
+     clip, the headline and the two buttons are all this page supplies;
+     the frame, the scrim and its RTL mirror live in app-page-hero. -->
+<app-page-hero
+  sectionId="hero"
+  video="/assets/video/hero.mp4"
+  poster="/assets/img/model/slide-1.jpg"
+  focus="center 28%"
+  [heading]="i18n.t('s1.title')"
+  [copy]="i18n.t('s1.lede')">
+  <div class="hero__cta">
+    <a class="btn btn--gold" routerLink="/shop">{{ i18n.t('hero.cta1') }}</a>
+    <a class="btn btn--light" routerLink="/" fragment="feature">{{ i18n.t('hero.cta2') }}</a>
   </div>
-  <div class="slide__scrim"></div>
-
-  <div class="wrap hero__in">
-    <div class="hero__copy">
-      <h1 class="h-xl">{{ i18n.t('s1.title') }}</h1>
-      <p class="lede hero__lede">{{ i18n.t('s1.lede') }}</p>
-      <div class="hero__cta">
-        <a class="btn btn--gold" routerLink="/shop">{{ i18n.t('hero.cta1') }}</a>
-        <a class="btn btn--light" routerLink="/" fragment="feature">{{ i18n.t('hero.cta2') }}</a>
-      </div>
-    </div>
-  </div>
-</section>
+</app-page-hero>
 
 <!-- ============ CATEGORIES ============ -->
 <section class="section">
@@ -41,25 +34,10 @@
   </div>
 </section>
 
-<!-- ============ THE RANGE ============
-     One grid. There used to be two here — "best sellers" and "the full
-     range" — both drawing from the same products in products.ts. -->
-<section class="section section--tight section--tint">
-  <div class="wrap">
-    <div class="section-head section-head--center">
-      <h2 class="h-lg">{{ i18n.t('feat.title') }}</h2>
-      <p class="lede">{{ i18n.t('feat.lede') }}</p>
-    </div>
-    <div class="grid-products" id="allproducts">
-      @for (p of range; track p.id) {
-      <app-product-card [product]="p" />
-      }
-    </div>
-    <div class="section-foot">
-      <a class="btn btn--outline" routerLink="/shop">{{ i18n.t('cat.all') }}</a>
-    </div>
-  </div>
-</section>
+<!-- ============ BEST SELLERS — horizontal row ============
+     A scroll-snapped row of the badged products. It is the only place
+     the homepage shows product cards; the full range lives on /shop. -->
+<app-product-carousel />
 
 <!-- ============ SPOTLIGHT — 360° video ============
      Rendered only once a product with a working video at
@@ -85,7 +63,7 @@
       </span>
     </div>
     <div class="spotlight__copy">
-      <p class="eyebrow eyebrow--dash">{{ i18n.t('spot.eyebrow') }}</p>
+      <p class="eyebrow">{{ i18n.t('spot.eyebrow') }}</p>
       <h2 class="h-lg" id="spotlight-name">{{ i18n.copy(spot).name }}</h2>
       <p class="lede" id="spotlight-tag">{{ i18n.copy(spot).tagline }}</p>
       <div class="spotlight__price" id="spotlight-price">{{ i18n.money(spot.price) }}</div>

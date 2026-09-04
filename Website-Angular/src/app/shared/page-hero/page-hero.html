@@ -1,0 +1,30 @@
+<section class="hero" [attr.id]="sectionId()">
+  <div class="hero__bg" [class.is-empty]="empty()" [style.--hero-focus]="focus()">
+    @if (video(); as src) {
+    <video class="hero__video" #videoEl autoplay muted loop playsinline preload="metadata" [attr.poster]="poster()">
+      <source [src]="src" type="video/mp4">
+    </video>
+    } @else if (image(); as src) {
+    <img class="hero__img" [src]="src" [alt]="alt()" (error)="empty.set(true)" fetchpriority="high">
+    }
+  </div>
+  <div class="slide__scrim"></div>
+
+  <div class="wrap hero__in">
+    <div class="hero__copy">
+      <ng-content select="[heroTop]" />
+      @if (eyebrow(); as text) {
+      <p class="eyebrow">{{ text }}</p>
+      }
+      @if (segments(); as parts) {
+      <h1 class="h-xl" splitHeading [segments]="parts"></h1>
+      } @else {
+      <h1 class="h-xl">{{ heading() }}</h1>
+      }
+      @if (copy(); as text) {
+      <p class="lede hero__lede">{{ text }}</p>
+      }
+      <ng-content />
+    </div>
+  </div>
+</section>

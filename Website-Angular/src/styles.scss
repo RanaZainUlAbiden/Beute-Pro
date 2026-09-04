@@ -14,6 +14,8 @@ app-whatsapp-button,
 app-back-to-top,
 app-progress-bar,
 app-product-card,
+app-page-hero,
+app-product-carousel,
 app-home,
 app-shop,
 app-product,
@@ -229,6 +231,12 @@ body.no-hero.scrolled .site-head .topbar{
   transition:opacity .3s var(--ease),transform .3s var(--ease),visibility .3s
 }
 .has-mega.is-open .mega{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,0)}
+/* inset-inline-start:50% is `right:50%` in Arabic, so the panel has to be
+   pulled back the other way — translate() is physical and knows nothing
+   about direction. Without this the menu lands on the far side of the
+   page from the Shop link that opens it. */
+html[dir="rtl"] .mega{transform:translate(50%,10px)}
+html[dir="rtl"] .has-mega.is-open .mega{transform:translate(50%,0)}
 .mega__in{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:2rem;padding:1.7rem}
 .mega__col h4{
   font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
@@ -361,6 +369,7 @@ html[dir="rtl"] .mnav.is-open{transform:translateX(0)}
 .mnav__acc-panel .mega__feat-price{font-size:.8rem;font-weight:700;color:var(--gold-lt)}
 @media(min-width:1025px){
   .mnav{inset-inline-start:auto;width:min(420px,90vw);box-shadow:-30px 0 80px -40px rgba(0,0,0,.7)}
+  html[dir="rtl"] .mnav{box-shadow:30px 0 80px -40px rgba(0,0,0,.7)}
 }
 
 /* =========================================================
@@ -368,8 +377,12 @@ html[dir="rtl"] .mnav.is-open{transform:translateX(0)}
    ========================================================= */
 .hero{position:relative;min-height:100vh;min-height:100svh;background:var(--green);overflow:hidden}
 .hero__bg{position:absolute;inset:0;overflow:hidden}
-.hero__video{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 28%
+.hero__video,
+.hero__img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  /* the page decides where the subject sits in the frame — see [focus] on
+     app-page-hero. Falls back to the framing the hero clip was cut for. */
+  object-position:var(--hero-focus,center 28%)
 }
 .hero__bg.is-empty{
   background:
@@ -377,7 +390,8 @@ html[dir="rtl"] .mnav.is-open{transform:translateX(0)}
     radial-gradient(90% 70% at 16% 84%,rgba(44,96,69,.7),transparent 64%),
     linear-gradient(155deg,#1c4433,#0c2119)
 }
-.hero__bg.is-empty .hero__video{display:none}
+.hero__bg.is-empty .hero__video,
+.hero__bg.is-empty .hero__img{display:none}
 .slide__scrim{
   position:absolute;inset:0;
   background:
@@ -390,24 +404,38 @@ html:not([dir="rtl"]) .slide__scrim{
     linear-gradient(to bottom,rgba(10,28,19,.55),transparent 24%),
     linear-gradient(to top,rgba(10,28,19,.7),transparent 34%);
 }
+/* Mirroring the fade mirrors the gradient but not the photograph. The
+   hero stills are framed with their subject on the right and the empty
+   ground on the left, so in Arabic — where the copy moves to the right —
+   the headline lands on the bottles rather than on empty green. Matching
+   the English contrast therefore takes a denser ramp on this side, not
+   the same numbers flipped. Adjust these together with the photos. */
 html[dir="rtl"] .slide__scrim{
   background:
-    linear-gradient(to left,rgba(10,28,19,.9) 0%,rgba(10,28,19,.55) 46%,rgba(10,28,19,.18) 78%),
+    linear-gradient(to left,rgba(10,28,19,.95) 0%,rgba(10,28,19,.84) 34%,rgba(10,28,19,.55) 62%,rgba(10,28,19,.2) 86%),
     linear-gradient(to bottom,rgba(10,28,19,.55),transparent 24%),
     linear-gradient(to top,rgba(10,28,19,.7),transparent 34%);
 }
-html[dir="rtl"] .hero__copy h1,
-html[dir="rtl"] .hero__copy .hero__lede{
+.hero__copy h1,
+.hero__copy .hero__lede{
   text-shadow:0 2px 16px var(--green),0 1px 4px var(--green)
 }
 .hero__in{
   position:relative;z-index:3;min-height:100vh;min-height:100svh;
-  display:flex;align-items:center;padding-block:clamp(6rem,14vh,9rem) clamp(4rem,10vh,6.5rem)
+  display:flex;align-items:center;
+  /* the header is fixed and overlays the hero, so the copy clears its
+     full height — the shrunk, scrolled header is 38px shorter, which
+     only ever adds room */
+  padding-block:calc(var(--head-h) + clamp(1rem,4vh,2.6rem)) clamp(4rem,10vh,6.5rem)
 }
 .hero__copy{max-width:600px;color:var(--ivory)}
 .hero h1{color:var(--ivory);margin-bottom:1.15rem}
 .hero__lede{color:rgba(247,244,236,.86);max-width:47ch;margin:0 0 2rem}
 .hero__cta{display:flex;gap:.75rem;flex-wrap:wrap}
+/* shop and contact carry a breadcrumb and an eyebrow above the headline */
+.hero .crumb{color:rgba(247,244,236,.62);margin-bottom:1.5rem}
+.hero .crumb a:hover{color:var(--gold-lt)}
+.hero .eyebrow{color:var(--gold-lt)}
 .hero__copy{opacity:0;transform:translateY(18px);animation:up .5s var(--ease-out) .08s forwards}
 @keyframes up{to{opacity:1;transform:none}}
 
@@ -444,7 +472,7 @@ html[dir="rtl"] .hero__copy .hero__lede{
 .pcard__img{
   position:absolute;inset:var(--media-pad);width:auto;height:auto;
   object-fit:contain;object-position:center center;
-  margin-left: -15px; margin-top: 20px;
+  margin-inline-start:-15px;margin-top:20px;
 }
 .pcard__img.is-placeholder{inset:16%}
 .pcard__badge{
@@ -644,7 +672,7 @@ html[dir="rtl"] .hero__copy .hero__lede{
 .totop svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2}
 
 .whatsapp-fab{
-  position:fixed;bottom:1.3rem;right:1.3rem;z-index:97;
+  position:fixed;bottom:1.3rem;inset-inline-end:1.3rem;z-index:97;
   width:56px;height:56px;border-radius:50%;
   background:var(--green);color:var(--ivory);
   display:grid;place-items:center;box-shadow:var(--shadow-lg);
@@ -653,7 +681,7 @@ html[dir="rtl"] .hero__copy .hero__lede{
 .whatsapp-fab:hover{background:var(--gold);color:var(--green);transform:translateY(-2px)}
 .whatsapp-fab svg{width:26px;height:26px;fill:currentColor}
 body.is-locked .whatsapp-fab{opacity:0;visibility:hidden;pointer-events:none}
-@media(max-width:680px){.whatsapp-fab{width:50px;height:50px;bottom:1rem;right:1rem}}
+@media(max-width:680px){.whatsapp-fab{width:50px;height:50px;bottom:1rem;inset-inline-end:1rem}}
 
 /* =========================================================
    CART DRAWER
@@ -725,7 +753,7 @@ html[dir="rtl"] .cart.is-open{transform:translateX(0)}
   }
   html[dir="rtl"] .slide__scrim{
     background:
-      linear-gradient(to left,rgba(10,28,19,.88) 0%,rgba(10,28,19,.6) 60%,rgba(10,28,19,.35) 100%),
+      linear-gradient(to left,rgba(10,28,19,.94) 0%,rgba(10,28,19,.78) 55%,rgba(10,28,19,.5) 100%),
       linear-gradient(to bottom,rgba(10,28,19,.55),transparent 24%)
   }
 }
@@ -826,7 +854,6 @@ html[dir="rtl"] .cart.is-open{transform:translateX(0)}
 .section--dark h1,.section--dark h2,.section--dark h3,.section--dark h4{color:var(--ivory)}
 .section--dark .lede{color:rgba(247,244,236,.74)}
 .section--dark .eyebrow{color:var(--gold)}
-.section--tint{background:var(--ivory-2)}
 .bloom::before{
   content:"";position:absolute;z-index:0;pointer-events:none;
   width:min(620px,85vw);aspect-ratio:1;border-radius:50%;
@@ -835,8 +862,6 @@ html[dir="rtl"] .cart.is-open{transform:translateX(0)}
 .bloom--tr::before{top:-28%;inset-inline-end:-10%}
 .bloom--bl::before{bottom:-30%;inset-inline-start:-12%}
 .bloom > *{position:relative;z-index:1}
-.eyebrow--dash{display:inline-flex;align-items:center;gap:.85rem}
-.eyebrow--dash::before{content:"";width:clamp(24px,4vw,54px);height:1.5px;background:currentColor;flex:0 0 auto}
 
 /* PAGE HERO (shop / about / etc.) */
 .pagehero{
@@ -856,6 +881,10 @@ html[dir="rtl"] .cart.is-open{transform:translateX(0)}
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(to right,rgba(11,31,22,.94) 0%,rgba(11,31,22,.66) 52%,rgba(11,31,22,.32) 100%)
 }
+/* the copy sits on the other side in Arabic, so the fade has to follow it */
+html[dir="rtl"] .pagehero::after{
+  background:linear-gradient(to left,rgba(11,31,22,.94) 0%,rgba(11,31,22,.66) 52%,rgba(11,31,22,.32) 100%)
+}
 .pagehero__in{position:relative;z-index:2}
 .pagehero h1{max-width:18ch;margin-bottom:1.1rem}
 .pagehero .lede{color:rgba(247,244,236,.78);max-width:52ch}
@@ -870,79 +899,119 @@ html[dir="rtl"] .cart.is-open{transform:translateX(0)}
 .pagehero__leaf:nth-of-type(3){width:46px;top:36%;inset-inline-end:22%;animation-delay:2.6s;opacity:.1}
 @keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-16px) rotate(8deg)}}
 
-/* PROCESS */
+/* PROCESS
+   Eight steps, read in order, so it stays a grid — nothing is hidden
+   behind a drag. Three things carry the rhythm:
+
+     - each step is a card, so the eight read as eight objects rather
+       than eight paragraphs sharing a background;
+     - the numbered marker straddles its card's top edge, and the dotted
+       rail crosses the gutter at exactly that height, so the card tops
+       and the rail resolve into one continuous line with the numbers
+       sitting on it;
+     - the copy measure is narrow enough that no step runs to a
+       different number of lines than its neighbours.
+
+   Everything here is static — the block has no scroll animation of its
+   own. The rail is symmetrical and positioned logically, so Arabic
+   needs no rule of its own. */
 .process{
-  --pgap-x:clamp(1.2rem,2.5vw,2.2rem);
-  --pgap-y:clamp(1.8rem,3vw,2.8rem);
+  --pgap-x:clamp(1rem,2.1vw,1.8rem);
+  --pgap-y:clamp(3.4rem,5.5vw,4.8rem);
+  --pad:clamp(1rem,1.7vw,1.4rem);
   --badge:44px;
+  --rail:color-mix(in srgb,var(--gold) 52%,transparent);
+  --hair:color-mix(in srgb,var(--ivory) 15%,transparent);
+  --pcard:color-mix(in srgb,var(--ivory) 5%,transparent);
+  --pnum-bg:var(--green-2);
+  --pnum-fg:var(--gold);
+  --pbody:color-mix(in srgb,var(--ivory) 68%,transparent);
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
   column-gap:var(--pgap-x);
   row-gap:var(--pgap-y);
 }
-.pstep{position:relative;min-width:0}
-.pstep__num{
-  width:var(--badge);height:var(--badge);border-radius:var(--r);
-  display:grid;place-items:center;
-  border:1px solid rgba(201,164,76,.5);color:var(--gold);
-  font-size:.8rem;font-weight:800;letter-spacing:.04em;
-  background:var(--green);position:relative;z-index:2;margin-bottom:1rem
+.pstep{
+  position:relative;min-width:0;
+  padding:calc(var(--badge) / 2 + 1.15rem) var(--pad) clamp(1.2rem,2vw,1.55rem);
+  border:1px solid var(--hair);border-radius:var(--r-lg);
+  background:var(--pcard)
 }
-.pstep h4{font-size:clamp(.96rem,1.5vw,1.08rem);font-weight:700;margin-bottom:.4rem}
-.pstep p{margin:0;font-size:.88rem;color:rgba(247,244,236,.68);line-height:1.6}
+.pstep__num{
+  position:absolute;top:0;inset-inline-start:var(--pad);transform:translateY(-50%);
+  width:var(--badge);height:var(--badge);border-radius:var(--r);
+  display:grid;place-items:center;z-index:2;
+  background:var(--pnum-bg);border:1px solid var(--rail);color:var(--pnum-fg);
+  font-size:.78rem;font-weight:800;letter-spacing:.06em;font-variant-numeric:tabular-nums
+}
+.pstep h4{font-size:clamp(.96rem,1.5vw,1.06rem);font-weight:700;margin-bottom:.42rem}
+.pstep p{margin:0;font-size:.87rem;color:var(--pbody);line-height:1.62;max-width:32ch}
+/* the rail, dotted so the eight read as a sequence of beats, picking up
+   the card's top border and carrying it across the gutter */
 .pstep::before{
   content:"";position:absolute;z-index:1;
-  top:calc(var(--badge) / 2);
-  inset-inline-start:var(--badge);
-  width:calc(100% + var(--pgap-x) - var(--badge));
-  height:1.5px;border-radius:2px;
-  background:linear-gradient(to right,rgba(201,164,76,.6),rgba(201,164,76,.22))
-}
-html[dir="rtl"] .pstep::before{
-  background:linear-gradient(to left,rgba(201,164,76,.6),rgba(201,164,76,.22))
+  top:-1px;inset-inline-start:100%;
+  width:var(--pgap-x);height:2px;
+  background-image:radial-gradient(circle,var(--rail) 1px,transparent 1.2px);
+  background-size:7px 2px;background-repeat:repeat-x;background-position:0 50%
 }
 .process .pstep:nth-child(4)::before,
 .process .pstep:nth-child(8)::before{display:none}
-.section:not(.section--dark) .pstep__num{background:var(--white);border-color:var(--ivory-3);color:var(--green)}
-.section:not(.section--dark) .pstep p{color:var(--green-soft)}
+/* on an ivory ground the card turns white and the marker fills in, so
+   the numbers stay the strongest mark in the block either way */
+.section:not(.section--dark) .process{
+  --rail:color-mix(in srgb,var(--gold) 62%,transparent);
+  --hair:var(--ivory-3);
+  --pcard:var(--white);
+  --pnum-bg:var(--green);
+  --pnum-fg:var(--gold-lt);
+  --pbody:var(--green-soft)
+}
+/* Two columns of four: the marker moves in beside the copy and the rail
+   turns vertical, running from one badge down to the next. */
 @media(max-width:1100px){
   .process{
     grid-template-columns:repeat(2,minmax(0,1fr));
     grid-template-rows:repeat(4,auto);
     grid-auto-flow:column;
-    column-gap:clamp(1.5rem,4vw,3rem);
+    --pgap-x:clamp(1.3rem,3.5vw,2.4rem);
+    --pgap-y:clamp(1.5rem,2.8vw,2.1rem);
+    --pad:clamp(1.05rem,2vw,1.35rem)
   }
   .pstep{
     display:grid;grid-template-columns:var(--badge) minmax(0,1fr);
-    column-gap:1rem;align-items:start;padding-bottom:.2rem
+    column-gap:1.05rem;align-items:start;padding:var(--pad)
   }
-  .pstep__num{grid-row:1 / span 2;margin-bottom:0}
-  .pstep h4{grid-column:2;align-self:center;min-height:var(--badge);display:flex;align-items:center;margin-bottom:.3rem}
-  .pstep p{grid-column:2}
+  .pstep__num{position:static;transform:none;grid-row:1 / span 2}
+  .pstep h4{grid-column:2;align-self:center;min-height:var(--badge);display:flex;align-items:center;margin-bottom:.35rem}
+  .pstep p{grid-column:2;max-width:46ch}
   .pstep::before{
-    top:var(--badge);
-    inset-inline-start:calc((var(--badge) / 2) - .75px);
-    width:1.5px;
-    height:calc(100% + var(--pgap-y) - var(--badge));
-    background:linear-gradient(to bottom,rgba(201,164,76,.6),rgba(201,164,76,.22))
+    top:100%;
+    inset-inline-start:calc(var(--pad) + var(--badge) / 2 - 1px);
+    width:2px;height:calc(var(--pgap-y) + 2px);
+    background-size:2px 7px;background-repeat:repeat-y
   }
-  html[dir="rtl"] .pstep::before{background:linear-gradient(to bottom,rgba(201,164,76,.6),rgba(201,164,76,.22))}
   .process .pstep::before{display:block}
   .process .pstep:nth-child(4)::before,
   .process .pstep:nth-child(8)::before{display:none}
 }
+/* One column: the rail runs the whole way down, all eight in order. */
 @media(max-width:680px){
   .process{
     grid-template-columns:1fr;
     grid-template-rows:none;
     grid-auto-flow:row;
-    row-gap:clamp(1.5rem,5vw,2rem);
+    --pgap-y:clamp(1.3rem,4vw,1.8rem);
     --badge:40px
   }
-  .pstep h4{font-size:.98rem}
-  .pstep p{font-size:.86rem}
+  .pstep h4{font-size:.97rem}
+  .pstep p{font-size:.86rem;max-width:none}
   .process .pstep:nth-child(4)::before{display:block}
   .process .pstep:last-child::before{display:none}
+}
+@media(max-width:360px){
+  .process{--badge:36px;--pad:.95rem}
+  .pstep{column-gap:.8rem}
 }
 
 /* FLOOR responsive */
@@ -994,6 +1063,9 @@ html[dir="rtl"] .pstep::before{
 .field textarea{resize:vertical;min-height:140px}
 .acc--narrow{max-width:800px;margin-inline:auto}
 .prose{max-width:68ch}
+/* the policy headings sit outside .prose so they follow the page
+   direction, but they keep its measure and spacing */
+.prose__title{max-width:68ch;margin-bottom:1.4rem}
 .prose h2{margin-bottom:1.4rem}
 .prose h3{font-size:1.02rem;font-weight:700;margin:1.8rem 0 .5rem}
 .prose h3:first-of-type{margin-top:0}

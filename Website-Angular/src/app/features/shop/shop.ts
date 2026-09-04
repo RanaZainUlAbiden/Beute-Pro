@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
@@ -6,6 +6,7 @@ import { RevealDirective } from '../../core/directives/reveal.directive';
 import { StaggerDirective } from '../../core/directives/stagger.directive';
 import { CATEGORIES, PRODUCTS } from '../../core/data/products';
 import { I18nService } from '../../core/services/i18n.service';
+import { PageHero } from '../../shared/page-hero/page-hero';
 import { ProductCard } from '../../shared/product-card/product-card';
 import { SplitHeading, type SplitSegment } from '../../shared/split-heading/split-heading';
 
@@ -23,7 +24,7 @@ const SHOP_GROUPS: Record<string, readonly string[]> = {
   templateUrl: './shop.html',
   styleUrl: './shop.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RevealDirective, StaggerDirective, ProductCard, SplitHeading],
+  imports: [RouterLink, RevealDirective, StaggerDirective, PageHero, ProductCard, SplitHeading],
 })
 export class Shop {
   protected readonly i18n = inject(I18nService);
@@ -64,9 +65,6 @@ export class Shop {
     { text: this.i18n.t('pr.t1') },
     { text: this.i18n.t('pr.t2'), class: 'accent' },
   ]);
-
-  /** The shop hero photo may not exist yet — fall back to the gradient. */
-  protected readonly heroEmpty = signal(false);
 
   protected isChipActive(id: string): boolean {
     return !this.activeGroup() && id === this.activeCat();
