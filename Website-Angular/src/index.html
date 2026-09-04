@@ -10,9 +10,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-<!-- the factory photos are the one thing on the homepage that waits for
-     the scroll observer. With no JS at all they must still be visible. -->
-<noscript><style>.floor__band.reveal .floor__shot{opacity:1;transform:none}</style></noscript>
+<!-- The factory clips are the one thing on the homepage that waits for
+     the scroll observer; with no JS at all they must still be visible.
+     The play overlay is hidden in the same breath: nothing can hand it
+     its click handler, and a dead button reads worse than none. What is
+     left is the first frame and its caption. -->
+<noscript><style>
+.floor__band.reveal .floor__shot,.floor__band.reveal .vfig,
+.storyvid__grid.reveal .vfig{opacity:1;transform:none}
+.vfig__play{display:none}
+</style></noscript>
 </head>
 <body>
   <app-root></app-root>

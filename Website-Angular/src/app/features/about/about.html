@@ -17,17 +17,41 @@
 </section>
 
 <!-- ============ BRAND STORY ============
-     Sourced from beutepro.com/who-we-are/. Long body copy stays inline
-     English for now (see build summary) — headings are i18n keys. -->
+     Sourced from beutepro.com/who-we-are/. Both paragraphs now live in
+     i18n.data.ts with an Arabic pair, so the section no longer falls
+     back to English mid-page under RTL and the dir="ltr" pin is gone. -->
 <section class="section">
   <div class="wrap">
     <div class="section-head reveal">
       <p class="eyebrow">{{ i18n.t('about.brand.eyebrow') }}</p>
       <h2 class="h-lg" splitHeading [text]="i18n.t('about.brand.title')"></h2>
     </div>
-    <div dir="ltr" style="max-width:62ch">
-      <p class="lede" style="margin-bottom:1.1rem">Béute Pro draws on South Asian beauty traditions — neem, turmeric, aloe vera, rice, amla and rose — combined with modern cosmetic science to make self care that works with your skin, not against it.</p>
-      <p class="lede">Clean beauty isn't a trend to us. It's a standard: thoughtful ingredient selection, responsible formulation, and an unwavering commitment to transparency about what actually goes into every bottle.</p>
+    <div style="max-width:62ch">
+      <p class="lede" style="margin-bottom:1.1rem">{{ i18n.t('about.brand.p1') }}</p>
+      <p class="lede">{{ i18n.t('about.brand.p2') }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INSIDE OUR SITE ============
+     The two factory clips the homepage band does not carry. Same
+     component, same click-to-play contract: preload="none" is the goal
+     and preload="metadata" the fallback where no poster file exists, so
+     the pair costs this page a couple of HTTP headers until asked. -->
+<section class="section section--tight storyvid">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">{{ i18n.t('about.floor.eyebrow') }}</p>
+      <h2 class="h-lg" splitHeading [text]="i18n.t('about.floor.title')"></h2>
+      <p class="lede">{{ i18n.t('about.floor.lede') }}</p>
+    </div>
+    <div class="storyvid__grid reveal" role="group" [attr.aria-label]="i18n.t('about.floor.gallery')">
+      <app-video-figure
+        src="/assets/video/factory/Outside-View.mp4"
+        [caption]="i18n.t('about.vid1')" />
+      <app-video-figure
+        src="/assets/video/factory/company-reception.mp4"
+        [caption]="i18n.t('about.vid2')" />
     </div>
   </div>
 </section>

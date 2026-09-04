@@ -5,13 +5,14 @@ import { RevealDirective } from '../../core/directives/reveal.directive';
 import { StaggerDirective } from '../../core/directives/stagger.directive';
 import { I18nService } from '../../core/services/i18n.service';
 import { SplitHeading, type SplitSegment } from '../../shared/split-heading/split-heading';
+import { VideoFigure } from '../../shared/video-figure/video-figure';
 
 @Component({
   selector: 'app-about',
   templateUrl: './about.html',
   styleUrl: './about.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RevealDirective, StaggerDirective, SplitHeading],
+  imports: [RouterLink, RevealDirective, StaggerDirective, SplitHeading, VideoFigure],
 })
 export class About {
   protected readonly i18n = inject(I18nService);

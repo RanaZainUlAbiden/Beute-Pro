@@ -93,21 +93,26 @@
     </div>
   </div>
 
-  <!-- direct child of the section, not of .wrap, so it spans the full
-       viewport width with no negative-margin trick -->
-  <div class="floor__band reveal" tabindex="0" role="group" [attr.aria-label]="i18n.t('floor.gallery')">
-    <figure class="floor__shot">
-      <img src="/assets/img/about/factory-1.jpg" alt="" data-fallback loading="lazy">
-      <figcaption>{{ i18n.t('floor.cap1') }}</figcaption>
-    </figure>
-    <figure class="floor__shot">
-      <img src="/assets/img/about/factory-2.jpg" alt="" data-fallback loading="lazy">
-      <figcaption>{{ i18n.t('floor.cap2') }}</figcaption>
-    </figure>
-    <figure class="floor__shot">
-      <img src="/assets/img/about/factory-3.jpg" alt="" data-fallback loading="lazy">
-      <figcaption>{{ i18n.t('floor.cap3') }}</figcaption>
-    </figure>
+  <!-- Direct child of the section, not of .wrap, so it spans the full
+       viewport width with no negative-margin trick.
+
+       Real footage from the floor, replacing the three generated stills.
+       Each clip is click-to-play and preloads nothing but its own header
+       until then, so three videos here cost the homepage a few tens of
+       KB rather than 56 MB. The band's own tabindex is gone: each figure
+       now holds a focusable play button, and a focusable wrapper around
+       three focusable controls only adds a stop on the way in. The named
+       role="group" stays, so the three are still announced as one set. -->
+  <div class="floor__band reveal" role="group" [attr.aria-label]="i18n.t('floor.gallery')">
+    <app-video-figure
+      src="/assets/video/factory/factory-inside-view.mp4"
+      [caption]="i18n.t('floor.cap1')" />
+    <app-video-figure
+      src="/assets/video/factory/mist-bottle-filling.mp4"
+      [caption]="i18n.t('floor.cap2')" />
+    <app-video-figure
+      src="/assets/video/factory/mist-bottle-chcek.mp4"
+      [caption]="i18n.t('floor.cap3')" />
   </div>
 
   <div class="wrap floor__foot">

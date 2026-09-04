@@ -26,6 +26,7 @@ import { MotionService } from '../../core/services/motion.service';
 import { ScrollService } from '../../core/services/scroll.service';
 import { ToastService } from '../../core/services/toast.service';
 import { PageHero } from '../../shared/page-hero/page-hero';
+import { VideoFigure } from '../../shared/video-figure/video-figure';
 import { ProductCarousel } from './product-carousel/product-carousel';
 
 /** The product that floats over the routine photo. */
@@ -42,6 +43,7 @@ const ROUTINE_CHIP_ID = 'aloe-vera-mist';
     RevealDirective,
     PageHero,
     ProductCarousel,
+    VideoFigure,
   ],
 })
 export class Home implements OnDestroy {

@@ -42,6 +42,8 @@ export class AudioService {
   /** True once playback has actually begun, as in main.js's Audio_. */
   private started = false;
   private armed = false;
+  /** Volume held at 0 while a video clip plays — not a mute choice. */
+  private ducked = false;
   private fadeTimer: ReturnType<typeof setInterval> | undefined;
 
   /** Called once by the shell, with the <audio id="bp-audio"> element. */
@@ -107,6 +109,7 @@ export class AudioService {
 
   play(): void {
     this.wants.set(true);
+    this.ducked = false;
     this.store.set('bp_sound', 'on');
     this.el
       ?.play()
@@ -119,8 +122,31 @@ export class AudioService {
 
   stop(): void {
     this.wants.set(false);
+    this.ducked = false;
     this.store.set('bp_sound', 'off');
     this.fade(0, () => this.el?.pause());
+  }
+
+  /* -------------------------------------------------------------
+     DUCKING
+
+     A factory clip and a background oud playing over each other is
+     unlistenable, so VideoService holds the music at zero for the
+     length of a clip. This is deliberately not stop(): `wants` and
+     the stored bp_sound preference are left exactly as they were,
+     so the music comes back by itself and the sound button never
+     flips under the visitor.
+     ------------------------------------------------------------- */
+  duck(): void {
+    if (this.ducked || !this.started || !this.wants()) return;
+    this.ducked = true;
+    this.fade(0);
+  }
+
+  unduck(): void {
+    if (!this.ducked) return;
+    this.ducked = false;
+    if (this.wants()) this.fade(0.28);
   }
 
   private fade(to: number, done?: () => void): void {

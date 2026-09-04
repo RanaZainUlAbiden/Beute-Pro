@@ -1,1 +1,78 @@
-/* All styling for this page is global — see src/styles.scss. */
+/* Page-level styling is global — see src/styles.scss.
+
+   The "Reach us through" list is the exception: it is local to this page.
+   It previously borrowed `.buy__meta`, which lives in product.scss and is
+   view-encapsulated, so none of it ever applied here and the inline icons
+   fell back to the SVG default box. These rules replace it. */
+.contact-info{
+  display:flex;
+  flex-direction:column;
+  gap:1.4rem;
+  margin-top:1.3rem
+}
+.contact-info__row{
+  display:flex;
+  gap:.8rem;
+  align-items:flex-start;
+  font-size:.9rem;
+  color:var(--green-soft)
+}
+.contact-info__row > svg{
+  width:18px;
+  height:18px;
+  margin-top:.25rem;
+  stroke:var(--gold);
+  fill:none;
+  stroke-width:1.7;
+  flex:0 0 auto
+}
+.contact-info__row > div{min-width:0}
+/* A class, not the bare `b`: encapsulation stamps `.contact-info__row b`
+   with two attributes and it would then outrank the global RTL override. */
+.contact-info__label{
+  display:block;
+  color:var(--ink);
+  font-size:.72rem;
+  font-weight:800;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  margin-bottom:.3rem
+}
+.contact-info__row p{margin:0}
+
+/* The manufacturer name carries the trust, so it reads at body weight in
+   ink rather than the muted green the rest of the list uses. */
+.contact-info__row .contact-info__mfr{
+  color:var(--ink);
+  font-weight:700;
+  margin-bottom:.45rem
+}
+.contact-info__site{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.15rem .5rem;
+  line-height:1.55
+}
+.contact-info__row .contact-info__site + .contact-info__site{margin-top:.35rem}
+.contact-info__site-label{
+  color:var(--gold);
+  font-size:.7rem;
+  font-weight:800;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  flex:0 0 auto;
+  padding-top:.16rem
+}
+.contact-info__site bdi{min-width:0}
+
+/* Arabic drops the tracking on these two — but that rule has to be global
+   and lives with the rest of the RTL block in styles.scss. Written here it
+   would compile to `html[dir=rtl][_ngcontent-…]`, which never matches,
+   because emulated encapsulation stamps every compound in the selector. */
+
+/* Placeholder for a detail the client has not supplied yet. */
+.contact-info__pending{
+  font-size:.82rem;
+  letter-spacing:.04em;
+  opacity:.75
+}

@@ -1,0 +1,26 @@
+<figure class="vfig">
+  <div class="vfig__media">
+    <video
+      #video
+      class="vfig__video"
+      [src]="mediaSrc()"
+      [attr.poster]="poster()"
+      [attr.preload]="preload()"
+      [controls]="started()"
+      [attr.aria-label]="caption()"
+      playsinline
+      webkit-playsinline
+      (play)="onPlay()"
+      (pause)="onPause()"
+      (ended)="onPause()"></video>
+
+    @if (!started()) {
+    <button class="vfig__play" type="button" [attr.aria-label]="playLabel()" (click)="start()">
+      <span class="vfig__play-ring" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M8 5.4v13.2L19 12z"/></svg>
+      </span>
+    </button>
+    }
+  </div>
+  <figcaption class="vfig__cap">{{ caption() }}</figcaption>
+</figure>

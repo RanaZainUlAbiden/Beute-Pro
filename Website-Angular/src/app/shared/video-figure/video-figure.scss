@@ -1,0 +1,4 @@
+/* Empty by design, like the other component stylesheets. Everything the
+   figure needs is in styles.scss under VIDEO FIGURE: the band and the Our
+   Story grid both override the caption, and Angular's per-component
+   attribute selector would outrank those overrides from in here. */

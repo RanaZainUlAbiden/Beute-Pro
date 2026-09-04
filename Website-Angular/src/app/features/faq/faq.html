@@ -22,7 +22,12 @@
      not usable as a source. The items below are the site's own real,
      already-sourced claims (halal/cruelty-free/ingredients/returns) plus
      [CLIENT TO CONFIRM] where the live site states nothing at all
-     (delivery times, payment methods). -->
+     (delivery times, payment methods).
+
+     The four real answers now come from i18n.data.ts with an Arabic
+     pair each, so the panels no longer open in English under RTL and
+     the dir="ltr" pins are gone. The two pending ones stay pinned:
+     the marker is a literal, not copy. -->
 <section class="section">
   <div class="wrap">
     <div class="section-head section-head--center reveal">
@@ -33,26 +38,27 @@
     <div class="acc acc--narrow" id="faq-acc">
       <div class="acc__item" [class.is-open]="panels()[0]">
         <button class="acc__btn" (click)="toggle(0)"><span>{{ i18n.t('faq.q1') }}</span><i>+</i></button>
-        <div class="acc__panel" [accordionPanel]="panels()[0]"><div class="acc__panel-in" dir="ltr">
-          <p style="margin:0">Yes. Béute Pro products are halal certified, ISO &amp; GMP certified, and made without parabens or sulphates.</p>
+        <div class="acc__panel" [accordionPanel]="panels()[0]"><div class="acc__panel-in">
+          <p style="margin:0">{{ i18n.t('faq.a1') }}</p>
         </div></div>
       </div>
       <div class="acc__item" [class.is-open]="panels()[1]">
         <button class="acc__btn" (click)="toggle(1)"><span>{{ i18n.t('faq.q2') }}</span><i>+</i></button>
-        <div class="acc__panel" [accordionPanel]="panels()[1]"><div class="acc__panel-in" dir="ltr">
-          <p style="margin:0">No — nothing we make is tested on animals, at any stage, by us or anyone we work with.</p>
+        <div class="acc__panel" [accordionPanel]="panels()[1]"><div class="acc__panel-in">
+          <p style="margin:0">{{ i18n.t('faq.a2') }}</p>
         </div></div>
       </div>
       <div class="acc__item" [class.is-open]="panels()[2]">
         <button class="acc__btn" (click)="toggle(2)"><span>{{ i18n.t('faq.q3') }}</span><i>+</i></button>
-        <div class="acc__panel" [accordionPanel]="panels()[2]"><div class="acc__panel-in" dir="ltr">
-          <p style="margin:0">Small batches, plant-derived ingredients, no undisclosed fragrance. Every product page lists the full ingredient list, benefits and how to use it.</p>
+        <div class="acc__panel" [accordionPanel]="panels()[2]"><div class="acc__panel-in">
+          <p style="margin:0">{{ i18n.t('faq.a3') }}</p>
         </div></div>
       </div>
       <div class="acc__item" [class.is-open]="panels()[3]">
         <button class="acc__btn" (click)="toggle(3)"><span>{{ i18n.t('faq.q4') }}</span><i>+</i></button>
-        <div class="acc__panel" [accordionPanel]="panels()[3]"><div class="acc__panel-in" dir="ltr">
-          <p style="margin:0">Unused items in their original packaging can be returned within 30 days of purchase for a refund or exchange. See our full <a class="link-arrow" routerLink="/policies" fragment="returns">Refund &amp; Exchange Policy</a> for the details.</p>
+        <div class="acc__panel" [accordionPanel]="panels()[3]"><div class="acc__panel-in">
+          <p style="margin:0 0 .7rem">{{ i18n.t('faq.a4') }}</p>
+          <a class="link-arrow" routerLink="/policies" fragment="returns">{{ i18n.t('faq.a4link') }}</a>
         </div></div>
       </div>
       <div class="acc__item" [class.is-open]="panels()[4]">
