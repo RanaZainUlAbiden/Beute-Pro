@@ -1,20 +1,15 @@
 <!-- ============ PAGE HERO (dark) ============ -->
-<section class="pagehero">
-  <div class="pagehero__bg" [class.is-empty]="heroEmpty()"><img src="/assets/img/model/policies-hero.jpg" alt="" (error)="heroEmpty.set(true)"></div>
-  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-  <div class="wrap pagehero__in">
-    <p class="crumb">
-      <a routerLink="/">{{ i18n.t('nav.home') }}</a>
-      &nbsp;&rsaquo;&nbsp;
-      <span>{{ i18n.t('policies.t1') }}</span>
-    </p>
-    <p class="eyebrow">{{ i18n.t('policies.eyebrow') }}</p>
-    <h1 class="h-xl" splitHeading [segments]="heroTitle()"></h1>
-    <p class="lede">{{ i18n.t('policies.lede') }}</p>
-  </div>
-</section>
+<app-page-banner
+  image="/assets/img/model/slide-3.jpg"
+  [eyebrow]="i18n.t('policies.eyebrow')"
+  [segments]="heroTitle()"
+  [copy]="i18n.t('policies.lede')">
+  <p class="crumb" bannerTop>
+    <a routerLink="/">{{ i18n.t('nav.home') }}</a>
+    &nbsp;&rsaquo;&nbsp;
+    <span>{{ i18n.t('policies.t1') }}</span>
+  </p>
+</app-page-banner>
 
 <!-- ============ QUICK NAV ============ -->
 <section class="section section--tight" style="padding-bottom:0">

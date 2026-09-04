@@ -1,0 +1,25 @@
+<section class="pagehero">
+  <div class="pagehero__bg" [class.is-empty]="empty()">
+    @if (image(); as src) {
+    <img [src]="src" [alt]="alt()" (error)="onError()" fetchpriority="high">
+    }
+  </div>
+  <svg class="pagehero__leaf" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
+  <svg class="pagehero__leaf" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
+  <svg class="pagehero__leaf" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
+  <div class="wrap pagehero__in">
+    <ng-content select="[bannerTop]" />
+    @if (eyebrow(); as text) {
+    <p class="eyebrow">{{ text }}</p>
+    }
+    @if (segments(); as parts) {
+    <h1 class="h-xl" splitHeading [segments]="parts"></h1>
+    } @else {
+    <h1 class="h-xl" splitHeading [text]="heading()"></h1>
+    }
+    @if (copy(); as text) {
+    <p class="lede">{{ text }}</p>
+    }
+    <ng-content />
+  </div>
+</section>

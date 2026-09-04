@@ -1,20 +1,15 @@
 <!-- ============ PAGE HERO (dark) ============ -->
-<section class="pagehero">
-  <div class="pagehero__bg" [class.is-empty]="heroEmpty()"><img src="/assets/img/about/factory-2.jpg" alt="" (error)="heroEmpty.set(true)"></div>
-  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-  <div class="wrap pagehero__in">
-    <p class="crumb">
-      <a routerLink="/">{{ i18n.t('nav.home') }}</a>
-      &nbsp;&rsaquo;&nbsp;
-      <span>{{ i18n.t('nav.story') }}</span>
-    </p>
-    <p class="eyebrow">{{ i18n.t('story.eyebrow') }}</p>
-    <h1 class="h-xl" splitHeading [text]="i18n.t('story.title')"></h1>
-    <p class="lede">{{ i18n.t('about.hero.lede') }}</p>
-  </div>
-</section>
+<app-page-banner
+  image="/assets/img/about/factory-2.jpg"
+  [eyebrow]="i18n.t('story.eyebrow')"
+  [heading]="i18n.t('story.title')"
+  [copy]="i18n.t('about.hero.lede')">
+  <p class="crumb" bannerTop>
+    <a routerLink="/">{{ i18n.t('nav.home') }}</a>
+    &nbsp;&rsaquo;&nbsp;
+    <span>{{ i18n.t('nav.story') }}</span>
+  </p>
+</app-page-banner>
 
 <!-- ============ BRAND STORY ============
      Sourced from beutepro.com/who-we-are/. Both paragraphs now live in

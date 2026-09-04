@@ -291,48 +291,11 @@
   flex:0 0 auto
 }
 
-/* ---------- accordion ---------- */
-.acc{
-  margin-top:1.9rem;
-  border-top:1px solid var(--ivory-3)
-}
-.acc__item{border-bottom:1px solid var(--ivory-3)}
-.acc__btn{
-  width:100%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:1rem;
-  padding-block:1.05rem;
-  text-align:start;
-  font-size:.86rem;
-  font-weight:700
-}
-.acc__btn i{
-  font-style:normal;
-  color:var(--gold);
-  font-size:1.2rem;
-  transition:transform .38s var(--ease);
-  flex:0 0 auto
-}
-.acc__item.is-open .acc__btn i{transform:rotate(45deg)}
-.acc__panel{
-  max-height:0;
-  overflow:hidden;
-  transition:max-height .45s var(--ease)
-}
-.acc__panel-in{
-  padding-bottom:1.25rem;
-  color:var(--green-soft);
-  font-size:.92rem
-}
-.acc__panel ul{
-  margin:0;
-  padding-inline-start:1.1rem;
-  display:flex;
-  flex-direction:column;
-  gap:.35rem
-}
+/* ---------- accordion ----------
+   The .acc rules used to live here, which meant they were scoped to
+   app-product by view encapsulation and the FAQ page — same markup,
+   different component — rendered its accordion completely unstyled.
+   They are global now, at ACCORDION in src/styles.scss. */
 
 /* ---------- responsive overrides ---------- */
 @media(max-width:1300px){ .zoom__pane{width:min(350px,33vw)} }

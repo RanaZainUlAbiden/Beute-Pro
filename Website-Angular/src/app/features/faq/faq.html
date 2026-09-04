@@ -1,33 +1,32 @@
-<!-- ============ PAGE HERO (dark) ============ -->
-<section class="pagehero">
-  <div class="pagehero__bg" [class.is-empty]="heroEmpty()"><img src="/assets/img/model/faq-hero.jpg" alt="" (error)="heroEmpty.set(true)"></div>
-  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-  <svg class="pagehero__leaf" viewBox="0 0 24 24"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>
-  <div class="wrap pagehero__in">
-    <p class="crumb">
-      <a routerLink="/">{{ i18n.t('nav.home') }}</a>
-      &nbsp;&rsaquo;&nbsp;
-      <span>{{ i18n.t('foot.faq') }}</span>
-    </p>
-    <p class="eyebrow">{{ i18n.t('faq.eyebrow') }}</p>
-    <h1 class="h-xl" splitHeading [segments]="heroTitle()"></h1>
-    <p class="lede">{{ i18n.t('faq.lede') }}</p>
-  </div>
-</section>
+<!-- ============ PAGE BANNER (dark) ============
+     The shared banner about and policies use. It used to be this
+     block copied inline, pointing at assets/img/model/faq-hero.jpg —
+     a file that has never existed, so the photo layer 404'd on every
+     load and the gradient fallback was all anyone saw. -->
+<app-page-banner
+  image="/assets/img/model/slide-2.jpg"
+  [eyebrow]="i18n.t('faq.eyebrow')"
+  [segments]="heroTitle()"
+  [copy]="i18n.t('faq.lede')">
+  <p class="crumb" bannerTop>
+    <a routerLink="/">{{ i18n.t('nav.home') }}</a>
+    &nbsp;&rsaquo;&nbsp;
+    <span>{{ i18n.t('foot.faq') }}</span>
+  </p>
+</app-page-banner>
 
-<!-- ============ FAQ LIST ============
-     Live beutepro.com/faqs/ carries only unrelated WordPress-theme demo
-     Q&A (accordion-plugin placeholder text), not real content, so it was
-     not usable as a source. The items below are the site's own real,
-     already-sourced claims (halal/cruelty-free/ingredients/returns) plus
-     [CLIENT TO CONFIRM] where the live site states nothing at all
-     (delivery times, payment methods).
+<!-- ============ THE QUESTIONS ============
+     Five groups, one accordion, one panel open at a time. The copy
+     is in i18n.data.ts in both languages and the structure is in
+     faq.ts; nothing below is hardcoded text.
 
-     The four real answers now come from i18n.data.ts with an Arabic
-     pair each, so the panels no longer open in English under RTL and
-     the dir="ltr" pins are gone. The two pending ones stay pinned:
-     the marker is a literal, not copy. -->
+     What the answers may say is deliberately bounded: how herbal
+     cosmetics behave is category fact and gets explained properly,
+     while anything that would be a promise — a delivery window, a
+     lab result, a claim to treat a condition — is not written at
+     all, and pregnancy, reactions and children route to a doctor.
+     One company-specific detail we do not hold, where the batch
+     code sits on each pack format, carries [CLIENT TO CONFIRM]. -->
 <section class="section">
   <div class="wrap">
     <div class="section-head section-head--center reveal">
@@ -35,44 +34,53 @@
       <h2 class="h-lg" splitHeading [text]="i18n.t('faq.listtitle')"></h2>
     </div>
 
-    <div class="acc acc--narrow" id="faq-acc">
-      <div class="acc__item" [class.is-open]="panels()[0]">
-        <button class="acc__btn" (click)="toggle(0)"><span>{{ i18n.t('faq.q1') }}</span><i>+</i></button>
-        <div class="acc__panel" [accordionPanel]="panels()[0]"><div class="acc__panel-in">
-          <p style="margin:0">{{ i18n.t('faq.a1') }}</p>
-        </div></div>
-      </div>
-      <div class="acc__item" [class.is-open]="panels()[1]">
-        <button class="acc__btn" (click)="toggle(1)"><span>{{ i18n.t('faq.q2') }}</span><i>+</i></button>
-        <div class="acc__panel" [accordionPanel]="panels()[1]"><div class="acc__panel-in">
-          <p style="margin:0">{{ i18n.t('faq.a2') }}</p>
-        </div></div>
-      </div>
-      <div class="acc__item" [class.is-open]="panels()[2]">
-        <button class="acc__btn" (click)="toggle(2)"><span>{{ i18n.t('faq.q3') }}</span><i>+</i></button>
-        <div class="acc__panel" [accordionPanel]="panels()[2]"><div class="acc__panel-in">
-          <p style="margin:0">{{ i18n.t('faq.a3') }}</p>
-        </div></div>
-      </div>
-      <div class="acc__item" [class.is-open]="panels()[3]">
-        <button class="acc__btn" (click)="toggle(3)"><span>{{ i18n.t('faq.q4') }}</span><i>+</i></button>
-        <div class="acc__panel" [accordionPanel]="panels()[3]"><div class="acc__panel-in">
-          <p style="margin:0 0 .7rem">{{ i18n.t('faq.a4') }}</p>
-          <a class="link-arrow" routerLink="/policies" fragment="returns">{{ i18n.t('faq.a4link') }}</a>
-        </div></div>
-      </div>
-      <div class="acc__item" [class.is-open]="panels()[4]">
-        <button class="acc__btn" (click)="toggle(4)"><span>{{ i18n.t('faq.q5') }}</span><i>+</i></button>
-        <div class="acc__panel" [accordionPanel]="panels()[4]"><div class="acc__panel-in" dir="ltr">
-          <p style="margin:0">[CLIENT TO CONFIRM]</p>
-        </div></div>
-      </div>
-      <div class="acc__item" [class.is-open]="panels()[5]">
-        <button class="acc__btn" (click)="toggle(5)"><span>{{ i18n.t('faq.q6') }}</span><i>+</i></button>
-        <div class="acc__panel" [accordionPanel]="panels()[5]"><div class="acc__panel-in" dir="ltr">
-          <p style="margin:0">[CLIENT TO CONFIRM]</p>
-        </div></div>
-      </div>
+    <nav class="pill-list faq__jump" [attr.aria-label]="i18n.t('faq.jump')">
+      @for (g of groups; track g.id) {
+      <a class="chip" routerLink="/faq" [fragment]="g.id">{{ i18n.t(g.title) }}</a>
+      }
+    </nav>
+
+    <!-- one keydown listener for all twenty buttons, not twenty -->
+    <div class="faq" (keydown)="navigate($event)">
+      @for (g of groups; track g.id) {
+      <section class="faq__group" [id]="g.id" [attr.aria-labelledby]="g.id + '-title'">
+        <h3 class="faq__group-title" [id]="g.id + '-title'">{{ i18n.t(g.title) }}</h3>
+
+        <div class="acc">
+          @for (item of g.items; track item.id) {
+          <div class="acc__item" [class.is-open]="isOpen(item.id)">
+            <h4 class="acc__h">
+              <button class="acc__btn" type="button"
+                      [id]="item.id + '-btn'"
+                      [attr.aria-expanded]="isOpen(item.id)"
+                      [attr.aria-controls]="item.id + '-panel'"
+                      (click)="toggle(item.id)">
+                <span>{{ i18n.t(item.q) }}</span><i aria-hidden="true">+</i>
+              </button>
+            </h4>
+            <!-- inert while closed: the answer stays in the prerendered
+                 HTML for crawlers, but leaves the tab order and the
+                 accessibility tree until its question is opened -->
+            <div class="acc__panel"
+                 [id]="item.id + '-panel'"
+                 [attr.inert]="isOpen(item.id) ? null : ''"
+                 [accordionPanel]="isOpen(item.id)">
+              <div class="acc__panel-in">
+                @for (paragraph of item.a; track $index) {
+                <p>{{ i18n.t(paragraph) }}</p>
+                }
+                @if (item.link; as link) {
+                <a class="link-arrow" [routerLink]="link.route" [fragment]="link.fragment">{{ i18n.t(link.label) }}</a>
+                }
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </section>
+      }
+
+      <p class="faq__note">{{ i18n.t('faq.note') }}</p>
     </div>
 
     <div class="section-foot">

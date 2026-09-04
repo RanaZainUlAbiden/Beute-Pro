@@ -240,26 +240,112 @@ const en = {
   "contact.email.label": "Email",
   "contact.whatsapp.label": "WhatsApp",
   "contact.toast": "Thanks — we'll be in touch soon.",
+  /* ---------- FAQ ----------------------------------------------
+     Twenty questions in five groups. The first four explain how
+     herbal cosmetics behave — botany, formulation, skin physiology,
+     general practice — which is category fact, not a promise.
+     Nothing here states a delivery window, a lab result, or a claim
+     to treat a condition, and pregnancy / reactions / children all
+     route to a doctor rather than to advice of our own.
+
+     The fifth group is the four answers the old page already had and
+     could stand behind (halal, cruelty-free, ingredients, returns),
+     kept rather than deleted. The old q5/q6 — delivery time and
+     payment methods — had no answer at all, only a bare
+     [CLIENT TO CONFIRM], and are dropped: a delivery promise is not
+     ours to write.
+
+     Answers run to one or two paragraphs. faq.ts lists the keys each
+     item renders, so the second paragraph is optional per item. */
   "faq.eyebrow": "Answers",
   "faq.t1": "Questions people",
   "faq.t2": "actually ask.",
-  "faq.lede": "Ingredients, certifications, delivery, returns — the short answers are here.",
+  "faq.lede": "How herbal skincare works, how to use it, and how to look after it — the long answers, not the one-liners.",
   "faq.eyebrow2": "Frequently asked",
   "faq.listtitle": "Straight answers.",
-  "faq.q1": "Are Béute Pro products halal certified?",
-  "faq.q2": "Do you test on animals?",
-  "faq.q3": "What's actually in your products?",
-  "faq.q4": "What is your return policy?",
-  "faq.q5": "How long does delivery take?",
-  "faq.q6": "Which payment methods do you accept?",
-  /* The four answers the site can actually stand behind. q5 (delivery)
-     and q6 (payment) are still [CLIENT TO CONFIRM] in the template —
-     neither is ours to invent. */
-  "faq.a1": "Yes. Béute Pro products are halal certified, ISO & GMP certified, and made without parabens or sulphates.",
-  "faq.a2": "No — nothing we make is tested on animals, at any stage, by us or by anyone we work with.",
-  "faq.a3": "Small batches, plant-derived ingredients, and no undisclosed fragrance. Every product page carries the full ingredient list, what it is for, and how to use it.",
-  "faq.a4": "Unused items in their original packaging can be returned within 30 days of purchase for a refund or an exchange.",
-  "faq.a4link": "Read the full Refund & Exchange Policy",
+  "faq.jump": "Jump to a section",
+  "faq.note": "General information about herbal cosmetics and how they are used — not medical advice. For anything to do with a skin condition, a pregnancy, or a reaction, speak to a doctor.",
+
+  "faq.g.use": "Using the products",
+  "faq.g.herb": "Herbal specifics",
+  "faq.g.safe": "Safety",
+  "faq.g.store": "Storage and shelf life",
+  "faq.g.brand": "The brand and your order",
+
+  "faq.use.results.q": "How long until I see results from herbal skincare?",
+  "faq.use.results.a": "Give a herbal routine four to six weeks before you judge it. Botanical actives work with the skin's own renewal cycle — the surface layer turns over roughly every four weeks in adults, and more slowly with age — rather than forcing a fast change by stripping or resurfacing.",
+  "faq.use.results.a2": "Comfort and hydration usually read first, within days. Tone, texture and evenness follow over one to three of those cycles. Consistency matters more than quantity here: skipping days resets the clock faster than using a little less.",
+
+  "faq.use.patch.q": "How do I patch test, and why does it matter?",
+  "faq.use.patch.a": "Put a small amount on clean skin at the inner forearm or just behind the ear, leave it there, and look again at 24 and 48 hours. If nothing happens, it is reasonable to move to the face.",
+  "faq.use.patch.a2": "It matters because a plant extract is a mixture, not a single molecule — one cold-pressed oil carries dozens of naturally occurring compounds — and individual sensitivity to any one of them varies from person to person. Test one new product at a time; test several together and a reaction has no obvious source.",
+
+  "faq.use.ampm.q": "AM or PM — when do I use each product?",
+  "faq.use.ampm.a": "As a rule of thumb: light and protective in the morning, rich and reparative at night. Mists and lighter serums sit well under daytime layers and can be refreshed through the day. Heavier cold-pressed oils, balms and hair oils belong in the evening, when nothing is going on top of them.",
+  "faq.use.ampm.a2": "Two things push a product to the evening specifically: a texture heavy enough to interfere with whatever is layered over it, and citrus-derived botanicals, some of which are photosensitising — they make skin more reactive to sunlight.",
+
+  "faq.use.order.q": "What order do I apply things in?",
+  "faq.use.order.a": "Thinnest to thickest, water-based before oil-based. In practice that is cleanse, mist or tone, serum, then oil or moisturiser, then sunscreen in the morning. Oils form an occlusive film, so whatever goes on after one has a much harder time getting through.",
+  "faq.use.order.a2": "Let each layer settle for a few seconds instead of rubbing the next one straight in. For hair, oil goes on dry lengths before washing as a pre-wash treatment, or on damp lengths afterwards in a far smaller amount.",
+
+  "faq.use.alongside.q": "Can I use these alongside my current routine?",
+  "faq.use.alongside.a": "Usually, yes — add one new product at a time and leave about a week between additions, so you can tell what is doing what.",
+  "faq.use.alongside.a2": "Take more care if your routine already includes strong exfoliating acids, retinoids or benzoyl peroxide. Those temporarily thin the skin's surface barrier, and layering an active botanical onto a compromised barrier is where most irritation comes from. Alternate nights rather than stacking them. If a product was prescribed to you, ask the doctor who prescribed it before changing anything around it.",
+
+  "faq.herb.batch.q": "Why does the colour or scent vary between batches?",
+  "faq.herb.batch.a": "Because the raw material is agricultural. The colour and aroma of a cold-pressed oil or an infused extract depend on the harvest — the season, the soil, the rainfall, how ripe the seed was when it was pressed. Chlorophyll and carotenoid levels shift with all of those, so one pressing can run a deeper green or a warmer gold than the last.",
+  "faq.herb.batch.a2": "A conventional product holds one fixed shade because it has been decolourised, deodorised and fragranced to a standard. Variation inside a normal range is what an unstripped material looks like — not a fault.",
+
+  "faq.herb.vs.q": "How is herbal different from conventional skincare?",
+  "faq.herb.vs.a": "Conventional formulation isolates a single active and delivers it at a fixed concentration in a largely synthetic base: precise, repeatable, often fast. Herbal formulation works with a whole botanical extract, so what reaches the skin is a mixture — fatty acids, vitamins, polyphenols and trace compounds that occur together in the plant and act more gradually.",
+  "faq.herb.vs.a2": "The trade-off runs both ways. Herbal tends to be gentler on the skin barrier and more variable batch to batch; conventional is more consistent and more aggressive. Neither is automatically the better choice — it depends on what you want the product to do.",
+
+  "faq.herb.coldpressed.q": "What does cold-pressed actually mean?",
+  "faq.herb.coldpressed.a": "The seed or kernel is crushed mechanically, with no added heat and no solvents, and the oil is separated by pressure alone. Large-scale extraction normally uses heat, and often a solvent, to raise the yield, then refines whatever comes out of it.",
+  "faq.herb.coldpressed.a2": "Heat is why the distinction matters. It degrades the fragile parts of an oil — vitamin E, polyphenols, the more delicate unsaturated fatty acids — and those are exactly the parts that make the oil worth putting on skin. Cold pressing gives a lower yield and a shorter shelf life in exchange for keeping more of the plant intact.",
+
+  "faq.herb.purge.q": "Will these break me out at first?",
+  "faq.herb.purge.a": "Some people get a short adjustment period — a week or two of small congestion — whenever they change routine, herbal or not. It usually reflects existing debris clearing faster, or a richer texture than the skin is used to.",
+  "faq.herb.purge.a2": "That is not the same as a reaction. An adjustment is mild, stays in the areas you already break out in, and settles. Stinging, spreading redness, itching, or spots somewhere you never normally get them are not adjustment — stop, and see a doctor if it does not settle. If a rich oil is the trigger, use it less often, or on damp skin, so less of it sits on the surface.",
+
+  "faq.safe.pregnancy.q": "Are these safe during pregnancy?",
+  "faq.safe.pregnancy.a": "Ask your doctor or midwife before adding any new skincare during pregnancy or while breastfeeding, and take the ingredient list with you.",
+  "faq.safe.pregnancy.a2": "Several botanicals that are unremarkable the rest of the time — a number of concentrated essential oils among them — are ones clinicians advise limiting or avoiding in pregnancy, and that advice varies by trimester and by individual circumstance. Every product page here carries its full ingredient list, so your doctor has what they need. This is not something we are able to advise on ourselves.",
+
+  "faq.safe.sensitive.q": "Can I use them on sensitive or acne-prone skin?",
+  "faq.safe.sensitive.a": "Many people with sensitive or acne-prone skin use botanical products without trouble, but the answer depends on your skin rather than on the category. Two things help: patch test first, and introduce one product at a time.",
+  "faq.safe.sensitive.a2": "If you are acne-prone, note that heavier occlusive oils sit differently on different people — a lighter, faster-absorbing oil is usually the better place to start. If your skin is under active treatment for a condition, that is a conversation for your dermatologist rather than for us.",
+
+  "faq.safe.reaction.q": "What if I get a reaction?",
+  "faq.safe.reaction.a": "Stop using the product. Rinse the area with cool water and a plain unscented cleanser, then leave the skin alone — no exfoliants, no other actives — until it has settled.",
+  "faq.safe.reaction.a2": "If the reaction is severe or spreading, or involves swelling or any difficulty breathing, treat it as urgent and get medical help. For anything that has not settled within a couple of days, see a doctor and take the product with you so they can read the ingredient list. Tell us as well, with the batch number, so we can look at it from our side.",
+
+  "faq.safe.children.q": "Are these safe for children?",
+  "faq.safe.children.a": "Children's skin is thinner and more permeable than adult skin and absorbs more of what is put on it, which is why the general guidance for children is fewer products, lower concentrations, and no essential oils without advice.",
+  "faq.safe.children.a2": "Ask your paediatrician before using any of these on a child, and share the ingredient list with them. Nothing here is formulated as a children's product.",
+
+  "faq.store.how.q": "How should I store these?",
+  "faq.store.how.a": "Cool, dark and closed. Heat, light and air are what degrade a botanical product — between them they drive the oxidation that turns an oil rancid and fades a plant extract.",
+  "faq.store.how.a2": "A cupboard or a drawer away from the window beats a shelf in the bathroom, where every shower cycles the temperature and the humidity. Keep caps tight, keep fingers out of jars — use a clean spatula — and never leave a bottle in a car or on a sunny windowsill.",
+
+  "faq.store.shelf.q": "Why do herbal products have a shorter shelf life?",
+  "faq.store.shelf.a": "Because there is less in them holding the clock back. Cold-pressed oils and plant extracts are full of unsaturated fatty acids and other reactive compounds that oxidise on contact with air and light, and a formulation without heavy synthetic preservatives and antioxidants has fewer defences against that.",
+  "faq.store.shelf.a2": "It is the direct cost of the thing that makes the product worth using. Buy the size you will actually get through, keep it closed and cool, and go by the printed date rather than by how it looks or smells.",
+
+  "faq.store.batch.q": "Where do I find the batch number and expiry?",
+  "faq.store.batch.a": "Printed on the pack itself, alongside the manufacturing date — the exact position depends on the pack format [CLIENT TO CONFIRM].",
+  "faq.store.batch.a2": "The batch number identifies one specific production run, so it is what lets us trace a product if you ever need to ask us about it. Keep the outer packaging until you have finished what is inside.",
+
+  "faq.brand.halal.q": "Are Béute Pro products halal certified?",
+  "faq.brand.halal.a": "Yes. Béute Pro products are halal certified, ISO & GMP certified, and made without parabens or sulphates.",
+  "faq.brand.cruelty.q": "Do you test on animals?",
+  "faq.brand.cruelty.a": "No — nothing we make is tested on animals, at any stage, by us or by anyone we work with.",
+  "faq.brand.ingredients.q": "What's actually in your products?",
+  "faq.brand.ingredients.a": "Small batches, plant-derived ingredients, and no undisclosed fragrance. Every product page carries the full ingredient list, what it is for, and how to use it.",
+  "faq.brand.returns.q": "What is your return policy?",
+  "faq.brand.returns.a": "Unused items in their original packaging can be returned within 30 days of purchase for a refund or an exchange.",
+  "faq.brand.returns.link": "Read the full Refund & Exchange Policy",
+
   "faq.cta.title": "Still have questions?",
   "faq.cta.btn": "Get in touch",
   "policies.eyebrow": "Good to know",
@@ -497,20 +583,92 @@ const ar: Record<keyof typeof en, string> = {
   "faq.eyebrow": "الإجابات",
   "faq.t1": "أسئلة",
   "faq.t2": "يطرحها الناس فعلًا.",
-  "faq.lede": "المكوّنات، الشهادات، التوصيل، الاسترجاع — الإجابات المختصرة هنا.",
+  "faq.lede": "كيف تعمل العناية العشبية بالبشرة، وكيف تُستخدم، وكيف تُحفَظ — إجابات مفصّلة، لا عبارات مقتضبة.",
   "faq.eyebrow2": "الأسئلة الشائعة",
   "faq.listtitle": "إجابات واضحة.",
-  "faq.q1": "هل منتجات بيوت برو معتمدة حلال؟",
-  "faq.q2": "هل تُجرَّب منتجاتكم على الحيوانات؟",
-  "faq.q3": "ما الذي يدخل فعلًا في منتجاتكم؟",
-  "faq.q4": "ما سياسة الاسترجاع لديكم؟",
-  "faq.q5": "كم تستغرق مدة التوصيل؟",
-  "faq.q6": "ما طرق الدفع المتاحة؟",
-  "faq.a1": "نعم. منتجات بيوت برو حاصلة على شهادة الحلال وعلى شهادتي ISO و GMP، ومصنوعة دون بارابين أو سلفات.",
-  "faq.a2": "لا — لا شيء نصنعه يُختبر على الحيوانات، في أي مرحلة، لا منّا ولا من أي جهة نعمل معها.",
-  "faq.a3": "دفعات صغيرة، ومكوّنات نباتية المصدر، وبلا عطر غير مُفصح عنه. كل صفحة منتج تعرض قائمة المكوّنات كاملة، ولماذا تُستخدم، وكيف تُستعمل.",
-  "faq.a4": "يمكن إرجاع المنتجات غير المستخدمة بعبوتها الأصلية خلال ٣٠ يومًا من الشراء لاسترداد المبلغ أو للاستبدال.",
-  "faq.a4link": "اقرئي سياسة الاسترجاع والاستبدال كاملة",
+  "faq.jump": "انتقلي إلى قسم",
+  "faq.note": "معلومات عامة عن مستحضرات التجميل العشبية وطريقة استخدامها — وليست نصيحة طبية. ولأي أمر يتعلق بحالة جلدية أو بالحمل أو برد فعل تحسسي، راجعي طبيبًا.",
+
+  "faq.g.use": "استخدام المنتجات",
+  "faq.g.herb": "خصوصيات المنتجات العشبية",
+  "faq.g.safe": "السلامة",
+  "faq.g.store": "التخزين ومدة الصلاحية",
+  "faq.g.brand": "العلامة وطلبك",
+
+  "faq.use.results.q": "كم من الوقت حتى أرى نتائج العناية العشبية بالبشرة؟",
+  "faq.use.results.a": "امنحي الروتين العشبي من أربعة إلى ستة أسابيع قبل أن تحكمي عليه. فالمكوّنات النباتية الفعّالة تعمل مع دورة تجدّد البشرة نفسها — إذ تتجدّد الطبقة السطحية كل أربعة أسابيع تقريبًا لدى البالغين، وببطء أكبر مع التقدّم في العمر — بدل أن تفرض تغيّرًا سريعًا عبر التقشير أو تجريد البشرة.",
+  "faq.use.results.a2": "الراحة والترطيب يظهران أولًا عادةً، خلال أيام. أما تجانس اللون والملمس والصفاء فتتبع على مدى دورة إلى ثلاث دورات. والانتظام هنا أهم من الكمية: تفويت الأيام يعيد العدّاد إلى الصفر أسرع من استخدام كمية أقل.",
+
+  "faq.use.patch.q": "كيف أُجري اختبار الحساسية، ولماذا هو مهم؟",
+  "faq.use.patch.a": "ضعي كمية صغيرة على بشرة نظيفة في باطن الساعد أو خلف الأذن، واتركيها، ثم افحصي الموضع بعد ٢٤ ثم ٤٨ ساعة. فإن لم يحدث شيء، فمن المعقول الانتقال إلى الوجه.",
+  "faq.use.patch.a2": "وهو مهم لأن المستخلص النباتي خليط لا جزيء واحد — فالزيت الواحد المعصور على البارد يحمل عشرات المركّبات الطبيعية — وتختلف حساسية كل شخص تجاه أيٍّ منها. اختبري منتجًا جديدًا واحدًا في كل مرة؛ فاختبار عدة منتجات معًا يجعل مصدر رد الفعل مجهولًا.",
+
+  "faq.use.ampm.q": "صباحًا أم مساءً — متى أستخدم كل منتج؟",
+  "faq.use.ampm.a": "القاعدة العامة: الخفيف والواقي صباحًا، والغني والمُصلِح ليلًا. فالبخاخات والسيرومات الخفيفة تنسجم تحت طبقات النهار ويمكن تجديدها خلاله. أما الزيوت الأثقل المعصورة على البارد والبلسمات وزيوت الشعر فمكانها المساء، حين لا يأتي فوقها شيء.",
+  "faq.use.ampm.a2": "وأمران يدفعان بمنتج إلى المساء تحديدًا: قوام ثقيل بما يكفي ليعيق ما يوضع فوقه، والمكوّنات المشتقّة من الحمضيات، إذ إن بعضها مُحسِّس للضوء — أي يجعل البشرة أكثر تفاعلًا مع أشعة الشمس.",
+
+  "faq.use.order.q": "ما ترتيب وضع المنتجات؟",
+  "faq.use.order.a": "من الأخف إلى الأثقل، والمائي قبل الزيتي. وعمليًا: تنظيف، ثم بخاخ أو تونر، ثم سيروم، ثم زيت أو مرطّب، ثم واقي الشمس صباحًا. فالزيوت تُكوّن طبقة عازلة، وما يوضع بعدها يجد صعوبة أكبر بكثير في النفاذ.",
+  "faq.use.order.a2": "اتركي كل طبقة تستقرّ لثوانٍ بدل فرك التالية فوقها مباشرة. أما الشعر، فالزيت يوضع على الأطراف الجافة قبل الغسل كعلاج تمهيدي، أو على الشعر الرطب بعده بكمية أقل بكثير.",
+
+  "faq.use.alongside.q": "هل يمكنني استخدامها إلى جانب روتيني الحالي؟",
+  "faq.use.alongside.a": "غالبًا نعم — أضيفي منتجًا جديدًا واحدًا في كل مرة، واتركي نحو أسبوع بين إضافة وأخرى، حتى تتبيّني أثر كل منتج.",
+  "faq.use.alongside.a2": "وتوخّي حذرًا أكبر إن كان روتينك يضم أحماض تقشير قوية أو رتينويدات أو بيروكسيد البنزويل. فهذه تُضعف حاجز البشرة السطحي مؤقتًا، ووضع مستخلص نباتي فعّال فوق حاجز مُنهَك هو مصدر معظم التهيّج. تبادلي بينها ليلةً بليلة بدل تراكمها. وإن كان المنتج موصوفًا لك طبيًا، فاستشيري الطبيب الذي وصفه قبل تغيير ما حوله.",
+
+  "faq.herb.batch.q": "لماذا يختلف اللون أو الرائحة بين دفعة وأخرى؟",
+  "faq.herb.batch.a": "لأن المادة الخام زراعية. فلون الزيت المعصور على البارد أو المستخلص المنقوع ورائحته يعتمدان على الموسم والتربة وكمية الأمطار ودرجة نضج البذرة عند عصرها. ونسب الكلوروفيل والكاروتينات تتغيّر مع كل ذلك، فتأتي عصرة أعمق خضرةً أو أدفأ ذهبيةً من سابقتها.",
+  "faq.herb.batch.a2": "والمنتج التقليدي يحافظ على درجة لون واحدة ثابتة لأنه أُزيل لونه ورائحته وأُضيف إليه عطر وفق معيار محدّد. أما التباين ضمن نطاق طبيعي فهو شكل المادة غير المُجرَّدة — لا عيب فيها.",
+
+  "faq.herb.vs.q": "بمَ تختلف العناية العشبية عن العناية التقليدية؟",
+  "faq.herb.vs.a": "الصياغة التقليدية تعزل مادة فعّالة واحدة وتقدّمها بتركيز ثابت في قاعدة صناعية في معظمها: دقيقة، وقابلة للتكرار، وسريعة غالبًا. أما الصياغة العشبية فتعمل بمستخلص نباتي كامل، فيصل إلى البشرة خليط — أحماض دهنية وفيتامينات وبوليفينولات ومركّبات نادرة توجد معًا في النبتة وتعمل بتدرّج أبطأ.",
+  "faq.herb.vs.a2": "والمقايضة قائمة في الاتجاهين. فالعشبي أرفق بحاجز البشرة وأكثر تباينًا بين الدفعات؛ والتقليدي أكثر ثباتًا وأشدّ قوة. ولا أحدهما أفضل تلقائيًا — الأمر يتوقف على ما تريدينه من المنتج.",
+
+  "faq.herb.coldpressed.q": "ما معنى «معصور على البارد» فعليًا؟",
+  "faq.herb.coldpressed.a": "تُسحق البذرة أو اللبّ ميكانيكيًا، بلا حرارة مضافة وبلا مذيبات، ويُفصل الزيت بالضغط وحده. أما الاستخلاص الصناعي الواسع فيستخدم عادةً الحرارة، ومذيبًا في أغلب الأحيان، لرفع المردود، ثم يكرّر ما ينتج عنه.",
+  "faq.herb.coldpressed.a2": "والحرارة هي سبب أهمية هذا الفارق، إذ تُتلف أكثر أجزاء الزيت هشاشةً — فيتامين E والبوليفينولات والأحماض الدهنية غير المشبعة الأرقّ — وهي بالضبط ما يجعل الزيت جديرًا بالوضع على البشرة. والعصر على البارد يعطي مردودًا أقل ومدة صلاحية أقصر، مقابل الحفاظ على قدر أكبر من النبتة كما هي.",
+
+  "faq.herb.purge.q": "هل ستسبّب لي حبوبًا في البداية؟",
+  "faq.herb.purge.a": "بعض الأشخاص يمرّون بفترة تأقلم قصيرة — أسبوع أو أسبوعان من احتقان بسيط — كلما غيّروا روتينهم، عشبيًا كان أو غير ذلك. وهي تعكس عادةً تسارع خروج ما هو موجود أصلًا، أو قوامًا أغنى مما اعتادته البشرة.",
+  "faq.herb.purge.a2": "وهذا يختلف عن رد الفعل التحسسي. فالتأقلم خفيف، ويبقى في المناطق التي تظهر فيها الحبوب أصلًا، ثم يزول. أما اللسع أو الاحمرار المنتشر أو الحكة أو ظهور حبوب في مكان لا تظهر فيه عادةً فليست تأقلمًا — أوقفي الاستخدام، وراجعي طبيبًا إن لم تهدأ. وإن كان الزيت الغني هو السبب، فاستخدميه بوتيرة أقل أو على بشرة رطبة، ليبقى أقلّ منه على السطح.",
+
+  "faq.safe.pregnancy.q": "هل هي آمنة أثناء الحمل؟",
+  "faq.safe.pregnancy.a": "استشيري طبيبك أو القابلة قبل إضافة أي منتج عناية جديد أثناء الحمل أو الرضاعة، وخذي معك قائمة المكوّنات.",
+  "faq.safe.pregnancy.a2": "فعدد من النباتات التي لا تثير أي تحفّظ في الأوقات الأخرى — ومنها زيوت عطرية مركّزة — ينصح الأطباء بالحدّ منها أو تجنّبها أثناء الحمل، وتختلف هذه النصيحة باختلاف الثلث وباختلاف الحالة الفردية. وكل صفحة منتج هنا تعرض قائمة مكوّناتها كاملة، ليكون لدى طبيبك ما يحتاجه. وهذا أمر لا يمكننا نحن تقديم المشورة فيه.",
+
+  "faq.safe.sensitive.q": "هل يمكن استخدامها على البشرة الحساسة أو المعرّضة لحب الشباب؟",
+  "faq.safe.sensitive.a": "كثيرات ممن لديهنّ بشرة حساسة أو معرّضة لحب الشباب يستخدمن منتجات نباتية دون مشكلة، لكن الجواب يتوقف على بشرتك أنت لا على الفئة عمومًا. وأمران يساعدان: اختبار الحساسية أولًا، وإدخال منتج واحد في كل مرة.",
+  "faq.safe.sensitive.a2": "وإن كانت بشرتك معرّضة لحب الشباب، فانتبهي إلى أن الزيوت العازلة الأثقل تتصرّف بشكل مختلف من شخص لآخر — والأفضل عادةً البدء بزيت أخفّ وأسرع امتصاصًا. وإن كانت بشرتك تحت علاج نشط لحالة ما، فذلك حديث مع طبيب الجلدية لا معنا.",
+
+  "faq.safe.reaction.q": "ماذا أفعل إن ظهر لديّ رد فعل؟",
+  "faq.safe.reaction.a": "أوقفي استخدام المنتج. اغسلي المنطقة بماء بارد وغسول بسيط بلا عطر، ثم اتركي البشرة وشأنها — بلا مقشّرات وبلا مواد فعّالة أخرى — حتى تهدأ.",
+  "faq.safe.reaction.a2": "وإن كان رد الفعل شديدًا أو منتشرًا، أو صاحبه تورّم أو أي صعوبة في التنفس، فتعاملي معه كحالة عاجلة واطلبي المساعدة الطبية. وأي شيء لا يهدأ خلال يومين يستدعي مراجعة طبيب، وخذي المنتج معك ليطّلع على قائمة المكوّنات. وأخبرينا نحن أيضًا، مع رقم الدفعة، لننظر في الأمر من جانبنا.",
+
+  "faq.safe.children.q": "هل هي آمنة للأطفال؟",
+  "faq.safe.children.a": "بشرة الأطفال أرقّ وأكثر نفاذيةً من بشرة البالغين وتمتصّ قدرًا أكبر مما يوضع عليها، ولهذا فالتوجيه العام للأطفال هو منتجات أقل وتراكيز أدنى وبلا زيوت عطرية دون استشارة.",
+  "faq.safe.children.a2": "استشيري طبيب الأطفال قبل استخدام أي من هذه المنتجات على طفل، وشاركيه قائمة المكوّنات. ولا شيء هنا مُصاغ كمنتج للأطفال.",
+
+  "faq.store.how.q": "كيف أخزّن هذه المنتجات؟",
+  "faq.store.how.a": "في مكان بارد ومظلم ومُحكم الإغلاق. فالحرارة والضوء والهواء هي ما يُتلف المنتج النباتي — وهي مجتمعةً تدفع الأكسدة التي تُزنِخ الزيت وتُبهِت المستخلص النباتي.",
+  "faq.store.how.a2": "وخزانة أو درج بعيدًا عن النافذة أفضل من رفّ في الحمّام، حيث يرفع كل استحمام درجة الحرارة والرطوبة ثم يخفضهما. أحكمي إغلاق الأغطية، وتجنّبي إدخال الأصابع في العبوات — استخدمي ملعقة نظيفة — ولا تتركي عبوة في السيارة أو على حافة نافذة مشمسة أبدًا.",
+
+  "faq.store.shelf.q": "لماذا مدة صلاحية المنتجات العشبية أقصر؟",
+  "faq.store.shelf.a": "لأن ما يكبح مرور الوقت فيها أقل. فالزيوت المعصورة على البارد والمستخلصات النباتية مليئة بأحماض دهنية غير مشبعة ومركّبات تفاعلية أخرى تتأكسد بملامسة الهواء والضوء، والتركيبة الخالية من المواد الحافظة ومضادات الأكسدة الصناعية الثقيلة تملك دفاعات أقل ضد ذلك.",
+  "faq.store.shelf.a2": "وهذه هي الكلفة المباشرة للشيء نفسه الذي يجعل المنتج جديرًا بالاستخدام. اشتري الحجم الذي ستنتهين منه فعلًا، واحفظيه مغلقًا وباردًا، واعتمدي على التاريخ المطبوع لا على شكله أو رائحته.",
+
+  "faq.store.batch.q": "أين أجد رقم الدفعة وتاريخ الانتهاء؟",
+  "faq.store.batch.a": "مطبوعَين على العبوة نفسها، إلى جانب تاريخ التصنيع — أما الموضع الدقيق فيتوقف على شكل العبوة [CLIENT TO CONFIRM].",
+  "faq.store.batch.a2": "ورقم الدفعة يحدّد دورة إنتاج بعينها، وهو ما يتيح لنا تتبّع المنتج إن احتجتِ إلى سؤالنا عنه يومًا. احتفظي بالعلبة الخارجية حتى تنتهي مما بداخلها.",
+
+  "faq.brand.halal.q": "هل منتجات بيوت برو معتمدة حلال؟",
+  "faq.brand.halal.a": "نعم. منتجات بيوت برو حاصلة على شهادة الحلال وعلى شهادتي ISO و GMP، ومصنوعة دون بارابين أو سلفات.",
+  "faq.brand.cruelty.q": "هل تُجرَّب منتجاتكم على الحيوانات؟",
+  "faq.brand.cruelty.a": "لا — لا شيء نصنعه يُختبر على الحيوانات، في أي مرحلة، لا منّا ولا من أي جهة نعمل معها.",
+  "faq.brand.ingredients.q": "ما الذي يدخل فعلًا في منتجاتكم؟",
+  "faq.brand.ingredients.a": "دفعات صغيرة، ومكوّنات نباتية المصدر، وبلا عطر غير مُفصح عنه. كل صفحة منتج تعرض قائمة المكوّنات كاملة، ولماذا تُستخدم، وكيف تُستعمل.",
+  "faq.brand.returns.q": "ما سياسة الاسترجاع لديكم؟",
+  "faq.brand.returns.a": "يمكن إرجاع المنتجات غير المستخدمة بعبوتها الأصلية خلال ٣٠ يومًا من الشراء لاسترداد المبلغ أو للاستبدال.",
+  "faq.brand.returns.link": "اقرئي سياسة الاسترجاع والاستبدال كاملة",
+
   "faq.cta.title": "ألا تزال لديك أسئلة؟",
   "faq.cta.btn": "تواصلي معنا",
   "policies.eyebrow": "جيد أن تعرفي",

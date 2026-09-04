@@ -15,6 +15,7 @@ app-back-to-top,
 app-progress-bar,
 app-product-card,
 app-page-hero,
+app-page-banner,
 app-product-carousel,
 app-video-figure,
 app-home,
@@ -1157,7 +1158,107 @@ html[dir="rtl"] .pagehero::after{
 }
 .field input:focus,.field textarea:focus{border-color:var(--gold);outline:none}
 .field textarea{resize:vertical;min-height:140px}
+/* ---------------------------------------------------------
+   ACCORDION
+
+   Moved here from product.scss. Two pages render this markup —
+   the product page and the FAQ — and a component stylesheet is
+   scoped to its own component by view encapsulation, so the FAQ's
+   copy of it was rendering with no rules at all: no borders, no
+   button layout, and no overflow:hidden, which left every closed
+   answer spilling on top of the next question. Shared markup, so
+   the rules are shared.
+
+   The open height is set inline by AccordionPanelDirective, which
+   measures the content. The .is-open cap below is the fallback for
+   the two moments that directive has not run — the prerendered
+   HTML, and a visitor with JavaScript off — so the first panel is
+   genuinely open in the server's markup. An inline max-height wins
+   over it, so hydration takes the cap over silently and without a
+   frame of movement.
+   --------------------------------------------------------- */
+.acc{
+  margin-top:1.9rem;
+  border-top:1px solid var(--ivory-3)
+}
+.acc__item{border-bottom:1px solid var(--ivory-3)}
+/* the question is a heading so it can be navigated to as one; the
+   button inside it carries the type, not the <h4> */
+.acc__h{margin:0;font:inherit;letter-spacing:inherit;line-height:inherit}
+.acc__btn{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  padding-block:1.05rem;
+  text-align:start;
+  font-size:.86rem;
+  font-weight:700
+}
+.acc__btn i{
+  font-style:normal;
+  color:var(--gold);
+  font-size:1.2rem;
+  transition:transform .38s var(--ease);
+  flex:0 0 auto
+}
+.acc__item.is-open .acc__btn i{transform:rotate(45deg)}
+.acc__panel{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .45s var(--ease)
+}
+.acc__item.is-open .acc__panel{max-height:80rem}
+.acc__panel-in{
+  padding-bottom:1.25rem;
+  color:var(--green-soft);
+  font-size:.92rem
+}
+.acc__panel ul{
+  margin:0;
+  padding-inline-start:1.1rem;
+  display:flex;
+  flex-direction:column;
+  gap:.35rem
+}
 .acc--narrow{max-width:800px;margin-inline:auto}
+
+/* ---------------------------------------------------------
+   FAQ
+
+   Five titled groups of one accordion. The measure is the same
+   .prose measure the policy pages read at, because these answers
+   are the same kind of body copy.
+   --------------------------------------------------------- */
+.faq{max-width:820px;margin-inline:auto}
+.faq__group + .faq__group{margin-top:clamp(2.4rem,5vw,3.4rem)}
+.faq__group-title{
+  font-size:clamp(1rem,1.5vw,1.2rem);
+  padding-bottom:.6rem;
+  margin-bottom:.2rem;
+  border-bottom:2px solid var(--gold)
+}
+/* the group title carries the rule above the first question, so the
+   accordion drops the border-top it wears on the product page */
+.faq__group .acc{margin-top:0;border-top:0}
+.faq .acc__btn{font-size:.92rem;gap:1.4rem}
+.faq .acc__panel-in{max-width:68ch;padding-bottom:1.5rem}
+.faq .acc__panel-in p{margin:0 0 .85rem;line-height:1.78}
+.faq .acc__panel-in p:last-child{margin-bottom:0}
+.faq .acc__panel-in .link-arrow{margin-top:.35rem}
+.faq__jump{justify-content:center;margin-bottom:clamp(2.2rem,4vw,3.2rem)}
+.faq__note{
+  max-width:820px;
+  margin:clamp(2.4rem,4vw,3.2rem) auto 0;
+  padding:1.05rem 1.25rem;
+  border-radius:var(--r);
+  border-inline-start:3px solid var(--gold);
+  background:var(--ivory-2);
+  font-size:.85rem;
+  line-height:1.7;
+  color:var(--green-soft)
+}
 .prose{max-width:68ch}
 /* the policy headings sit outside .prose so they follow the page
    direction, but they keep its measure and spacing */

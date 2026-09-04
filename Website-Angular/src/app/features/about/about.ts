@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { RevealDirective } from '../../core/directives/reveal.directive';
 import { StaggerDirective } from '../../core/directives/stagger.directive';
 import { I18nService } from '../../core/services/i18n.service';
+import { PageBanner } from '../../shared/page-banner/page-banner';
 import { SplitHeading, type SplitSegment } from '../../shared/split-heading/split-heading';
 import { VideoFigure } from '../../shared/video-figure/video-figure';
 
@@ -12,7 +13,7 @@ import { VideoFigure } from '../../shared/video-figure/video-figure';
   templateUrl: './about.html',
   styleUrl: './about.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RevealDirective, StaggerDirective, SplitHeading, VideoFigure],
+  imports: [RouterLink, RevealDirective, StaggerDirective, SplitHeading, VideoFigure, PageBanner],
 })
 export class About {
   protected readonly i18n = inject(I18nService);
@@ -33,6 +34,4 @@ export class About {
   protected readonly whyTitle = computed<SplitSegment[]>(() => [
     { text: this.i18n.t('why.title') },
   ]);
-
-  protected readonly heroEmpty = signal(false);
 }
