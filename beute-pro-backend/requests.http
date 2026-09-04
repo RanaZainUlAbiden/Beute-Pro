@@ -1,0 +1,164 @@
+### ================================================
+###  BÉUTE PRO — COMPLETE API TESTING
+###  Make sure the server is running: npm run dev
+### ================================================
+
+@baseUrl = http://localhost:5000
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ3YWxlZWRAYmV1dGVwcm8uY29tIiwiaXNBZG1pbiI6dHJ1ZSwiaWF0IjoxNzg4NTAyMjE2LCJleHAiOjE3ODkxMDcwMTZ9.RbCm0u9OC5MqOs3JvnMZF2P_4f59SjRbot34mqyvCbQ
+
+### ------------------------------------------------
+### 1. HEALTH CHECK (Public)
+### ------------------------------------------------
+GET {{baseUrl}}/api/health
+
+### ------------------------------------------------
+### 2. REGISTER A NEW USER
+### ------------------------------------------------
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "waleed@beutepro.com",
+  "password": "SecurePass123",
+  "full_name": "Waleed Ahmed",
+  "phone": "+92-300-1234567",
+  "address": "Faisalabad, Pakistan"
+}
+
+### ------------------------------------------------
+### 3. LOGIN (Get the JWT Token)
+### ------------------------------------------------
+# Copy the "token" from the response and paste it in @authToken above
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "waleed@beutepro.com",
+  "password": "SecurePass123"
+}
+
+### ------------------------------------------------
+### 4. GET CURRENT USER PROFILE (Protected)
+### ------------------------------------------------
+GET {{baseUrl}}/api/users/me
+Authorization: Bearer {{authToken}}
+
+### ------------------------------------------------
+### 5. UPDATE USER PROFILE (Protected)
+### ------------------------------------------------
+PUT {{baseUrl}}/api/users/me
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "phone": "+92-321-9876543",
+  "address": "Islamabad, Pakistan"
+}
+
+### ================================================
+### PHASE 2 — ORDER MANAGEMENT TESTS
+### ================================================
+
+### 6. Place an order (as guest — no token needed)
+POST {{baseUrl}}/api/orders
+Content-Type: application/json
+
+{
+  "email": "guest@example.com",
+  "phone": "+92-300-1111111",
+  "name": "Guest User",
+  "address": "Lahore, Pakistan",
+  "items": [
+    { "productId": "aloe-vera-mist", "quantity": 2 },
+    { "productId": "almond-oil", "quantity": 1 }
+  ],
+  "paymentMethod": "cod"
+}
+
+### 7. Place an order (authenticated — token required)
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "email": "waleed@beutepro.com",
+  "phone": "+92-300-1234567",
+  "name": "Waleed Ahmed",
+  "address": "Faisalabad, Pakistan",
+  "items": [
+    { "productId": "rose-water-mist", "quantity": 1 },
+    { "productId": "amla-hair-oil", "quantity": 1 }
+  ],
+  "paymentMethod": "cod"
+}
+
+### 8. Get my orders (authenticated)
+GET {{baseUrl}}/api/orders/my
+Authorization: Bearer {{authToken}}
+
+### 9. Track an order (public)
+# Replace BP-0001 with actual order number from response above
+GET {{baseUrl}}/api/orders/track/BP-0003
+
+### ================================================
+### ADMIN TESTS (require admin user)
+### ================================================
+
+# First, set your user as admin in the DB:
+# UPDATE users SET is_admin = true WHERE email = 'waleed@beutepro.com';
+
+### 10. Admin: List all orders
+GET {{baseUrl}}/api/admin/orders
+Authorization: Bearer {{authToken}}
+
+### 11. Admin: Get single order
+# Replace 1 with order ID
+GET {{baseUrl}}/api/admin/orders/1
+Authorization: Bearer {{authToken}}
+
+### 12. Admin: Update order status
+PUT {{baseUrl}}/api/admin/orders/1/status
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "status": "processing",
+  "adminNotes": "Order confirmed, preparing shipment"
+}
+
+### 13. Admin: Add tracking info
+PUT {{baseUrl}}/api/admin/orders/1/tracking
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "trackingNumber": "TCS-123456789",
+  "courierName": "TCS"
+}
+
+### 14. Admin: Revenue summary
+GET {{baseUrl}}/api/admin/revenue
+Authorization: Bearer {{authToken}}
+
+### 15. Admin: Revenue with filters (optional)
+GET {{baseUrl}}/api/admin/orders?status=pending&page=1&limit=10
+Authorization: Bearer {{authToken}}
+
+
+
+
+
+### ================================================
+### PHASE 3 — CURRENCY & DASHBOARD TESTS
+### ================================================
+
+### 16. Get exchange rates (Public)
+GET {{baseUrl}}/api/rates
+
+### 17. Admin: Get dashboard stats
+GET {{baseUrl}}/api/admin/dashboard
+Authorization: Bearer {{authToken}}
+
+### 18. Admin: Manually refresh exchange rates
+POST {{baseUrl}}/api/admin/rates/refresh
+Authorization: Bearer {{authToken}}
