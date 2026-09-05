@@ -19,6 +19,14 @@ export const serverRoutes: ServerRoute[] = [
     getPrerenderParams: async () => CATEGORIES.map((c) => ({ category: c.id })),
   },
   {
+    path: 'orders/:orderNumber',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'admin-panel-bdjhdfvjdsbfmnsdfmnsd-vh09879823749823bm475nkndsf-dfshidf/orders/:id',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender,
   },
