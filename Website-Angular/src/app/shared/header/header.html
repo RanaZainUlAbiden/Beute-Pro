@@ -1,88 +1,106 @@
 <!-- ============ HEADER ============ -->
 <header class="site-head" [class.is-stuck]="stuck()" [class.is-hidden]="hidden()">
   <div class="topbar">
-  <div class="wrap topbar__in">
-    <div class="topbar__set">
-      <span class="topbar__link" aria-disabled="true"><span>{{ i18n.t('topbar.login') }}</span><span class="pill-soon">{{ i18n.t('topbar.soon') }}</span></span>
-      <span class="topbar__link" aria-disabled="true"><span>{{ i18n.t('topbar.track') }}</span><span class="pill-soon">{{ i18n.t('topbar.soon') }}</span></span>
-      <span class="topbar__link" aria-disabled="true"><span>{{ i18n.t('topbar.wishlist') }}</span><span class="pill-soon">{{ i18n.t('topbar.soon') }}</span></span>
+    <div class="wrap topbar__in">
+      <div class="topbar__set">
+        <!-- DYNAMIC AUTH LINKS WITH PROFILE DROPDOWN -->
+        @if (isLoggedIn()) {
+          <app-profile-dropdown></app-profile-dropdown>
+        } @else {
+          <a class="topbar__link" routerLink="/login">
+            <span>{{ i18n.t('topbar.login') }}</span>
+          </a>
+        }
+        <!-- Track Order -->
+        <a class="topbar__link" routerLink="/track">
+          <span>{{ i18n.t('topbar.track') }}</span>
+        </a>
+        <!-- Wishlist – now active -->
+        <a class="topbar__link" routerLink="/wishlist">
+          <span>{{ i18n.t('topbar.wishlist') }}</span>
+        </a>
+      </div>
     </div>
   </div>
-  </div>
 
+  <!-- Nav -->
   <div class="nav">
-  <div class="wrap nav__in">
-    <a class="nav__logo" routerLink="/">
-      @if (logoStep() === 0) {<img src="/assets/img/brand/logo-white.png" alt="Béute Pro" (error)="onLogoError()">}
-      @else if (logoStep() === 1) {<img src="/assets/img/brand/logo.png" alt="Béute Pro" (error)="onLogoError()">}
-      @else {<span class="nav__logo-fallback">B&eacute;ute Pro</span>}
-    </a>
-    <nav class="nav__links" aria-label="Primary">
-      <a routerLink="/" [class.is-active]="section() === 'home'">{{ i18n.t('nav.home') }}</a>
+    <div class="wrap nav__in">
+      <a class="nav__logo" routerLink="/">
+        @if (logoStep() === 0) {<img src="/assets/img/brand/logo-white.png" alt="Béute Pro" (error)="onLogoError()">}
+        @else if (logoStep() === 1) {<img src="/assets/img/brand/logo.png" alt="Béute Pro" (error)="onLogoError()">}
+        @else {<span class="nav__logo-fallback">B&eacute;ute Pro</span>}
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a routerLink="/" [class.is-active]="section() === 'home'">{{ i18n.t('nav.home') }}</a>
 
-      <div class="nav__item has-mega" id="shop-mega-wrap" #megaWrap
-           [class.is-open]="megaOpen()"
-           (mouseenter)="openMega()"
-           (mouseleave)="closeMega()"
-           (focusout)="onMegaFocusOut($event, megaWrap)"
-           (keydown)="onMegaKeydown($event)">
-        <a routerLink="/shop" class="nav__mega-trigger" [class.is-active]="section() === 'shop'" id="shop-mega-trigger" #megaTrigger aria-haspopup="true" [attr.aria-expanded]="megaOpen()" aria-controls="shop-mega" (focus)="openMega()"><span>{{ i18n.t('nav.shop') }}</span><svg class="nav__caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a>
-        <div class="mega" id="shop-mega" #megaPanel role="menu" aria-label="Shop menu">
-          <div class="wrap mega__in">
-            <div class="mega__col">
-              <h4>{{ i18n.t('nav.megamenu.category') }}</h4>
-              <ul class="mega__list" role="none">
-                @for (c of categories; track c.id) {
-                <li role="none"><a role="menuitem" [routerLink]="['/shop', c.id]">{{ i18n.catName(c) }}</a></li>
-                }
-              </ul>
-            </div>
-            <div class="mega__col">
-              <h4>{{ i18n.t('nav.megamenu.concern') }}</h4>
-              <ul class="mega__list" role="none">
-                @for (c of concerns; track c) {
-                <li role="none"><a role="menuitem" routerLink="/shop" [queryParams]="{ concern: c }">{{ concernLabel(c) }}</a></li>
-                }
-              </ul>
-            </div>
-            <div class="mega__col mega__col--feat">
-              <h4>{{ i18n.t('nav.megamenu.featured') }}</h4>
-              <a class="mega__all" role="menuitem" routerLink="/shop">{{ i18n.t('nav.shopall') }}</a>
-              <a class="mega__feat" role="menuitem" [routerLink]="['/product', featured.id]">
-                <span class="mega__feat-frame"><img [src]="imgSrc(featured.id, 1)" [alt]="i18n.copy(featured).name" data-fallback></span>
-                <span class="mega__feat-name">{{ i18n.copy(featured).name }}</span>
-                <span class="mega__feat-price">{{ i18n.money(featured.price) }}</span>
-              </a>
+        <div class="nav__item has-mega" id="shop-mega-wrap" #megaWrap
+             [class.is-open]="megaOpen()"
+             (mouseenter)="openMega()"
+             (mouseleave)="closeMega()"
+             (focusout)="onMegaFocusOut($event, megaWrap)"
+             (keydown)="onMegaKeydown($event)">
+          <a routerLink="/shop" class="nav__mega-trigger" [class.is-active]="section() === 'shop'" id="shop-mega-trigger" #megaTrigger aria-haspopup="true" [attr.aria-expanded]="megaOpen()" aria-controls="shop-mega" (focus)="openMega()"><span>{{ i18n.t('nav.shop') }}</span><svg class="nav__caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a>
+          <div class="mega" id="shop-mega" #megaPanel role="menu" aria-label="Shop menu">
+            <div class="wrap mega__in">
+              <div class="mega__col">
+                <h4>{{ i18n.t('nav.megamenu.category') }}</h4>
+                <ul class="mega__list" role="none">
+                  @for (c of categories; track c.id) {
+                  <li role="none"><a role="menuitem" [routerLink]="['/shop', c.id]">{{ i18n.catName(c) }}</a></li>
+                  }
+                </ul>
+              </div>
+              <div class="mega__col">
+                <h4>{{ i18n.t('nav.megamenu.concern') }}</h4>
+                <ul class="mega__list" role="none">
+                  @for (c of concerns; track c) {
+                  <li role="none"><a role="menuitem" routerLink="/shop" [queryParams]="{ concern: c }">{{ concernLabel(c) }}</a></li>
+                  }
+                </ul>
+              </div>
+              <div class="mega__col mega__col--feat">
+                <h4>{{ i18n.t('nav.megamenu.featured') }}</h4>
+                <a class="mega__all" role="menuitem" routerLink="/shop">{{ i18n.t('nav.shopall') }}</a>
+                <a class="mega__feat" role="menuitem" [routerLink]="['/product', featured.id]">
+                  <span class="mega__feat-frame"><img [src]="imgSrc(featured.id, 1)" [alt]="i18n.copy(featured).name" data-fallback></span>
+                  <span class="mega__feat-name">{{ i18n.copy(featured).name }}</span>
+                  <span class="mega__feat-price">{{ i18n.money(featured.price) }}</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <a routerLink="/shop" [queryParams]="{ group: 'skincare' }">{{ i18n.t('nav.skincare') }}</a>
-      <a routerLink="/shop" [queryParams]="{ group: 'haircare' }">{{ i18n.t('nav.haircare') }}</a>
-      <a routerLink="/about" [class.is-active]="section() === 'about'">{{ i18n.t('nav.story') }}</a>
-      <a routerLink="/contact" [class.is-active]="section() === 'contact'">{{ i18n.t('nav.contact') }}</a>
-    </nav>
-    <div class="nav__tools">
-      <button class="lang-btn" aria-label="Language" (click)="i18n.toggle()">{{ i18n.toggleLabel() }}</button>
-      <button class="icon-btn sound-btn" [class.is-on]="audio.wants()" [attr.aria-label]="i18n.t('a11y.sound')" (click)="audio.toggle()">
-        <span class="eq"><span></span><span></span><span></span><span></span></span>
-      </button>
-      <button class="icon-btn search-btn" [attr.aria-label]="i18n.t('a11y.search')">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      </button>
-      <button class="icon-btn" [attr.aria-label]="i18n.t('a11y.cart')" (click)="cart.open()">
-        <svg viewBox="0 0 24 24"><path d="M6 7h12l-1.2 12H7.2z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
-        <span class="cart-count" [style.display]="cart.count() ? 'grid' : 'none'">{{ cart.count() }}</span>
-      </button>
-      <button class="icon-btn burger" id="burger" aria-label="Menu" (click)="openMenu()">
-        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-      </button>
+        <a routerLink="/shop" [queryParams]="{ group: 'skincare' }">{{ i18n.t('nav.skincare') }}</a>
+        <a routerLink="/shop" [queryParams]="{ group: 'haircare' }">{{ i18n.t('nav.haircare') }}</a>
+        <a routerLink="/about" [class.is-active]="section() === 'about'">{{ i18n.t('nav.story') }}</a>
+        <a routerLink="/contact" [class.is-active]="section() === 'contact'">{{ i18n.t('nav.contact') }}</a>
+      </nav>
+      <div class="nav__tools">
+        <button class="lang-btn" aria-label="Language" (click)="i18n.toggle()">{{ i18n.toggleLabel() }}</button>
+        <button class="icon-btn sound-btn" [class.is-on]="audio.wants()" [attr.aria-label]="i18n.t('a11y.sound')" (click)="audio.toggle()">
+          <span class="eq"><span></span><span></span><span></span><span></span></span>
+        </button>
+        <button class="icon-btn search-btn" [attr.aria-label]="i18n.t('a11y.search')" (click)="openSearch()">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </button>
+        <button class="icon-btn" [attr.aria-label]="i18n.t('a11y.cart')" (click)="cart.open()">
+          <svg viewBox="0 0 24 24"><path d="M6 7h12l-1.2 12H7.2z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+          <span class="cart-count" [style.display]="cart.count() ? 'grid' : 'none'">{{ cart.count() }}</span>
+        </button>
+        <button class="icon-btn burger" id="burger" aria-label="Menu" (click)="openMenu()">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
     </div>
   </div>
-  </div>
+
+  <!-- SEARCH COMPONENT -->
+  <app-search></app-search>
 </header>
 
+<!-- Mobile menu -->
 <div class="mnav" id="mnav" [class.is-open]="menuOpen()">
   <div class="mnav__top">
     <span class="nav__logo-fallback">Béute Pro</span>
@@ -90,7 +108,9 @@
       <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
-  <button class="mnav__search" (click)="cart.close()">
+
+  <!-- Mobile search trigger -->
+  <button class="mnav__search" (click)="openSearch(); closeMenu()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
     <span>{{ i18n.t('a11y.search') }}</span>
   </button>
@@ -130,5 +150,14 @@
     <a routerLink="/shop" [queryParams]="{ group: 'haircare' }" (click)="closeMenu()">{{ i18n.t('nav.haircare') }}</a>
     <a routerLink="/about" (click)="closeMenu()">{{ i18n.t('nav.story') }}</a>
     <a routerLink="/contact" (click)="closeMenu()">{{ i18n.t('nav.contact') }}</a>
+
+    <!-- Mobile auth + wishlist links -->
+    @if (isLoggedIn()) {
+      <a routerLink="/orders" (click)="closeMenu()">My Orders</a>
+      <a routerLink="/wishlist" (click)="closeMenu()">Wishlist</a>
+      <a (click)="logout(); closeMenu()" style="cursor:pointer;">Logout</a>
+    } @else {
+      <a routerLink="/login" (click)="closeMenu()">{{ i18n.t('topbar.login') }}</a>
+    }
   </nav>
 </div>

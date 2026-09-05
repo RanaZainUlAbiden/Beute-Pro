@@ -1,0 +1,87 @@
+<div class="order-detail-page">
+  <div class="wrap">
+    <!-- Back Button -->
+    <button class="back-btn" (click)="goBack()">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+      Back to Orders
+    </button>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading order details...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage" class="error-state">
+      <p>{{ errorMessage }}</p>
+      <button class="btn btn--gold" (click)="goBack()">Go Back</button>
+    </div>
+
+    <!-- Order Details -->
+    <div *ngIf="!isLoading && !errorMessage && order" class="order-detail">
+      <!-- Header -->
+      <div class="order-header">
+        <div>
+          <h1 class="h-lg">Order #{{ order.order_number }}</h1>
+          <p class="order-date">Placed on {{ formatDate(order.created_at) }}</p>
+        </div>
+        <span class="order-status-large" [class]="getStatusClass(order.status)">
+          {{ getStatusLabel(order.status) }}
+        </span>
+      </div>
+
+      <!-- Tracking Info -->
+      <div *ngIf="order.tracking_number" class="tracking-section">
+        <h3>Tracking Information</h3>
+        <div class="tracking-info">
+          <span><strong>Courier:</strong> {{ order.courier_name || 'N/A' }}</span>
+          <span><strong>Tracking #:</strong> {{ order.tracking_number }}</span>
+        </div>
+      </div>
+
+      <!-- Order Items -->
+      <div class="items-section">
+        <h3>Order Items</h3>
+        <div class="items-list">
+          <div *ngFor="let item of order.items" class="item-row">
+            <div class="item-info">
+              <span class="item-name">{{ item.product_id | titlecase }}</span>
+              <span class="item-qty">× {{ item.quantity }}</span>
+            </div>
+            <span class="item-price">{{ formatPrice(item.unit_price_pkr) }}</span>
+          </div>
+        </div>
+        <div class="items-total">
+          <span>Total</span>
+          <span class="total-amount">{{ formatPrice(order.total_amount_pkr) }}</span>
+        </div>
+      </div>
+
+      <!-- Customer Info -->
+      <div class="customer-section">
+        <h3>Customer Details</h3>
+        <div class="customer-info">
+          <p><strong>Name:</strong> {{ order.customer_name }}</p>
+          <p><strong>Email:</strong> {{ order.customer_email }}</p>
+          <p><strong>Phone:</strong> {{ order.customer_phone }}</p>
+          <p><strong>Shipping Address:</strong> {{ order.shipping_address }}</p>
+        </div>
+      </div>
+
+      <!-- Payment Info -->
+      <div class="payment-section">
+        <h3>Payment Details</h3>
+        <div class="payment-info">
+          <span><strong>Method:</strong> {{ order.payment_method | uppercase }}</span>
+          <span><strong>Status:</strong> {{ order.payment_status | uppercase }}</span>
+        </div>
+      </div>
+
+      <!-- Reorder Button -->
+      <button class="btn btn--gold" (click)="reorder(order.items)" style="margin-top: 1.5rem;">
+        Reorder All Items
+      </button>
+    </div>
+  </div>
+</div>

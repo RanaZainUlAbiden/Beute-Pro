@@ -2,6 +2,12 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const pool = require('./db');
 
+// === DEBUG: Check if env variables are loaded ===
+console.log('🔍 [passport.js] GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? '✅ Loaded' : '❌ Missing');
+console.log('🔍 [passport.js] GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? '✅ Loaded' : '❌ Missing');
+console.log('🔍 [passport.js] BACKEND_URL:', process.env.BACKEND_URL || '❌ Missing');
+// ============================================
+
 // Serialize/deserialize user (required for session support)
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
@@ -19,7 +25,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `${process.env.FRONTEND_URL}/api/auth/google/callback`,
+      callbackURL: `${process.env.BACKEND_URL}/api/auth/google/callback`,
       // Or if backend handles callback: 'http://localhost:5000/api/auth/google/callback'
       // I'll make the callback hit the backend directly, then redirect to frontend with token.
       // We'll set this to backend URL, but we'll handle redirect manually.

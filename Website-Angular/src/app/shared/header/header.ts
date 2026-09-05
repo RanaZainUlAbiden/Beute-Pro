@@ -11,6 +11,12 @@ import { CartService } from '../../core/services/cart.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { LayoutService } from '../../core/services/layout.service';
 import { ScrollService } from '../../core/services/scroll.service';
+import { AuthService } from '../../services/auth';
+import { ProfileDropdownComponent } from '../../features/auth/profile-dropdown/profile-dropdown';
+
+// ✅ New imports for Search
+import { SearchService } from '../../core/services/search.service';
+import { SearchComponent } from '../../shared/search/search';
 
 /** Featured product in the Shop mega menu, sourced live from products.ts. */
 const MEGA_FEATURED_ID = 'herbal-hair-oil';
@@ -29,7 +35,12 @@ export const CONCERNS = [
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ImgFallbackDirective],
+  imports: [
+    RouterLink,
+    ImgFallbackDirective,
+    ProfileDropdownComponent,
+    SearchComponent, // ✅ Added
+  ],
   host: { '(document:keydown.escape)': 'closeMenu()' },
 })
 export class Header {
@@ -39,6 +50,8 @@ export class Header {
   private readonly layout = inject(LayoutService);
   private readonly scroll = inject(ScrollService);
   private readonly router = inject(Router);
+  protected readonly auth = inject(AuthService);
+  private readonly searchService = inject(SearchService); // ✅ Added
 
   protected readonly categories = CATEGORIES;
   protected readonly concerns = CONCERNS;
@@ -97,7 +110,6 @@ export class Header {
       } else {
         this.stuck.set(y > 60);
       }
-      // ★ FIX: keep header visible when mega menu is open ★
       this.hidden.set(y > 320 && y > this.lastY && !this.menuOpen() && !this.megaOpen());
       this.lastY = y;
     });
@@ -110,14 +122,27 @@ export class Header {
     });
   }
 
+  // ---- Auth helpers for the template ----
+  protected get user() {
+    return this.auth.user$;
+  }
+  protected isLoggedIn = this.auth.isLoggedIn.bind(this.auth);
+  protected logout = this.auth.logout.bind(this.auth);
+  protected goToLogin = () => this.router.navigate(['/login']);
+  protected goToProfile = () => this.router.navigate(['/profile']);
+
+  // ---- Search helper ----
+  protected openSearch(): void {
+    this.searchService.open();
+  }
+
+  /* ---- mega menu methods ---- */
   protected openMega(): void {
-    // Cancel any pending close timer
     clearTimeout(this.closeTimer);
     this.megaOpen.set(true);
   }
 
   protected closeMega(returnFocus = false, delay = 300): void {
-    // Delay the close to allow moving the mouse from the trigger into the panel
     clearTimeout(this.closeTimer);
     this.closeTimer = setTimeout(() => {
       this.megaOpen.set(false);

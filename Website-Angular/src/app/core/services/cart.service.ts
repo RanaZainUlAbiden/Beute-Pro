@@ -18,11 +18,6 @@ export interface CartRow extends CartLine {
 
 /* =============================================================
    CART
-
-   Demo only — the basket lives in memory for the session. There
-   is no backend and nothing is persisted, so a reload empties it.
-   Same behaviour as the static site's Cart object, moved onto
-   signals.
    ============================================================= */
 @Injectable({ providedIn: 'root' })
 export class CartService {
@@ -76,6 +71,12 @@ export class CartService {
 
   remove(id: string): void {
     this.items.update((items) => items.filter((i) => i.id !== id));
+  }
+
+  /** ✅ NEW: Clear all items from cart and close the drawer */
+  clear(): void {
+    this.items.set([]);
+    this.close();
   }
 
   open(): void {

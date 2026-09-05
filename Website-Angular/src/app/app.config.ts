@@ -5,8 +5,10 @@ import {
 } from '@angular/core';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { routes } from './app.routes';
+import { AuthInterceptor } from './interceptors/auth-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,5 +25,9 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideClientHydration(withEventReplay()),
+
+    // HTTP client with class-based interceptors
+    provideHttpClient(withInterceptorsFromDi()),
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
 };

@@ -16,7 +16,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-
+import { WishlistService } from '../../services/wishlist';
 import { AccordionPanelDirective } from '../../core/directives/accordion-panel.directive';
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
 import { StaggerDirective } from '../../core/directives/stagger.directive';
@@ -50,6 +50,8 @@ const photoCache = new Map<string, Promise<number[]>>();
   ],
 })
 export class ProductPage implements OnDestroy {
+  private wishlist = inject(WishlistService);
+protected inWishlist = signal(false);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly zone = inject(NgZone);
   private readonly route = inject(ActivatedRoute);
@@ -116,7 +118,10 @@ export class ProductPage implements OnDestroy {
   constructor() {
     // the tab title is the brand name on every page, set from the route —
     // the product name is not appended to it
-
+ effect(() => {
+    const id = this.product().id;
+    this.inWishlist.set(this.wishlist.isInWishlist(id));
+  });
     // a new product resets the viewer and re-probes its photos
     effect(() => {
       const id = this.product().id;
@@ -148,6 +153,21 @@ export class ProductPage implements OnDestroy {
       });
     });
   }
+
+  protected toggleWishlist(): void {
+  const id = this.product().id;
+  if (this.inWishlist()) {
+    this.wishlist.remove(id).subscribe({
+      next: () => this.inWishlist.set(false),
+      error: (err) => console.error('Failed to remove from wishlist', err),
+    });
+  } else {
+    this.wishlist.add(id).subscribe({
+      next: () => this.inWishlist.set(true),
+      error: (err) => console.error('Failed to add to wishlist', err),
+    });
+  }
+}
 
   private readonly onWindowMove = (e: MouseEvent) => this.spinMove(e);
   private readonly onWindowUp = () => this.spinEnd();

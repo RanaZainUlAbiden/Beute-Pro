@@ -1,0 +1,30 @@
+<div class="wishlist-page">
+  <div class="wrap">
+    <div class="page-header">
+      <h1 class="h-lg">My Wishlist</h1>
+      <p class="lede">Products you've saved for later</p>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading your wishlist...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && products.length === 0" class="empty-state">
+      <svg viewBox="0 0 24 24" width="48" height="48"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      <h2>Your wishlist is empty</h2>
+      <p>Start adding your favorite products by tapping the heart icon on any product.</p>
+      <a routerLink="/shop" class="btn btn--gold">Start Shopping</a>
+    </div>
+
+    <!-- Products Grid -->
+    <div *ngIf="!isLoading && products.length > 0" class="grid-products">
+      <app-product-card
+        *ngFor="let product of products"
+        [product]="product"
+      ></app-product-card>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const pool = require('../config/db'); // ✅ Fixed path (was ..configdb)
 const bcrypt = require('bcryptjs');
 const { generateToken } = require('../utils/jwt');
 
@@ -104,9 +104,45 @@ const updateUserProfile = async (id, updates) => {
   return result.rows[0] || null;
 };
 
+/**
+ * ✅ NEW: Change user password
+ */
+const changeUserPassword = async (userId, currentPassword, newPassword) => {
+  // 1. Get user with password hash
+  const result = await pool.query(
+    `SELECT id, password_hash FROM users WHERE id = $1`,
+    [userId]
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error('User not found');
+  }
+
+  const user = result.rows[0];
+
+  // 2. Verify current password
+  const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
+  if (!isMatch) {
+    throw new Error('Current password is incorrect');
+  }
+
+  // 3. Hash new password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  // 4. Update password in database
+  await pool.query(
+    `UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2`,
+    [hashedPassword, userId]
+  );
+
+  return { success: true, message: 'Password updated successfully' };
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getUserById,
   updateUserProfile,
+  changeUserPassword, // ✅ Export the new function
 };

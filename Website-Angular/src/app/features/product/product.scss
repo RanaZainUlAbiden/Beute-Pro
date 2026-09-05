@@ -351,3 +351,44 @@
 @media(max-width:430px){
   :root{--media-pad:7%}
 }
+
+.btn--wishlist {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1rem;
+  border-radius: var(--r);
+  border: 1.5px solid var(--ivory-3);
+  background: var(--white);
+  font-weight: 600;
+  font-size: 0.8rem;
+  transition: all 0.3s var(--ease);
+  color: var(--green-soft);
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    transition: fill 0.3s, stroke 0.3s;
+  }
+
+  &:hover {
+    border-color: var(--green-3);
+    background: var(--ivory-2);
+  }
+
+  &.is-active {
+    color: #e74c3c;
+    border-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.08);
+    svg {
+      fill: #e74c3c;
+      stroke: #e74c3c;
+    }
+    &:hover {
+      background: rgba(231, 76, 60, 0.15);
+    }
+  }
+}

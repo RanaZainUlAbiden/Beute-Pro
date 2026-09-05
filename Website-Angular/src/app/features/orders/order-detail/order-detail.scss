@@ -1,0 +1,251 @@
+@import '../../../../styles.scss';
+
+.order-detail-page {
+  padding-top: calc(var(--head-h) + 2rem);
+  padding-bottom: 4rem;
+  min-height: 70vh;
+  background: var(--ivory);
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--green-soft);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  margin-bottom: 1.5rem;
+  transition: color 0.3s;
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+  &:hover {
+    color: var(--green);
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 0;
+  gap: 1rem;
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--ivory-3);
+    border-top: 3px solid var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  p {
+    color: var(--green-soft);
+    font-weight: 500;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-state {
+  text-align: center;
+  padding: 3rem 0;
+  p {
+    color: #a8443c;
+    margin-bottom: 1rem;
+  }
+}
+
+.order-detail {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--ivory-3);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--ivory-3);
+
+  h1 {
+    color: var(--green);
+    margin-bottom: 0.2rem;
+  }
+  .order-date {
+    color: var(--green-soft);
+    font-size: 0.9rem;
+  }
+}
+
+.order-status-large {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.4rem 1rem;
+  border-radius: var(--r);
+}
+
+.status-badge {
+  &--pending {
+    background: #fef3c7;
+    color: #b45309;
+  }
+  &--processing {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  &--shipped {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  &--delivered {
+    background: var(--green-2);
+    color: var(--ivory);
+  }
+  &--cancelled {
+    background: #fde8e6;
+    color: #a8443c;
+  }
+}
+
+.tracking-section,
+.items-section,
+.customer-section,
+.payment-section {
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 0.8rem;
+  }
+}
+
+.tracking-info {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: var(--green-soft);
+  strong {
+    color: var(--ink);
+  }
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  .item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--ivory-2);
+    .item-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      .item-name {
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .item-qty {
+        color: var(--green-soft);
+        font-size: 0.85rem;
+      }
+    }
+    .item-price {
+      font-weight: 700;
+      color: var(--gold);
+    }
+  }
+}
+
+.items-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.8rem;
+  margin-top: 0.5rem;
+  border-top: 2px solid var(--gold);
+  font-size: 1.1rem;
+  font-weight: 700;
+  .total-amount {
+    color: var(--gold);
+    font-size: 1.3rem;
+  }
+}
+
+.customer-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem 2rem;
+  p {
+    margin: 0.2rem 0;
+    font-size: 0.9rem;
+    color: var(--green-soft);
+    strong {
+      color: var(--ink);
+    }
+  }
+}
+
+.payment-info {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: var(--green-soft);
+  strong {
+    color: var(--ink);
+  }
+}
+
+// Responsive
+@media (max-width: 680px) {
+  .order-detail-page {
+    padding-top: calc(var(--head-h) + 1rem);
+    padding-bottom: 2rem;
+  }
+
+  .order-detail {
+    padding: 1.2rem;
+  }
+
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .customer-info {
+    grid-template-columns: 1fr;
+  }
+
+  .tracking-info {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .payment-info {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+}

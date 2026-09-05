@@ -19,8 +19,18 @@ const updateProfileSchema = Joi.object({
   address: Joi.string().optional(),
 });
 
+// ✅ NEW: Password change validation schema
+const changePasswordSchema = Joi.object({
+  currentPassword: Joi.string().required(),
+  newPassword: Joi.string().min(6).required(),
+  confirmPassword: Joi.string().valid(Joi.ref('newPassword')).required().messages({
+    'any.only': 'Passwords do not match',
+  }),
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
   updateProfileSchema,
+  changePasswordSchema, // ✅ Export the new schema
 };

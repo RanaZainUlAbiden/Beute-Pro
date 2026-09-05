@@ -1,0 +1,213 @@
+@import '../../../styles.scss';
+
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(10, 28, 19, 0.75);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s var(--ease), visibility 0.35s var(--ease);
+  display: grid;
+  place-items: center;
+
+  &.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.search-container {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  width: min(620px, 92vw);
+  max-height: 80vh;
+  padding: 1.8rem 1.8rem 1.8rem;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(12px);
+  transition: transform 0.4s var(--ease-out);
+
+  .search-overlay.is-open & {
+    transform: translateY(0);
+  }
+}
+
+.search-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+
+  .search-input-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--ivory-2);
+    border-radius: var(--r);
+    padding: 0 0.8rem;
+    border: 2px solid transparent;
+    transition: border-color 0.3s, background 0.3s;
+
+    &:focus-within {
+      border-color: var(--gold);
+      background: var(--white);
+    }
+
+    .search-icon {
+      flex-shrink: 0;
+      color: var(--green-soft);
+      margin-right: 0.4rem;
+    }
+
+    input {
+      flex: 1;
+      border: 0;
+      background: transparent;
+      padding: 0.7rem 0.4rem;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--ink);
+      outline: none;
+      font-family: inherit;
+
+      &::placeholder {
+        color: var(--green-soft);
+        opacity: 0.7;
+      }
+    }
+
+    .clear-btn {
+      background: none;
+      border: 0;
+      color: var(--green-soft);
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0 0.2rem;
+      transition: color 0.2s;
+      &:hover {
+        color: var(--ink);
+      }
+    }
+  }
+
+  .close-btn {
+    background: none;
+    border: 0;
+    font-size: 1.6rem;
+    color: var(--green-soft);
+    cursor: pointer;
+    padding: 0 0.2rem;
+    transition: color 0.2s, transform 0.2s;
+    &:hover {
+      color: var(--ink);
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.search-results {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 52vh;
+  margin-top: 0.2rem;
+
+  .hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+    color: var(--green-soft);
+    svg {
+      stroke: var(--gold);
+      opacity: 0.4;
+      margin-bottom: 0.8rem;
+    }
+    p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--green-soft);
+    p {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+  }
+
+  .result-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .result-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.7rem 1rem;
+    border-radius: var(--r);
+    background: var(--white);
+    border: 1px solid var(--ivory-3);
+    transition: background 0.25s, border-color 0.25s, transform 0.2s;
+    text-decoration: none;
+
+    &:hover {
+      background: var(--ivory-2);
+      border-color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    .result-name {
+      flex: 1;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .result-category {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--gold);
+      background: var(--ivory-2);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+    }
+
+    .result-price {
+      font-weight: 700;
+      color: var(--green);
+    }
+  }
+}
+
+@media (max-width: 680px) {
+  .search-container {
+    padding: 1.2rem;
+    max-height: 90vh;
+  }
+  .search-header {
+    flex-wrap: wrap;
+    .close-btn {
+      font-size: 1.4rem;
+    }
+  }
+  .result-item {
+    flex-wrap: wrap;
+    .result-category {
+      order: 3;
+      width: 100%;
+      text-align: left;
+    }
+  }
+}

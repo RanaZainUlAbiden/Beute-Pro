@@ -1,0 +1,51 @@
+<div class="search-overlay" [class.is-open]="searchService.isOpen()" (click)="close()">
+  <div class="search-container" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="search-header">
+      <div class="search-input-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8" fill="none"/>
+          <path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" fill="none"/>
+        </svg>
+        <input
+          #searchInput
+          type="text"
+          placeholder="Search products..."
+          [(ngModel)]="query"
+          autofocus
+          (keydown.escape)="close()"
+        />
+        <button *ngIf="query().length > 0" class="clear-btn" (click)="clear()">✕</button>
+      </div>
+      <button class="close-btn" (click)="close()">✕</button>
+    </div>
+
+    <!-- Results -->
+    <div class="search-results">
+      @if (query().length === 0) {
+        <div class="hint">
+          <svg viewBox="0 0 24 24" width="32" height="32"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+          <p>Start typing to find products…</p>
+        </div>
+      } @else if (filteredProducts().length === 0) {
+        <div class="no-results">
+          <p>No products found for “{{ query() }}”</p>
+        </div>
+      } @else {
+        <div class="result-list">
+          @for (p of filteredProducts(); track p.id) {
+            <a
+              [routerLink]="['/product', p.id]"
+              (click)="close()"
+              class="result-item"
+            >
+              <span class="result-name">{{ i18n.copy(p).name }}</span>
+              <span class="result-category">{{ getCategoryName(p.category) }}</span>
+              <span class="result-price">{{ i18n.money(p.price) }}</span>
+            </a>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

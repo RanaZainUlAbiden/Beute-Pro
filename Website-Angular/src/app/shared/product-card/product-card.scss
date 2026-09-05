@@ -1,1 +1,40 @@
-/* All styling for this component is global — see src/styles.scss. */
+.wishlist-btn {
+  position: absolute;
+  top: 0.8rem;
+  inset-inline-end: 0.8rem;
+  z-index: 4;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--ivory-3);
+  display: grid;
+  place-items: center;
+  transition: transform 0.3s var(--ease), background 0.3s, border-color 0.3s;
+  cursor: pointer;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: var(--green-soft);
+    stroke-width: 1.8;
+    transition: fill 0.3s, stroke 0.3s;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    background: var(--ivory-2);
+  }
+
+  &.is-active {
+    svg {
+      fill: #e74c3c;
+      stroke: #e74c3c;
+    }
+    &:hover {
+      background: rgba(231, 76, 60, 0.1);
+    }
+  }
+}

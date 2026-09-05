@@ -1,4 +1,4 @@
-const { registerSchema, loginSchema, updateProfileSchema } = require('../utils/validators');
+const { registerSchema, loginSchema, updateProfileSchema, changePasswordSchema } = require('../utils/validators'); // ✅ Added changePasswordSchema
 const authService = require('../services/authService');
 
 /**
@@ -91,6 +91,30 @@ const updateMe = async (req, res) => {
 };
 
 /**
+ * ✅ NEW: Change user password
+ * PUT /api/users/me/password
+ */
+const changePassword = async (req, res) => {
+  try {
+    // Validate input
+    const { error, value } = changePasswordSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const { currentPassword, newPassword } = value;
+    const userId = req.user.id;
+
+    const result = await authService.changeUserPassword(userId, currentPassword, newPassword);
+
+    res.json(result);
+  } catch (err) {
+    console.error('Change password error:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+};
+
+/**
  * Google OAuth callback
  * This is called by Passport after Google redirects
  */
@@ -117,5 +141,6 @@ module.exports = {
   login,
   getMe,
   updateMe,
+  changePassword, // ✅ Export the new controller function
   googleCallback,
 };

@@ -1,0 +1,225 @@
+@import '../../../../styles.scss';
+
+.dropdown-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.3rem;
+  border-radius: var(--r);
+  background: transparent;
+  border: 1.5px solid transparent;
+  transition: border-color 0.3s, background-color 0.3s;
+  cursor: pointer;
+  color: var(--ivory);
+
+  &:hover {
+    border-color: rgba(247, 244, 236, 0.3);
+    background: rgba(247, 244, 236, 0.08);
+  }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--green);
+    display: grid;
+    place-items: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .user-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .chevron {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.35s var(--ease);
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    flex-shrink: 0;
+
+    &.is-open {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.dropdown-panel {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  inset-inline-end: 0;
+  min-width: 280px;
+  max-width: 340px;
+  background: var(--white);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--ivory-3);
+  opacity: 0;
+  left:10px;
+  visibility: hidden;
+  transform: translateY(8px) scale(0.96);
+  transform-origin: top right;
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), visibility 0.3s;
+  z-index: 100;
+  overflow: hidden;
+
+  &.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 1.2rem 0.8rem;
+
+  .avatar-large {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--green);
+    display: grid;
+    place-items: center;
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .user-info {
+    flex: 1;
+    min-width: 0;
+
+    .user-name-full {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+
+    .user-email {
+      font-size: 0.78rem;
+      color: var(--green-soft);
+      word-break: break-all;
+    }
+
+    .user-phone {
+      font-size: 0.75rem;
+      color: var(--green-soft);
+      margin-top: 0.1rem;
+    }
+  }
+}
+
+.divider {
+  height: 1px;
+  background: var(--ivory-3);
+  margin: 0.3rem 1.2rem;
+}
+
+.dropdown-menu {
+  padding: 0.4rem 0.6rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: var(--r);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink);
+    transition: background-color 0.25s, color 0.25s;
+    width: 100%;
+    text-align: left;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      stroke: var(--green-soft);
+      stroke-width: 1.8;
+      fill: none;
+      transition: stroke 0.25s;
+    }
+
+    &:hover {
+      background: var(--ivory-2);
+      color: var(--green);
+      svg {
+        stroke: var(--gold);
+      }
+    }
+
+    &--danger {
+      color: #a8443c;
+      svg {
+        stroke: #a8443c;
+      }
+      &:hover {
+        background: #fde8e6;
+        color: #8a2e2a;
+        svg {
+          stroke: #8a2e2a;
+        }
+      }
+    }
+  }
+}
+
+// RTL support
+html[dir="rtl"] {
+  .dropdown-panel {
+    transform-origin: top left;
+  }
+}
+
+// Responsive
+@media (max-width: 680px) {
+  .profile-trigger {
+    padding: 0.2rem;
+    .user-name {
+      display: none;
+    }
+    .chevron {
+      display: none;
+    }
+    .avatar {
+      width: 34px;
+      height: 34px;
+      font-size: 0.8rem;
+    }
+  }
+
+  .dropdown-panel {
+    min-width: 240px;
+    inset-inline-end: -1rem;
+  }
+}

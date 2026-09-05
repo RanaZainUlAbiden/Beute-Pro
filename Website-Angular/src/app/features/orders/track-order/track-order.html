@@ -1,0 +1,95 @@
+<div class="track-page">
+  <div class="wrap">
+    <div class="page-header">
+      <h1 class="h-lg">Track Your Order</h1>
+      <p class="lede">Enter your order number (e.g., BP-0001) to check the status</p>
+    </div>
+
+    <!-- Search Form -->
+    <div class="search-section">
+      <form [formGroup]="trackForm" (ngSubmit)="onSubmit()">
+        <div class="search-row">
+          <div class="input-wrapper">
+            <input
+              id="orderNumber"
+              type="text"
+              formControlName="orderNumber"
+              placeholder="BP-0001"
+              autocomplete="off"
+            />
+            <div class="error" *ngIf="f['orderNumber'].invalid && f['orderNumber'].touched">
+              Please enter a valid order number (e.g., BP-0001)
+            </div>
+          </div>
+          <button type="submit" class="btn btn--gold" [disabled]="isLoading">
+            {{ isLoading ? 'Searching…' : 'Track Order' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Fetching order details…</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="!isLoading && errorMessage" class="error-state">
+      <svg viewBox="0 0 24 24" width="48" height="48"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="12" y1="12" x2="12" y2="8" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="1.5"/></svg>
+      <p>{{ errorMessage }}</p>
+      <button class="btn btn--outline" (click)="trackForm.reset(); errorMessage='';">Try Again</button>
+    </div>
+
+    <!-- Order Result -->
+    <div *ngIf="!isLoading && order && !errorMessage" class="result-section">
+      <div class="order-card">
+        <div class="order-header">
+          <div>
+            <h2>Order #{{ order.order_number }}</h2>
+            <p class="order-date">Placed on {{ formatDate(order.created_at) }}</p>
+          </div>
+          <span class="order-status-large" [class]="getStatusClass(order.status)">
+            {{ getStatusLabel(order.status) }}
+          </span>
+        </div>
+
+        <!-- Tracking Info -->
+        <div *ngIf="order.tracking_number" class="tracking-info">
+          <h3>Tracking Information</h3>
+          <div>
+            <span><strong>Courier:</strong> {{ order.courier_name || 'N/A' }}</span>
+            <span><strong>Tracking #:</strong> {{ order.tracking_number }}</span>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="items-section">
+          <h3>Items ({{ getTotalItems() }})</h3>
+          <div class="items-list">
+            <div *ngFor="let item of order.items" class="item-row">
+              <span class="item-name">{{ item.product_id | titlecase }}</span>
+              <span class="item-qty">× {{ item.quantity }}</span>
+              <span class="item-price">{{ formatPrice(item.unit_price_pkr) }}</span>
+            </div>
+          </div>
+          <div class="items-total">
+            <span>Total</span>
+            <span class="total-amount">{{ formatPrice(order.total_amount_pkr) }}</span>
+          </div>
+        </div>
+
+        <!-- Customer Info -->
+        <div class="customer-section">
+          <h3>Customer Details</h3>
+          <div class="customer-info">
+            <p><strong>Name:</strong> {{ order.customer_name }}</p>
+            <p><strong>Email:</strong> {{ order.customer_email }}</p>
+            <p><strong>Phone:</strong> {{ order.customer_phone }}</p>
+            <p><strong>Shipping Address:</strong> {{ order.shipping_address }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

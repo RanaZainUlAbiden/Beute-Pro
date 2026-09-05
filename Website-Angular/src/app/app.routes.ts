@@ -1,16 +1,17 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
+import { environment } from '../environments/environment';
 
 /** Extra per-route data the shell reads: body classes and <meta>. */
 export interface PageData {
-  /** Page starts below the fixed header rather than under it. */
   noHero: boolean;
-  /** Show the scroll-progress hairline. */
   progress: boolean;
-  /** <meta name="description">; omitted where the static page had none. */
   description?: string;
 }
 
 export const routes: Routes = [
+  // ---- PUBLIC ROUTES ----
   {
     path: '',
     pathMatch: 'full',
@@ -56,7 +57,6 @@ export const routes: Routes = [
     path: 'contact',
     title: 'Béute Pro',
     data: {
-      // full-viewport hero: the header overlays it, as on home and shop
       noHero: false,
       progress: true,
       description:
@@ -85,5 +85,75 @@ export const routes: Routes = [
     } satisfies PageData,
     loadComponent: () => import('./features/policies/policies').then((m) => m.Policies),
   },
+
+  // ---- AUTHENTICATION ROUTES ----
+  {
+    path: 'login',
+    title: 'Sign In · Béute Pro',
+    data: { noHero: true, progress: false } satisfies PageData,
+    loadComponent: () => import('./features/auth/login/login').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'auth/success',
+    title: 'Authenticating · Béute Pro',
+    data: { noHero: true, progress: false } satisfies PageData,
+    loadComponent: () => import('./features/auth/auth-success/auth-success').then((m) => m.AuthSuccessComponent),
+  },
+
+  // ---- CHECKOUT (public – guests allowed) ----
+  {
+    path: 'checkout',
+    title: 'Checkout · Béute Pro',
+    data: { noHero: true, progress: true } satisfies PageData,
+    loadComponent: () => import('./features/checkout/checkout').then((m) => m.CheckoutComponent),
+  },
+
+  // ---- TRACK ORDER (public) ----
+  {
+    path: 'track',
+    title: 'Track Order · Béute Pro',
+    data: { noHero: true, progress: true } satisfies PageData,
+    loadComponent: () => import('./features/orders/track-order/track-order').then((m) => m.TrackOrderComponent),
+  },
+
+  // ---- PROTECTED ROUTES ----
+  {
+    path: 'profile',
+    title: 'My Profile · Béute Pro',
+    data: { noHero: true, progress: true } satisfies PageData,
+    loadComponent: () => import('./features/auth/profile/profile').then((m) => m.ProfileComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'orders',
+    title: 'My Orders · Béute Pro',
+    data: { noHero: true, progress: true } satisfies PageData,
+    loadComponent: () => import('./features/orders/orders-page/orders-page').then((m) => m.OrdersPageComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'orders/:orderNumber',
+    title: 'Order Details · Béute Pro',
+    data: { noHero: true, progress: true } satisfies PageData,
+    loadComponent: () => import('./features/orders/order-detail/order-detail').then((m) => m.OrderDetailComponent),
+    canActivate: [authGuard],
+  },
+  // ✅ Wishlist route
+  {
+    path: 'wishlist',
+    title: 'Wishlist · Béute Pro',
+    data: { noHero: true, progress: true } satisfies PageData,
+    loadComponent: () => import('./features/wishlist/wishlist-page/wishlist-page').then((m) => m.WishlistPageComponent),
+    canActivate: [authGuard],
+  },
+
+  // ---- ADMIN ROUTE (complex path - obfuscated) ----
+  {
+    path: environment.adminPath,
+    loadChildren: () => import('./admin/admin.routes').then((m) => m.adminRoutes),
+    canActivate: [adminGuard],
+  },
+
+  // ---- FALLBACK ----
   { path: '**', redirectTo: '' },
 ];

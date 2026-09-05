@@ -1,0 +1,100 @@
+<div class="checkout-page">
+  <div class="wrap">
+    <div class="page-header">
+      <h1 class="h-lg">Checkout</h1>
+      <p class="lede">Review your order and complete your purchase</p>
+    </div>
+
+    <div class="checkout-grid">
+      <!-- Left: Order Summary -->
+      <div class="order-summary">
+        <h2>Order Summary</h2>
+
+        <div class="cart-items">
+          @if (cartItems.length === 0) {
+            <div class="empty-cart">
+              <p>Your cart is empty.</p>
+              <a routerLink="/shop" class="btn btn--gold">Continue Shopping</a>
+            </div>
+          } @else {
+            @for (row of cartItems; track row.id) {
+              <div class="cart-item">
+                <div class="item-details">
+                  <span class="item-name">{{ row.product.en.name }}</span>
+                  <span class="item-qty">× {{ row.qty }}</span>
+                </div>
+                <span class="item-total">{{ getItemTotal(row) }}</span>
+              </div>
+            }
+          }
+        </div>
+
+        <div class="order-total">
+          <span>Total</span>
+          <span class="total-amount">{{ getTotal() }}</span>
+        </div>
+
+        @if (cartItems.length > 0) {
+          <div class="cart-actions">
+            <button class="btn btn--outline" routerLink="/shop">Continue Shopping</button>
+          </div>
+        }
+      </div>
+
+      <!-- Right: Checkout Form -->
+      <div class="checkout-form-wrapper">
+        <h2>Customer Details</h2>
+
+        <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input id="name" type="text" formControlName="name" placeholder="John Doe" />
+            <div class="error" *ngIf="f['name'].invalid && f['name'].touched">
+              Name is required (min 2 characters)
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input id="email" type="email" formControlName="email" placeholder="you@example.com" />
+            <div class="error" *ngIf="f['email'].invalid && f['email'].touched">
+              Valid email is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number *</label>
+            <input id="phone" type="tel" formControlName="phone" placeholder="+92-300-1234567" />
+            <div class="error" *ngIf="f['phone'].invalid && f['phone'].touched">
+              Valid phone number is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="address">Shipping Address *</label>
+            <input id="address" type="text" formControlName="address" placeholder="City, Country, Full address" />
+            <div class="error" *ngIf="f['address'].invalid && f['address'].touched">
+              Shipping address is required (min 5 characters)
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Payment Method *</label>
+            <div class="payment-options">
+              <label *ngFor="let method of paymentMethods" class="payment-option">
+                <input type="radio" formControlName="paymentMethod" [value]="method" />
+                <span>{{ method | titlecase }}</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn--gold btn--full" [disabled]="isSubmitting || cartItems.length === 0">
+              {{ isSubmitting ? 'Placing Order...' : 'Place Order' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

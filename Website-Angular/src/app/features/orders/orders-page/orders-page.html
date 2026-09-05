@@ -1,0 +1,55 @@
+<div class="orders-page">
+  <div class="wrap">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="h-lg">My Orders</h1>
+      <p class="lede">View and track all your past orders</p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading your orders...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="errorMessage" class="error-state">
+      <p>{{ errorMessage }}</p>
+      <button class="btn btn--gold" (click)="loadOrders()">Try Again</button>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && !errorMessage && orders.length === 0" class="empty-state">
+      <svg viewBox="0 0 24 24" width="48" height="48"><path d="M6 7h12l-1.2 12H7.2z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M9 7a3 3 0 0 1 6 0" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+      <h2>No orders yet</h2>
+      <p>Looks like you haven't placed any orders. Start shopping and come back here to track them!</p>
+      <a routerLink="/shop" class="btn btn--gold">Shop Now</a>
+    </div>
+
+    <!-- Orders List -->
+    <div *ngIf="!isLoading && !errorMessage && orders.length > 0" class="orders-list">
+      <div *ngFor="let order of orders" class="order-card" [routerLink]="['/orders', order.order_number]">
+        <div class="order-header">
+          <div class="order-info">
+            <span class="order-number">#{{ order.order_number }}</span>
+            <span class="order-date">{{ formatDate(order.created_at) }}</span>
+          </div>
+          <span class="order-total">{{ formatPrice(order.total_amount_pkr) }}</span>
+        </div>
+
+        <div class="order-body">
+          <div class="order-items">
+            <span>{{ getTotalItems(order) }} items</span>
+          </div>
+          <span class="order-status" [class]="getStatusClass(order.status)">
+            {{ getStatusLabel(order.status) }}
+          </span>
+        </div>
+
+        <div class="order-footer">
+          <span class="order-cta">View Details →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

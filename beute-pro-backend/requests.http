@@ -162,3 +162,15 @@ Authorization: Bearer {{authToken}}
 ### 18. Admin: Manually refresh exchange rates
 POST {{baseUrl}}/api/admin/rates/refresh
 Authorization: Bearer {{authToken}}
+
+
+### Change Password (Authenticated)
+PUT {{baseUrl}}/api/users/me/password
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "currentPassword": "SecurePass123",
+  "newPassword": "NewSecurePass456",
+  "confirmPassword": "NewSecurePass456"
+}

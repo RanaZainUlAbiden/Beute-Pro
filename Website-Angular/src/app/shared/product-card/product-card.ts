@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, effect } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
 import { CATEGORIES } from '../../core/data/products';
@@ -7,19 +8,20 @@ import { imgSrc } from '../../core/image';
 import type { Product } from '../../core/models/product';
 import { CartService } from '../../core/services/cart.service';
 import { I18nService } from '../../core/services/i18n.service';
+import { WishlistService } from '../../services/wishlist';
 
-/* One card in any product grid — home, shop and the related row all
-   render this, so hover and layout stay identical across the site. */
 @Component({
   selector: 'app-product-card',
+  standalone: true,
+  imports: [RouterLink, ImgFallbackDirective, CommonModule],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ImgFallbackDirective],
 })
 export class ProductCard {
   protected readonly i18n = inject(I18nService);
   private readonly cart = inject(CartService);
+  private readonly wishlist = inject(WishlistService);
   protected readonly imgSrc = imgSrc;
 
   readonly product = input.required<Product>();
@@ -33,10 +35,29 @@ export class ProductCard {
     return badge ? this.i18n.t(`badge.${badge}`) : '';
   });
 
-  /** The quick-add chip sits inside the card link, so stop navigation. */
+  // Wishlist state – we'll read from the service's signal
+  get isInWishlist(): boolean {
+    return this.wishlist.isInWishlist(this.product().id);
+  }
+
   protected add(e: Event): void {
     e.preventDefault();
     e.stopPropagation();
     this.cart.add(this.product().id, 1);
+  }
+
+  protected toggleWishlist(e: Event): void {
+    e.preventDefault();
+    e.stopPropagation();
+    const id = this.product().id;
+    if (this.isInWishlist) {
+      this.wishlist.remove(id).subscribe({
+        error: (err) => console.error('Failed to remove from wishlist', err),
+      });
+    } else {
+      this.wishlist.add(id).subscribe({
+        error: (err) => console.error('Failed to add to wishlist', err),
+      });
+    }
   }
 }
