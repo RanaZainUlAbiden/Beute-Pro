@@ -17,12 +17,17 @@ export const adminRoutes: Routes = [
         loadComponent: () => import('./orders/admin-orders.component').then(m => m.AdminOrdersComponent),
       },
       {
-        path: 'orders/:id',  // ✅ This matches the relative navigation ['../', order.id]
+        path: 'orders/:id',
         loadComponent: () => import('./order-detail/admin-order-detail.component').then(m => m.AdminOrderDetailComponent),
       },
       {
         path: 'revenue',
         loadComponent: () => import('./revenue/revenue.component').then(m => m.RevenueComponent),
+      },
+      // ✅ Contact Messages route
+      {
+        path: 'contact',
+        loadComponent: () => import('./contact-messages/contact-messages').then(m => m.ContactMessagesComponent),
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],

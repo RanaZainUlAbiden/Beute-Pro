@@ -18,6 +18,9 @@ import { ProfileDropdownComponent } from '../../features/auth/profile-dropdown/p
 import { SearchService } from '../../core/services/search.service';
 import { SearchComponent } from '../../shared/search/search';
 
+// ✅ Import environment for admin path
+import { environment } from '../../../environments/environment';
+
 /** Featured product in the Shop mega menu, sourced live from products.ts. */
 const MEGA_FEATURED_ID = 'herbal-hair-oil';
 
@@ -39,7 +42,7 @@ export const CONCERNS = [
     RouterLink,
     ImgFallbackDirective,
     ProfileDropdownComponent,
-    SearchComponent, // ✅ Added
+    SearchComponent,
   ],
   host: { '(document:keydown.escape)': 'closeMenu()' },
 })
@@ -51,11 +54,14 @@ export class Header {
   private readonly scroll = inject(ScrollService);
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
-  private readonly searchService = inject(SearchService); // ✅ Added
+  private readonly searchService = inject(SearchService);
 
   protected readonly categories = CATEGORIES;
   protected readonly concerns = CONCERNS;
   protected readonly imgSrc = imgSrc;
+
+  // ✅ Expose admin path for template
+  protected readonly adminPath = environment.adminPath;
 
   protected readonly featured =
     PRODUCTS.find((p) => p.id === MEGA_FEATURED_ID) ?? PRODUCTS[0];
@@ -127,6 +133,7 @@ export class Header {
     return this.auth.user$;
   }
   protected isLoggedIn = this.auth.isLoggedIn.bind(this.auth);
+  protected isAdmin = this.auth.isAdmin.bind(this.auth); // ✅ expose admin check
   protected logout = this.auth.logout.bind(this.auth);
   protected goToLogin = () => this.router.navigate(['/login']);
   protected goToProfile = () => this.router.navigate(['/profile']);

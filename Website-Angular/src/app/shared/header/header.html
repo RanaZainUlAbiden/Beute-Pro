@@ -11,11 +11,19 @@
             <span>{{ i18n.t('topbar.login') }}</span>
           </a>
         }
+
+        <!-- ✅ Admin Panel link (only visible to admin users) -->
+        @if (isLoggedIn() && isAdmin()) {
+          <a class="topbar__link" [routerLink]="adminPath">
+            <span>⚙️ Admin Panel</span>
+          </a>
+        }
+
         <!-- Track Order -->
         <a class="topbar__link" routerLink="/track">
           <span>{{ i18n.t('topbar.track') }}</span>
         </a>
-        <!-- Wishlist – now active -->
+        <!-- Wishlist -->
         <a class="topbar__link" routerLink="/wishlist">
           <span>{{ i18n.t('topbar.wishlist') }}</span>
         </a>
@@ -151,10 +159,14 @@
     <a routerLink="/about" (click)="closeMenu()">{{ i18n.t('nav.story') }}</a>
     <a routerLink="/contact" (click)="closeMenu()">{{ i18n.t('nav.contact') }}</a>
 
-    <!-- Mobile auth + wishlist links -->
+    <!-- Mobile auth + wishlist + admin links -->
     @if (isLoggedIn()) {
       <a routerLink="/orders" (click)="closeMenu()">My Orders</a>
       <a routerLink="/wishlist" (click)="closeMenu()">Wishlist</a>
+      <!-- ✅ Admin Panel link for mobile menu -->
+      @if (isAdmin()) {
+        <a [routerLink]="adminPath" (click)="closeMenu()">⚙️ Admin Panel</a>
+      }
       <a (click)="logout(); closeMenu()" style="cursor:pointer;">Logout</a>
     } @else {
       <a routerLink="/login" (click)="closeMenu()">{{ i18n.t('topbar.login') }}</a>

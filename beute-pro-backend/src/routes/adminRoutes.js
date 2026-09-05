@@ -1,5 +1,7 @@
 const express = require('express');
 const { protect, adminOnly } = require('../middleware/auth');
+
+// Order controllers
 const {
   adminListOrders,
   adminGetOrder,
@@ -7,8 +9,17 @@ const {
   adminAddTracking,
   getRevenue,
 } = require('../controllers/orderController');
+
+// Dashboard & currency
 const { getDashboardStats } = require('../controllers/dashboardController');
 const { refreshRates } = require('../controllers/currencyController');
+
+// ✅ Contact controllers
+const {
+  getMessages,
+  updateMessageStatus,
+  deleteMessage,
+} = require('../controllers/contactController');
 
 const router = express.Router();
 
@@ -48,5 +59,18 @@ router.get('/dashboard', getDashboardStats);
 
 // Manually refresh exchange rates
 router.post('/rates/refresh', refreshRates);
+
+// ============================================
+// CONTACT MANAGEMENT
+// ============================================
+
+// Get all contact messages (with filters & pagination)
+router.get('/contact', getMessages);
+
+// Update message status
+router.put('/contact/:id/status', updateMessageStatus);
+
+// Delete a message
+router.delete('/contact/:id', deleteMessage);
 
 module.exports = router;

@@ -13,6 +13,7 @@ const orderRoutes = require('./routes/orderRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const currencyRoutes = require('./routes/currencyRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 
 
 // Import cron job
@@ -89,6 +90,8 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/rates', currencyRoutes);
 
 app.use('/api/wishlist', wishlistRoutes);
+
+app.use('/api/contact', contactRoutes);
 
 // ============================================
 // GLOBAL ERROR HANDLER

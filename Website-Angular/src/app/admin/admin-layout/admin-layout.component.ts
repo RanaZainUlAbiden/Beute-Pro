@@ -16,6 +16,8 @@ import { AuthService } from '../../services/auth';
           <a routerLink="dashboard" routerLinkActive="active">Dashboard</a>
           <a routerLink="orders" routerLinkActive="active">Orders</a>
           <a routerLink="revenue" routerLinkActive="active">Revenue</a>
+          <!-- ✅ Messages link -->
+          <a routerLink="contact" routerLinkActive="active">Messages</a>
           <a (click)="logout()" style="cursor:pointer; margin-top:2rem;">Logout</a>
         </nav>
       </aside>
