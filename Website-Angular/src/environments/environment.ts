@@ -1,7 +1,7 @@
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:5000/api',
-  googleAuthUrl: 'http://localhost:5000/api/auth/google',
-  frontendUrl: 'http://localhost:4200',
-  adminPath: 'admin-panel-bdjhdfvjdsbfmnsdfmnsd-vh09879823749823bm475nkndsf-dfshidf', // <-- Add this
+  production: true,
+  apiUrl: 'https://beute-pro-backend.onrender.com/api',
+  googleAuthUrl: 'https://beute-pro-backend.onrender.com/api/auth/google',
+  frontendUrl: 'https://beute-pro-rana-zain-ul-abidens-projects.vercel.app',
+  adminPath: 'admin-panel-bdjhdfvjdsbfmnsdfmnsd-vh09879823749823bm475nkndsf-dfshidf',
 };
