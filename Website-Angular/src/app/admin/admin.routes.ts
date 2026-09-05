@@ -37,6 +37,13 @@ export const adminRoutes: Routes = [
           import('./order-detail/admin-order-detail.component').then((m) => m.AdminOrderDetailComponent),
       },
       {
+        path: 'customers',
+        title: 'Customers · Béute Pro Admin',
+        data: adminPage,
+        loadComponent: () =>
+          import('./customers/admin-customers.component').then((m) => m.AdminCustomersComponent),
+      },
+      {
         path: 'revenue',
         title: 'Revenue · Béute Pro Admin',
         data: adminPage,

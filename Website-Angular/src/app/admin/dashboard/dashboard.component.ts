@@ -1,17 +1,18 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { AdminApi, adminDate, adminMoney, adminProductName, type DashboardData } from '../admin-api';
-import { statusPill } from '../../features/orders/order-view';
+import { AdminApi, adminDate, adminMoney, type DashboardData } from '../admin-api';
+import { statusPill, statusKey } from '../../features/orders/order-view';
+import { I18nService } from '../../core/services/i18n.service';
 
 /* =============================================================
    DASHBOARD
 
-   The answer to "what happened while I was away", in one screen:
-   the five totals, where the open orders are sitting, the last
-   seven days of takings, the five most recent orders and the top
-   products. Everything is a link into the screen that can act
-   on it — the dashboard itself does nothing but show.
+   What an owner needs at a glance: today's revenue against the
+   all-time total, order volume and how much of it is still
+   waiting to ship, and the most recent orders. Everything is a
+   link into the screen that can act on it — the dashboard itself
+   does nothing but show.
    ============================================================= */
 @Component({
   selector: 'app-dashboard',
@@ -21,6 +22,7 @@ import { statusPill } from '../../features/orders/order-view';
 })
 export class DashboardComponent implements OnInit {
   private readonly api = inject(AdminApi);
+  protected readonly i18n = inject(I18nService);
 
   protected readonly data = signal<DashboardData | null>(null);
   protected readonly busy = signal(true);
@@ -28,13 +30,8 @@ export class DashboardComponent implements OnInit {
 
   protected readonly money = adminMoney;
   protected readonly date = adminDate;
-  protected readonly productName = adminProductName;
   protected readonly pill = statusPill;
-
-  /** The tallest bar sets the scale for the seven-day strip. */
-  protected readonly peak = computed(() =>
-    Math.max(1, ...(this.data()?.dailyRevenue ?? []).map((d) => d.revenue)),
-  );
+  protected readonly statusLabel = (status: string) => this.i18n.t(statusKey(status));
 
   protected readonly openOrders = computed(() =>
     (this.data()?.ordersByStatus ?? [])
@@ -59,14 +56,5 @@ export class DashboardComponent implements OnInit {
         this.failed.set(true);
       },
     });
-  }
-
-  protected barHeight(revenue: number): string {
-    return `${Math.max(4, Math.round((revenue / this.peak()) * 100))}%`;
-  }
-
-  protected weekday(value: string): string {
-    const d = new Date(value);
-    return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-GB', { weekday: 'short' });
   }
 }

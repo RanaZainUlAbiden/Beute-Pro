@@ -75,6 +75,31 @@ export interface ContactPage {
   totalPages: number;
 }
 
+export interface Customer {
+  id: number;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  address: string | null;
+  created_at: string;
+  order_count: number;
+}
+
+export interface CustomerPage {
+  customers: Customer[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface CustomerEdits {
+  full_name: string;
+  email: string;
+  phone: string;
+  address: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AdminApi {
   private readonly http = inject(HttpClient);
@@ -121,6 +146,28 @@ export class AdminApi {
 
   deleteMessage(id: number): Observable<unknown> {
     return this.http.delete(`${this.url}/admin/contact/${id}`);
+  }
+
+  customers(
+    page: number,
+    limit: number,
+    search?: string,
+    sortBy?: string,
+    sortDir?: 'asc' | 'desc',
+  ): Observable<CustomerPage> {
+    let params = new HttpParams().set('page', page).set('limit', limit);
+    if (search) params = params.set('search', search);
+    if (sortBy) params = params.set('sortBy', sortBy);
+    if (sortDir) params = params.set('sortDir', sortDir);
+    return this.http.get<CustomerPage>(`${this.url}/admin/customers`, { params });
+  }
+
+  updateCustomer(id: number, edits: CustomerEdits): Observable<{ customer: Customer }> {
+    return this.http.put<{ customer: Customer }>(`${this.url}/admin/customers/${id}`, edits);
+  }
+
+  deleteCustomer(id: number): Observable<unknown> {
+    return this.http.delete(`${this.url}/admin/customers/${id}`);
   }
 }
 

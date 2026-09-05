@@ -49,6 +49,9 @@ const placeOrder = async (req, res) => {
  */
 const getMyOrders = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
     const orders = await orderService.getOrdersByUserId(req.user.id);
     res.json({ orders });
   } catch (err) {

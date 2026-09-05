@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 
 import { LayoutService } from '../../../core/services/layout.service';
+import { I18nService } from '../../../core/services/i18n.service';
 
 /* =============================================================
    CONFIRM DIALOG (admin)
@@ -31,11 +32,13 @@ import { LayoutService } from '../../../core/services/layout.service';
 })
 export class ConfirmDialog {
   private readonly layout = inject(LayoutService);
+  protected readonly i18n = inject(I18nService);
 
   readonly heading = input.required<string>();
   readonly body = input('');
-  readonly confirmLabel = input('Delete');
-  readonly cancelLabel = input('Cancel');
+  /** Empty means "use the translated default" — set so every caller doesn't have to pass one. */
+  readonly confirmLabel = input('');
+  readonly cancelLabel = input('');
   /** Whether the confirming button is the destructive one. */
   readonly danger = input(true);
   readonly busy = input(false);

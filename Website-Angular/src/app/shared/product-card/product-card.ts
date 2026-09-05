@@ -37,10 +37,7 @@ export class ProductCard {
     return badge ? this.i18n.t(`badge.${badge}`) : '';
   });
 
-  // Wishlist state – we'll read from the service's signal
-  get isInWishlist(): boolean {
-    return this.wishlist.isInWishlist(this.product().id);
-  }
+  protected readonly isInWishlist = computed(() => this.wishlist.isInWishlist(this.product().id));
 
   protected add(e: Event): void {
     e.preventDefault();
@@ -52,7 +49,7 @@ export class ProductCard {
     e.preventDefault();
     e.stopPropagation();
     const id = this.product().id;
-    if (this.isInWishlist) {
+    if (this.isInWishlist()) {
       this.wishlist.remove(id).subscribe({
         error: (err) => console.error('Failed to remove from wishlist', err),
       });

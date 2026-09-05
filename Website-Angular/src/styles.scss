@@ -1636,25 +1636,40 @@ html[dir="rtl"] .btn--google svg{transform:none}
 
    Rows are ~34px, the type is .82rem, numbers are tabular and
    right-aligned, and the header row sticks so a long list keeps
-   its labels. English only, and forced LTR: these screens are
-   internal and their tables are read by column position.
+   its labels. Bilingual like the storefront: no forced `direction`
+   here any more, so `html[dir="rtl"]` mirrors the rail and tables
+   the same way it mirrors everything else — the rules below are
+   almost all logical properties already, so little else changes.
    ========================================================= */
 .adm{
   /* Full viewport, not `100vh - var(--head-h)` — the admin panel has no
      site header above it to clear (`chrome:false` in admin.routes.ts). */
-  direction:ltr;
-  display:grid;grid-template-columns:224px minmax(0,1fr);
+  display:grid;grid-template-columns:auto minmax(0,1fr);
   min-height:100vh;
-  background:var(--ivory-2)
+  background:var(--white)
 }
 .adm__rail{
+  /* `height`, not `max-height` — a `max-height` only caps the box, so on
+     a short nav (few links) the rail shrinks to its content and the page
+     background shows beneath it. An explicit height keeps it exactly
+     viewport-tall; overflow-y handles the rare case nav content is taller
+     than that. */
   background:var(--green);color:var(--ivory);
   padding:1.3rem 1rem;
   display:flex;flex-direction:column;gap:1.4rem;
   position:sticky;top:0;align-self:start;
-  max-height:100vh;overflow-y:auto
+  height:100vh;overflow-y:auto;overflow-x:hidden;
+  flex-shrink:0;
+  transition:width .3s var(--ease)
 }
-.adm__brand{display:flex;flex-direction:column;gap:.15rem;padding-inline:.6rem}
+.adm__brand{
+  display:flex;flex-direction:column;gap:.15rem;
+  width:100%;padding:.5rem .6rem;text-align:start;
+  border-radius:var(--r);
+  transition:background-color .25s
+}
+.adm__brand:hover{background:color-mix(in srgb,var(--ivory) 10%,transparent)}
+.adm__brand:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .adm__brand b{font-size:.98rem;font-weight:800;color:var(--gold);letter-spacing:-.01em}
 .adm__brand span{font-size:.66rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,var(--ivory) 52%,transparent)}
 .adm__nav{display:flex;flex-direction:column;gap:.15rem}
@@ -1668,6 +1683,7 @@ html[dir="rtl"] .btn--google svg{transform:none}
 .adm__nav a svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.7;flex:0 0 auto}
 .adm__nav a:hover{background:color-mix(in srgb,var(--ivory) 10%,transparent);color:var(--ivory)}
 .adm__nav a.is-on{background:color-mix(in srgb,var(--ivory) 15%,transparent);color:var(--ivory);box-shadow:inset 3px 0 0 var(--gold)}
+html[dir="rtl"] .adm__nav a.is-on{box-shadow:inset -3px 0 0 var(--gold)}
 .adm__foot{margin-top:auto;display:flex;flex-direction:column;gap:.6rem;padding-top:1rem;border-top:1px solid color-mix(in srgb,var(--ivory) 16%,transparent)}
 .adm__who{font-size:.74rem;line-height:1.5;color:color-mix(in srgb,var(--ivory) 60%,transparent);padding-inline:.6rem;overflow-wrap:anywhere}
 .adm__out{
@@ -1685,6 +1701,7 @@ html[dir="rtl"] .btn--google svg{transform:none}
 }
 .adm-head h1{font-size:clamp(1.2rem,2.4vw,1.6rem)}
 .adm-head p{margin:.3rem 0 0;font-size:.82rem;color:var(--green-soft)}
+.adm-head__acts{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 
 .adm-bar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.9rem}
 .adm-bar__spacer{flex:1 1 auto}
@@ -1698,7 +1715,7 @@ html[dir="rtl"] .btn--google svg{transform:none}
 .adm-field--search{min-width:min(260px,100%)}
 .adm-count{font-size:.78rem;font-weight:600;color:var(--green-soft);font-variant-numeric:tabular-nums}
 
-.adm-panel{background:var(--white);border:1px solid var(--ivory-3);border-radius:var(--r);overflow:hidden}
+.adm-panel{background:var(--white);border:1px solid var(--ivory-3);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
 .adm-panel__head{
   display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
   padding:.85rem 1rem;border-bottom:1px solid var(--ivory-3)
@@ -1743,7 +1760,7 @@ html[dir="rtl"] .btn--google svg{transform:none}
 .adm-rowacts{display:flex;gap:.15rem;align-items:center;justify-content:flex-end}
 
 .adm-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;margin-bottom:1.2rem}
-.adm-stat{background:var(--white);border:1px solid var(--ivory-3);border-radius:var(--r);padding:.95rem 1.05rem}
+.adm-stat{background:var(--white);border:1px solid var(--ivory-3);border-radius:var(--r);padding:.95rem 1.05rem;box-shadow:var(--shadow)}
 .adm-stat__k{font-size:.66rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--green-soft)}
 .adm-stat__v{font-size:clamp(1.35rem,2.6vw,1.8rem);font-weight:800;color:var(--green);line-height:1.15;margin-top:.35rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .adm-stat__n{font-size:.74rem;color:var(--green-soft);margin-top:.25rem}
@@ -1776,7 +1793,7 @@ html[dir="rtl"] .btn--google svg{transform:none}
 /* destructive actions ask first, in the page rather than in a
    browser dialog — a native confirm() blocks the whole tab */
 .adm-modal{
-  position:fixed;inset:0;z-index:120;direction:ltr;
+  position:fixed;inset:0;z-index:120;
   display:grid;place-items:center;padding:1rem;
   background:color-mix(in srgb,var(--green) 55%,transparent);
   backdrop-filter:blur(3px)
@@ -1790,10 +1807,25 @@ html[dir="rtl"] .btn--google svg{transform:none}
 .adm-modal__box p{margin:0;font-size:.87rem;line-height:1.65;color:var(--green-soft)}
 .adm-modal__acts{display:flex;gap:.55rem;justify-content:flex-end;margin-top:1.4rem;flex-wrap:wrap}
 
+/* Collapse/expand is a desktop-rail affordance only — under 900px the
+   rail is already a horizontal strip (see below), so its width and
+   label rules live here, scoped out of that layout entirely rather
+   than fighting it with specificity. */
+@media(min-width:901px){
+  .adm__rail{width:224px}
+  .adm.is-collapsed .adm__rail{width:72px;padding-inline:.5rem}
+  .adm.is-collapsed .adm__brand{align-items:center;text-align:center;padding-inline:0}
+  .adm.is-collapsed .adm__nav a{justify-content:center;padding-inline:.5rem}
+  .adm.is-collapsed .adm__out{justify-content:center;padding-inline:.5rem}
+  .adm.is-collapsed .adm__nav a span,
+  .adm.is-collapsed .adm__out span,
+  .adm.is-collapsed .adm__who{display:none}
+}
+
 @media(max-width:900px){
   .adm{grid-template-columns:1fr}
   .adm__rail{
-    position:static;max-height:none;flex-direction:row;flex-wrap:wrap;
+    position:static;height:auto;overflow:visible;flex-direction:row;flex-wrap:wrap;
     align-items:center;gap:.8rem;padding:.8rem var(--gut)
   }
   .adm__brand{padding-inline:0}
@@ -1819,4 +1851,5 @@ html[dir="rtl"] .btn--google svg{transform:none}
   .spinner{animation:none}
   .adm-skel::after{animation:none}
   .orow:hover,.orow:focus-within{box-shadow:none}
+  .adm__rail,.adm__brand{transition:none}
 }

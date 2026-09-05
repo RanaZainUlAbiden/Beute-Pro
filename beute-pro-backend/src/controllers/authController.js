@@ -56,6 +56,9 @@ const login = async (req, res) => {
  */
 const getMe = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
     const user = await authService.getUserById(req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -73,6 +76,9 @@ const getMe = async (req, res) => {
  */
 const updateMe = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
     const { error, value } = updateProfileSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
@@ -96,6 +102,9 @@ const updateMe = async (req, res) => {
  */
 const changePassword = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
     // Validate input
     const { error, value } = changePasswordSchema.validate(req.body);
     if (error) {

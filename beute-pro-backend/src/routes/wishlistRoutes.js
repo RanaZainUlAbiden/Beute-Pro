@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect } = require('../middleware/auth');
+const { protect, requireAuth } = require('../middleware/auth');
 const {
   getWishlist,
   addToWishlist,
@@ -11,6 +11,7 @@ const router = express.Router();
 
 // All routes require authentication
 router.use(protect);
+router.use(requireAuth);
 
 router.get('/', getWishlist);
 router.post('/:productId', addToWishlist);

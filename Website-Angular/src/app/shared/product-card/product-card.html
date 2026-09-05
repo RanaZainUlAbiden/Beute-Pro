@@ -3,7 +3,7 @@
     <!-- Wishlist heart -->
     <button
       class="wishlist-btn"
-      [class.is-active]="isInWishlist"
+      [class.is-active]="isInWishlist()"
       (click)="toggleWishlist($event)"
       aria-label="Wishlist"
     >

@@ -1,0 +1,180 @@
+<div class="adm-head">
+  <div>
+    <h1>{{ i18n.t('admin.customers.title') }}</h1>
+    <p>{{ i18n.t('admin.customers.sub') }}</p>
+  </div>
+  <div class="adm-head__acts">
+    <button type="button" class="btn btn--outline btn--sm" [attr.aria-label]="i18n.t('admin.common.language')" (click)="i18n.toggle()">{{ i18n.toggleLabel() }}</button>
+    <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">{{ i18n.t('admin.common.refresh') }}</button>
+  </div>
+</div>
+
+<div class="adm-bar">
+  <label class="cust__search">
+    <span class="cust__vh">{{ i18n.t('admin.customers.vhSearch') }}</span>
+    <input class="adm-field adm-field--search" type="search" [placeholder]="i18n.t('admin.customers.searchPlaceholder')"
+           [value]="search()" (input)="onSearchInput($any($event.target).value)">
+  </label>
+
+  <span class="adm-bar__spacer"></span>
+
+  <span class="adm-count">
+    {{ i18n.t('admin.customers.count').replace('{shown}', '' + customers().length).replace('{total}', '' + total()) }}
+  </span>
+</div>
+
+<div class="adm-panel">
+  @if (busy()) {
+  <div class="adm-panel__body">
+    @for (n of [1, 2, 3, 4, 5, 6]; track n) {
+    <div class="adm-skel cust__skel"></div>
+    }
+  </div>
+  } @else if (failed()) {
+  <div class="adm-state">
+    <p class="adm-state__t">{{ i18n.t('admin.customers.errTitle') }}</p>
+    <p>{{ i18n.t('admin.common.apiDown') }}</p>
+    <button type="button" class="btn btn--gold btn--sm" (click)="load()">{{ i18n.t('admin.common.tryAgain') }}</button>
+  </div>
+  } @else if (customers().length === 0) {
+  <div class="adm-state">
+    @if (search()) {
+    <p class="adm-state__t">{{ i18n.t('admin.customers.noMatchTitle').replace('{q}', search()) }}</p>
+    <p>{{ i18n.t('admin.customers.noMatchBody') }}</p>
+    <button type="button" class="btn btn--outline btn--sm" (click)="clearSearch()">{{ i18n.t('admin.common.clearSearch') }}</button>
+    } @else {
+    <p class="adm-state__t">{{ i18n.t('admin.customers.emptyTitle') }}</p>
+    <p>{{ i18n.t('admin.customers.emptyBody') }}</p>
+    }
+  </div>
+  } @else {
+  <div class="adm-scroll">
+    <table class="adm-table">
+      <thead>
+        <tr>
+          <th [class.is-sorted]="sortKey() === 'full_name'" [attr.aria-sort]="sortState('full_name')">
+            <button type="button" (click)="sortBy('full_name')">{{ i18n.t('admin.customers.colName') }}
+              <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('full_name') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </th>
+          <th [class.is-sorted]="sortKey() === 'email'" [attr.aria-sort]="sortState('email')">
+            <button type="button" (click)="sortBy('email')">{{ i18n.t('admin.customers.colEmail') }}
+              <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('email') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </th>
+          <th><span>{{ i18n.t('admin.customers.colPhone') }}</span></th>
+          <th><span>{{ i18n.t('admin.customers.colAddress') }}</span></th>
+          <th [class.is-sorted]="sortKey() === 'created_at'" [attr.aria-sort]="sortState('created_at')">
+            <button type="button" (click)="sortBy('created_at')">{{ i18n.t('admin.customers.colJoined') }}
+              <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('created_at') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </th>
+          <th class="num" [class.is-sorted]="sortKey() === 'order_count'" [attr.aria-sort]="sortState('order_count')">
+            <button type="button" (click)="sortBy('order_count')">{{ i18n.t('admin.customers.colOrders') }}
+              <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('order_count') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </th>
+          <th><span class="cust__vh">{{ i18n.t('admin.common.actions') }}</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of customers(); track c.id) {
+        <tr>
+          <td class="clip">{{ c.full_name }}</td>
+          <td class="clip">{{ c.email }}</td>
+          <td>
+            @if (c.phone) { {{ c.phone }} } @else { <span class="muted">{{ i18n.t('admin.common.notProvided') }}</span> }
+          </td>
+          <td class="clip">
+            @if (c.address) { {{ c.address }} } @else { <span class="muted">{{ i18n.t('admin.common.notProvided') }}</span> }
+          </td>
+          <td class="muted">{{ date(c.created_at) }}</td>
+          <td class="num">{{ c.order_count }}</td>
+          <td class="num">
+            <div class="adm-rowacts">
+              <button type="button" class="adm-iconbtn" [attr.aria-label]="i18n.t('admin.common.edit')" [attr.title]="i18n.t('admin.common.edit')" (click)="openEdit(c)">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3"/><path d="m13.5 7.5 3 3"/></svg>
+              </button>
+              <button type="button" class="adm-iconbtn adm-iconbtn--danger" [attr.aria-label]="i18n.t('admin.common.delete')" [attr.title]="i18n.t('admin.common.delete')" (click)="pendingDelete.set(c)">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14"/><path d="M9.5 7V5a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 14.5 5v2"/><path d="M7 7l1 12.5A1.5 1.5 0 0 0 9.5 21h5a1.5 1.5 0 0 0 1.5-1.5L17 7"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (totalPages() > 1) {
+  <div class="adm-pager">
+    <span class="adm-pager__at">{{ i18n.t('admin.common.pageOf').replace('{page}', '' + page()).replace('{total}', '' + totalPages()) }}</span>
+    <button type="button" [disabled]="page() === 1" (click)="goto(page() - 1)">{{ i18n.t('admin.common.previous') }}</button>
+    <button type="button" [disabled]="page() === totalPages()" (click)="goto(page() + 1)">{{ i18n.t('admin.common.next') }}</button>
+  </div>
+  }
+  }
+</div>
+
+@if (editing(); as c) {
+<div class="adm-modal" (click)="closeEdit()">
+  <div class="adm-modal__box cust__editbox" role="dialog" aria-modal="true" aria-labelledby="cust-edit-title" (click)="$event.stopPropagation()">
+    <h2 id="cust-edit-title">{{ i18n.t('admin.customers.editTitle') }}</h2>
+
+    <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="cust__form">
+      @if (editError()) {
+      <p class="alert alert--err" role="alert">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+        <span>{{ editError() }}</span>
+      </p>
+      }
+
+      <label class="cust__field">
+        <span class="aod__lab">{{ i18n.t('admin.customers.fieldName') }}</span>
+        <input class="adm-field" type="text" formControlName="full_name">
+        @if (showError('full_name')) { <span class="cust__err">{{ errorFor('full_name') }}</span> }
+      </label>
+
+      <label class="cust__field">
+        <span class="aod__lab">{{ i18n.t('admin.customers.fieldEmail') }}</span>
+        <input class="adm-field" type="email" formControlName="email">
+        @if (showError('email')) { <span class="cust__err">{{ errorFor('email') }}</span> }
+      </label>
+
+      <label class="cust__field">
+        <span class="aod__lab">{{ i18n.t('admin.customers.fieldPhone') }}</span>
+        <input class="adm-field" type="tel" formControlName="phone" placeholder="03XXXXXXXXX">
+        @if (showError('phone')) {
+        <span class="cust__err">{{ errorFor('phone') }}</span>
+        } @else {
+        <span class="cust__hint">{{ i18n.t('admin.customers.phoneHint') }}</span>
+        }
+      </label>
+
+      <label class="cust__field">
+        <span class="aod__lab">{{ i18n.t('admin.customers.fieldAddress') }}</span>
+        <textarea class="adm-field" rows="2" formControlName="address"></textarea>
+        @if (showError('address')) { <span class="cust__err">{{ errorFor('address') }}</span> }
+      </label>
+
+      <div class="adm-modal__acts">
+        <button type="button" class="btn btn--outline btn--sm" [disabled]="savingEdit()" (click)="closeEdit()">{{ i18n.t('admin.common.cancel') }}</button>
+        <button type="submit" class="btn btn--green btn--sm" [class.is-busy]="savingEdit()" [disabled]="savingEdit()">
+          @if (savingEdit()) {<span class="spinner spinner--sm" aria-hidden="true"></span>}
+          {{ savingEdit() ? i18n.t('admin.common.saving') : i18n.t('admin.common.save') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+@if (pendingDelete(); as c) {
+<app-confirm-dialog
+  [heading]="i18n.t('admin.customers.deleteHeading').replace('{name}', c.full_name)"
+  [body]="deleteBody(c)"
+  [confirmLabel]="i18n.t('admin.customers.deleteConfirm')"
+  [busy]="deleting()"
+  (confirmed)="confirmDelete()"
+  (dismissed)="pendingDelete.set(null)" />
+}

@@ -7,11 +7,11 @@
     }
     <div class="adm-modal__acts">
       <button type="button" class="btn btn--outline btn--sm" #cancelBtn
-              [disabled]="busy()" (click)="dismissed.emit()">{{ cancelLabel() }}</button>
+              [disabled]="busy()" (click)="dismissed.emit()">{{ cancelLabel() || i18n.t('admin.common.cancel') }}</button>
       <button type="button" class="btn btn--sm" [class.btn--danger]="danger()" [class.btn--green]="!danger()"
               [class.is-busy]="busy()" [disabled]="busy()" (click)="confirmed.emit()">
         @if (busy()) {<span class="spinner spinner--sm" aria-hidden="true"></span>}
-        {{ confirmLabel() }}
+        {{ confirmLabel() || i18n.t('admin.common.delete') }}
       </button>
     </div>
   </div>

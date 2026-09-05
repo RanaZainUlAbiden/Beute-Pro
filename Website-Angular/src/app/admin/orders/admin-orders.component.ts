@@ -2,7 +2,8 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { AdminApi, adminDate, adminMoney } from '../admin-api';
-import { ALL_STATUSES, statusPill } from '../../features/orders/order-view';
+import { ALL_STATUSES, statusKey, statusPill } from '../../features/orders/order-view';
+import { I18nService } from '../../core/services/i18n.service';
 import type { Order } from '../../services/order';
 
 type SortKey = 'order_number' | 'created_at' | 'customer_name' | 'total_amount_pkr' | 'status';
@@ -28,11 +29,13 @@ type SortKey = 'order_number' | 'created_at' | 'customer_name' | 'total_amount_p
 })
 export class AdminOrdersComponent implements OnInit {
   private readonly api = inject(AdminApi);
+  protected readonly i18n = inject(I18nService);
 
   protected readonly statuses = ALL_STATUSES;
   protected readonly money = adminMoney;
   protected readonly date = adminDate;
   protected readonly pill = statusPill;
+  protected readonly statusLabel = (status: string) => this.i18n.t(statusKey(status));
 
   protected readonly orders = signal<readonly Order[]>([]);
   protected readonly busy = signal(true);

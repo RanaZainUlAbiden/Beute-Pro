@@ -53,6 +53,10 @@
   box-shadow: inset 3px 0 0 var(--gold);
 }
 
+html[dir="rtl"] .msg.is-unread {
+  box-shadow: inset -3px 0 0 var(--gold);
+}
+
 .msg__who {
   min-width: 0;
 }

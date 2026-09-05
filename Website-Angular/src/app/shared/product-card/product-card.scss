@@ -30,11 +30,11 @@
 
   &.is-active {
     svg {
-      fill: #e74c3c;
-      stroke: #e74c3c;
+      fill: var(--green);
+      stroke: var(--green);
     }
     &:hover {
-      background: rgba(231, 76, 60, 0.1);
+      background: color-mix(in srgb, var(--green) 12%, transparent);
     }
   }
 }

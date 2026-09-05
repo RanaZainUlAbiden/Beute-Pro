@@ -1,61 +1,5 @@
-/* Local to the dashboard: the seven-day strip, the status list and
-   the skeleton shapes. Tiles, panels and tables are `.adm*` in
-   styles.scss. */
-
-.dash__cols {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: .8rem;
-  margin-bottom: .8rem;
-
-  > * {
-    min-width: 0;
-  }
-}
-
-/* A bar per day, scaled against the week's peak. No library and no
-   axis — it answers "which day was busy", nothing more. */
-.dash__bars {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  align-items: end;
-  gap: .4rem;
-  height: 132px;
-}
-
-.dash__bar {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  gap: .4rem;
-  height: 100%;
-  min-width: 0;
-}
-
-.dash__bar-fill {
-  display: block;
-  width: 100%;
-  max-width: 42px;
-  border-radius: var(--r) var(--r) 0 0;
-  background: linear-gradient(to top, var(--green), var(--green-3));
-  transition: height .4s var(--ease-out);
-}
-
-.dash__bar:hover .dash__bar-fill {
-  background: linear-gradient(to top, var(--gold), var(--gold-lt));
-}
-
-.dash__bar-day {
-  font-size: .66rem;
-  font-weight: 700;
-  color: var(--green-soft);
-  white-space: nowrap;
-}
+/* Local to the dashboard: the status list and the skeleton shapes.
+   Tiles, panels and tables are `.adm*` in styles.scss. */
 
 .dash__statuses {
   list-style: none;
@@ -101,17 +45,5 @@
 
   + .dash__skel-row {
     margin-top: .8rem;
-  }
-}
-
-@media (max-width: 900px) {
-  .dash__cols {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dash__bar-fill {
-    transition: none;
   }
 }

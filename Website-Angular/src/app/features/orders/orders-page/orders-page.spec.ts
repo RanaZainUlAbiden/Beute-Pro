@@ -1,18 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
-import { OrdersPage } from './orders-page';
+import { OrdersPageComponent } from './orders-page';
 
 describe('OrdersPage', () => {
-  let component: OrdersPage;
-  let fixture: ComponentFixture<OrdersPage>;
+  let component: OrdersPageComponent;
+  let fixture: ComponentFixture<OrdersPageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OrdersPage]
+      imports: [OrdersPageComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(OrdersPage);
+    fixture = TestBed.createComponent(OrdersPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

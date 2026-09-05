@@ -44,4 +44,19 @@ const adminOnly = (req, res, next) => {
   next();
 };
 
-module.exports = { protect, adminOnly };
+/**
+ * Middleware to require a logged-in user — use AFTER protect.
+ * `protect` never rejects by itself (it lets guests through with
+ * req.user = null, e.g. for guest checkout), so any route whose
+ * controller actually needs req.user must add this too — otherwise
+ * a missing/expired/invalid token reaches the controller as a null
+ * user and crashes with a 500 instead of failing cleanly with 401.
+ */
+const requireAuth = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+  next();
+};
+
+module.exports = { protect, adminOnly, requireAuth };

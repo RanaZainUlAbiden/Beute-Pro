@@ -1,18 +1,21 @@
 <div class="adm-head">
   <div>
-    <h1>Messages</h1>
-    <p>Everything sent through the contact form. Opening one marks it read.</p>
+    <h1>{{ i18n.t('admin.messages.title') }}</h1>
+    <p>{{ i18n.t('admin.messages.sub') }}</p>
   </div>
-  <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">Refresh</button>
+  <div class="adm-head__acts">
+    <button type="button" class="btn btn--outline btn--sm" [attr.aria-label]="i18n.t('admin.common.language')" (click)="i18n.toggle()">{{ i18n.toggleLabel() }}</button>
+    <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">{{ i18n.t('admin.common.refresh') }}</button>
+  </div>
 </div>
 
 <div class="adm-bar">
   <label class="msg__filter">
-    <span class="msg__vh">Filter by status</span>
+    <span class="msg__vh">{{ i18n.t('admin.common.filterByStatus') }}</span>
     <select class="adm-field" [value]="status()" (change)="onFilter($any($event.target).value)">
-      <option value="">All messages</option>
+      <option value="">{{ i18n.t('admin.messages.allMessages') }}</option>
       @for (f of filters; track f) {
-      <option [value]="f">{{ f }}</option>
+      <option [value]="f">{{ statusLabel(f) }}</option>
       }
     </select>
   </label>
@@ -20,8 +23,8 @@
   <span class="adm-bar__spacer"></span>
 
   <span class="adm-count">
-    {{ messages().length }} of {{ total() }}
-    @if (unread()) { · {{ unread() }} unread on this page }
+    {{ i18n.t('admin.messages.count').replace('{shown}', '' + messages().length).replace('{total}', '' + total()) }}
+    @if (unread()) { {{ i18n.t('admin.messages.unreadSuffix').replace('{n}', '' + unread()) }} }
   </span>
 </div>
 
@@ -34,19 +37,19 @@
   </div>
   } @else if (failed()) {
   <div class="adm-state">
-    <p class="adm-state__t">The messages didn't load</p>
-    <p>The API didn't answer. Nothing is lost — try again, and check the backend is up if it keeps failing.</p>
-    <button type="button" class="btn btn--gold btn--sm" (click)="load()">Try again</button>
+    <p class="adm-state__t">{{ i18n.t('admin.messages.errTitle') }}</p>
+    <p>{{ i18n.t('admin.common.apiDown') }}</p>
+    <button type="button" class="btn btn--gold btn--sm" (click)="load()">{{ i18n.t('admin.common.tryAgain') }}</button>
   </div>
   } @else if (messages().length === 0) {
   <div class="adm-state">
     @if (status()) {
-    <p class="adm-state__t">No {{ status() }} messages</p>
-    <p>Nothing is sitting at this status right now.</p>
-    <button type="button" class="btn btn--outline btn--sm" (click)="onFilter('')">Show all messages</button>
+    <p class="adm-state__t">{{ i18n.t('admin.messages.noStatusTitle').replace('{status}', statusLabel(status())) }}</p>
+    <p>{{ i18n.t('admin.messages.noStatusBody') }}</p>
+    <button type="button" class="btn btn--outline btn--sm" (click)="onFilter('')">{{ i18n.t('admin.messages.showAll') }}</button>
     } @else {
-    <p class="adm-state__t">No messages yet</p>
-    <p>Anything sent through the contact form on the storefront arrives here.</p>
+    <p class="adm-state__t">{{ i18n.t('admin.messages.emptyTitle') }}</p>
+    <p>{{ i18n.t('admin.messages.emptyBody') }}</p>
     }
   </div>
   } @else {
@@ -59,7 +62,7 @@
           <span class="msg__mail">{{ m.email }}</span>
         </span>
         <span class="msg__peek">{{ m.message }}</span>
-        <span [class]="pillClass(m.status)">{{ m.status }}</span>
+        <span [class]="pillClass(m.status)">{{ statusLabel(m.status) }}</span>
         <span class="msg__when">{{ date(m.created_at) }}</span>
         <svg class="msg__caret" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
       </button>
@@ -71,15 +74,15 @@
         }
         <p class="msg__text">{{ m.message }}</p>
         <div class="msg__acts">
-          <a class="btn btn--green btn--sm" [href]="'mailto:' + m.email">Reply by email</a>
+          <a class="btn btn--green btn--sm" [href]="'mailto:' + m.email">{{ i18n.t('admin.messages.replyByEmail') }}</a>
           @if (m.status !== 'replied') {
-          <button type="button" class="btn btn--outline btn--sm" (click)="setStatus(m, 'replied')">Mark replied</button>
+          <button type="button" class="btn btn--outline btn--sm" (click)="setStatus(m, 'replied')">{{ i18n.t('admin.messages.markReplied') }}</button>
           }
           @if (m.status !== 'unread') {
-          <button type="button" class="btn btn--outline btn--sm" (click)="setStatus(m, 'unread')">Mark unread</button>
+          <button type="button" class="btn btn--outline btn--sm" (click)="setStatus(m, 'unread')">{{ i18n.t('admin.messages.markUnread') }}</button>
           }
           <span class="adm-bar__spacer"></span>
-          <button type="button" class="btn btn--danger btn--sm" (click)="pendingDelete.set(m)">Delete</button>
+          <button type="button" class="btn btn--danger btn--sm" (click)="pendingDelete.set(m)">{{ i18n.t('admin.common.delete') }}</button>
         </div>
       </div>
       }
@@ -89,9 +92,9 @@
 
   @if (totalPages() > 1) {
   <div class="adm-pager">
-    <span class="adm-pager__at">Page {{ page() }} of {{ totalPages() }}</span>
-    <button type="button" [disabled]="page() === 1" (click)="goto(page() - 1)">Previous</button>
-    <button type="button" [disabled]="page() === totalPages()" (click)="goto(page() + 1)">Next</button>
+    <span class="adm-pager__at">{{ i18n.t('admin.common.pageOf').replace('{page}', '' + page()).replace('{total}', '' + totalPages()) }}</span>
+    <button type="button" [disabled]="page() === 1" (click)="goto(page() - 1)">{{ i18n.t('admin.common.previous') }}</button>
+    <button type="button" [disabled]="page() === totalPages()" (click)="goto(page() + 1)">{{ i18n.t('admin.common.next') }}</button>
   </div>
   }
   }
@@ -99,9 +102,9 @@
 
 @if (pendingDelete(); as m) {
 <app-confirm-dialog
-  heading="Delete this message?"
-  [body]="'The message from ' + m.name + ' (' + m.email + ') will be removed permanently. There is no undo.'"
-  confirmLabel="Delete message"
+  [heading]="i18n.t('admin.messages.deleteHeading')"
+  [body]="i18n.t('admin.messages.deleteBody').replace('{name}', m.name).replace('{email}', m.email)"
+  [confirmLabel]="i18n.t('admin.messages.deleteConfirm')"
   [busy]="deleting()"
   (confirmed)="confirmDelete()"
   (dismissed)="pendingDelete.set(null)" />

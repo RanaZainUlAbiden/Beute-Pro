@@ -3,8 +3,10 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { AdminApi, adminDate, adminMoney, adminProductName } from '../admin-api';
-import { ALL_STATUSES, statusPill } from '../../features/orders/order-view';
+import { ALL_STATUSES, statusKey, statusPill } from '../../features/orders/order-view';
 import { ConfirmDialog } from '../ui/confirm-dialog/confirm-dialog';
+import { I18nService } from '../../core/services/i18n.service';
+import type { TranslationKey } from '../../core/data/i18n.data';
 import type { Order } from '../../services/order';
 
 /* =============================================================
@@ -28,12 +30,18 @@ export class AdminOrderDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(AdminApi);
   private readonly fb = inject(FormBuilder);
+  protected readonly i18n = inject(I18nService);
 
   protected readonly statuses = ALL_STATUSES;
   protected readonly money = adminMoney;
   protected readonly date = adminDate;
   protected readonly productName = adminProductName;
   protected readonly pill = statusPill;
+  protected readonly statusLabel = (status: string) => this.i18n.t(statusKey(status));
+  protected readonly paymentMethodLabel = (method: string) =>
+    this.i18n.t(`admin.payment.method.${method}` as TranslationKey);
+  protected readonly paymentStatusLabel = (status: string) =>
+    this.i18n.t(`admin.payment.status.${status}` as TranslationKey);
 
   protected readonly order = signal<Order | null>(null);
   protected readonly busy = signal(true);
@@ -124,13 +132,13 @@ export class AdminOrderDetailComponent implements OnInit {
         this.savingStatus.set(false);
         this.pendingCancel.set(false);
         this.order.set({ ...order, status: next as Order['status'] });
-        this.note.set(`Status set to ${next}.`);
+        this.note.set(this.i18n.t('admin.orderDetail.statusSetNote').replace('{status}', this.statusLabel(next)));
       },
       error: () => {
         this.savingStatus.set(false);
         this.pendingCancel.set(false);
         this.selectedStatus.set(order.status);
-        this.error.set("That status change didn't save. The order is unchanged — try again.");
+        this.error.set(this.i18n.t('admin.orderDetail.statusErr'));
       },
     });
   }
@@ -150,11 +158,11 @@ export class AdminOrderDetailComponent implements OnInit {
           tracking_number: trackingNumber || null,
           courier_name: courierName || null,
         });
-        this.note.set('Tracking saved. The customer can see it on the track page.');
+        this.note.set(this.i18n.t('admin.orderDetail.trackingSavedNote'));
       },
       error: () => {
         this.savingTracking.set(false);
-        this.error.set("The tracking details didn't save. Try again.");
+        this.error.set(this.i18n.t('admin.orderDetail.trackingErr'));
       },
     });
   }

@@ -25,18 +25,16 @@ export class WishlistPageComponent implements OnInit {
   private readonly wishlist = inject(WishlistService);
   protected readonly i18n = inject(I18nService);
 
-  private readonly ids = signal<readonly string[]>([]);
   protected readonly busy = signal(true);
   protected readonly failed = signal(false);
 
   /** Saved ids, resolved against the catalogue and in its order. */
   protected readonly products = computed<Product[]>(() => {
-    const saved = new Set(this.ids());
+    const saved = new Set(this.wishlist.items());
     return PRODUCTS.filter((p) => saved.has(p.id));
   });
 
   ngOnInit(): void {
-    this.wishlist.wishlist$.subscribe((items) => this.ids.set(items ?? []));
     this.load();
   }
 

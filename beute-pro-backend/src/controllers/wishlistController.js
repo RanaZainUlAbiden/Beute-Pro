@@ -6,6 +6,9 @@ const wishlistService = require('../services/wishlistService');
  */
 const getWishlist = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
     const userId = req.user.id;
     const items = await wishlistService.getWishlist(userId);
     res.json({ items });
@@ -21,6 +24,9 @@ const getWishlist = async (req, res) => {
  */
 const addToWishlist = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
     const userId = req.user.id;
     const { productId } = req.params;
     if (!productId) {
@@ -40,6 +46,9 @@ const addToWishlist = async (req, res) => {
  */
 const removeFromWishlist = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
     const userId = req.user.id;
     const { productId } = req.params;
     if (!productId) {
@@ -62,6 +71,9 @@ const removeFromWishlist = async (req, res) => {
  */
 const checkWishlist = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
     const userId = req.user.id;
     const { productId } = req.params;
     if (!productId) {

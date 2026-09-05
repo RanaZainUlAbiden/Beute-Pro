@@ -1,24 +1,27 @@
 <div class="adm-head">
   <div>
-    <h1>Orders</h1>
-    <p>Every order, newest first. Open one to change its status or add tracking.</p>
+    <h1>{{ i18n.t('admin.orders.title') }}</h1>
+    <p>{{ i18n.t('admin.orders.sub') }}</p>
   </div>
-  <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">Refresh</button>
+  <div class="adm-head__acts">
+    <button type="button" class="btn btn--outline btn--sm" [attr.aria-label]="i18n.t('admin.common.language')" (click)="i18n.toggle()">{{ i18n.toggleLabel() }}</button>
+    <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">{{ i18n.t('admin.common.refresh') }}</button>
+  </div>
 </div>
 
 <div class="adm-bar">
   <label class="ord__search">
-    <span class="ord__vh">Search this page</span>
-    <input class="adm-field adm-field--search" type="search" placeholder="Search number, name, email, phone"
+    <span class="ord__vh">{{ i18n.t('admin.orders.vhSearch') }}</span>
+    <input class="adm-field adm-field--search" type="search" [placeholder]="i18n.t('admin.orders.searchPlaceholder')"
            [value]="search()" (input)="search.set($any($event.target).value)">
   </label>
 
   <label class="ord__filter">
-    <span class="ord__vh">Filter by status</span>
+    <span class="ord__vh">{{ i18n.t('admin.common.filterByStatus') }}</span>
     <select class="adm-field" [value]="status()" (change)="onStatus($any($event.target).value)">
-      <option value="">All statuses</option>
+      <option value="">{{ i18n.t('admin.orders.allStatuses') }}</option>
       @for (s of statuses; track s) {
-      <option [value]="s">{{ s }}</option>
+      <option [value]="s">{{ statusLabel(s) }}</option>
       }
     </select>
   </label>
@@ -27,9 +30,9 @@
 
   <span class="adm-count">
     @if (search()) {
-      {{ rows().length }} of {{ orders().length }} on this page · {{ total() }} in total
+      {{ i18n.t('admin.orders.countSearch').replace('{shown}', '' + rows().length).replace('{page}', '' + orders().length).replace('{total}', '' + total()) }}
     } @else {
-      {{ orders().length }} of {{ total() }} orders
+      {{ i18n.t('admin.orders.count').replace('{shown}', '' + orders().length).replace('{total}', '' + total()) }}
     }
   </span>
 </div>
@@ -43,23 +46,23 @@
   </div>
   } @else if (failed()) {
   <div class="adm-state">
-    <p class="adm-state__t">The orders didn't load</p>
-    <p>The API didn't answer. Nothing is lost — try again, and check the backend is up if it keeps failing.</p>
-    <button type="button" class="btn btn--gold btn--sm" (click)="load()">Try again</button>
+    <p class="adm-state__t">{{ i18n.t('admin.orders.errTitle') }}</p>
+    <p>{{ i18n.t('admin.common.apiDown') }}</p>
+    <button type="button" class="btn btn--gold btn--sm" (click)="load()">{{ i18n.t('admin.common.tryAgain') }}</button>
   </div>
   } @else if (rows().length === 0) {
   <div class="adm-state">
     @if (search()) {
-    <p class="adm-state__t">Nothing on this page matches “{{ search() }}”</p>
-    <p>The search looks at the 25 orders loaded here. Clear it, or turn the page.</p>
-    <button type="button" class="btn btn--outline btn--sm" (click)="clearSearch()">Clear search</button>
+    <p class="adm-state__t">{{ i18n.t('admin.orders.noMatchTitle').replace('{q}', search()) }}</p>
+    <p>{{ i18n.t('admin.orders.noMatchBody') }}</p>
+    <button type="button" class="btn btn--outline btn--sm" (click)="clearSearch()">{{ i18n.t('admin.common.clearSearch') }}</button>
     } @else if (status()) {
-    <p class="adm-state__t">No {{ status() }} orders</p>
-    <p>Nothing is sitting at this status right now.</p>
-    <button type="button" class="btn btn--outline btn--sm" (click)="onStatus('')">Show all statuses</button>
+    <p class="adm-state__t">{{ i18n.t('admin.orders.noStatusTitle').replace('{status}', statusLabel(status())) }}</p>
+    <p>{{ i18n.t('admin.orders.noStatusBody') }}</p>
+    <button type="button" class="btn btn--outline btn--sm" (click)="onStatus('')">{{ i18n.t('admin.orders.showAllStatuses') }}</button>
     } @else {
-    <p class="adm-state__t">No orders yet</p>
-    <p>Orders placed on the storefront land here straight away.</p>
+    <p class="adm-state__t">{{ i18n.t('admin.orders.emptyTitle') }}</p>
+    <p>{{ i18n.t('admin.orders.emptyBody') }}</p>
     }
   </div>
   } @else {
@@ -68,32 +71,32 @@
       <thead>
         <tr>
           <th [class.is-sorted]="sortKey() === 'order_number'" [attr.aria-sort]="sortState('order_number')">
-            <button type="button" (click)="sortBy('order_number')">Order
+            <button type="button" (click)="sortBy('order_number')">{{ i18n.t('admin.orders.colOrder') }}
               <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('order_number') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
             </button>
           </th>
           <th [class.is-sorted]="sortKey() === 'created_at'" [attr.aria-sort]="sortState('created_at')">
-            <button type="button" (click)="sortBy('created_at')">Placed
+            <button type="button" (click)="sortBy('created_at')">{{ i18n.t('admin.orders.colPlaced') }}
               <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('created_at') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
             </button>
           </th>
           <th [class.is-sorted]="sortKey() === 'customer_name'" [attr.aria-sort]="sortState('customer_name')">
-            <button type="button" (click)="sortBy('customer_name')">Customer
+            <button type="button" (click)="sortBy('customer_name')">{{ i18n.t('admin.orders.colCustomer') }}
               <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('customer_name') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
             </button>
           </th>
-          <th class="num"><span>Items</span></th>
+          <th class="num"><span>{{ i18n.t('admin.orders.colItems') }}</span></th>
           <th class="num" [class.is-sorted]="sortKey() === 'total_amount_pkr'" [attr.aria-sort]="sortState('total_amount_pkr')">
-            <button type="button" (click)="sortBy('total_amount_pkr')">Total
+            <button type="button" (click)="sortBy('total_amount_pkr')">{{ i18n.t('admin.orders.colTotal') }}
               <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('total_amount_pkr') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
             </button>
           </th>
           <th [class.is-sorted]="sortKey() === 'status'" [attr.aria-sort]="sortState('status')">
-            <button type="button" (click)="sortBy('status')">Status
+            <button type="button" (click)="sortBy('status')">{{ i18n.t('admin.orders.colStatus') }}
               <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('status') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
             </button>
           </th>
-          <th><span class="ord__vh">Open</span></th>
+          <th><span class="ord__vh">{{ i18n.t('admin.orders.vhOpen') }}</span></th>
         </tr>
       </thead>
       <tbody>
@@ -107,8 +110,8 @@
           </td>
           <td class="num">{{ itemCount(o) }}</td>
           <td class="num">{{ money(o.total_amount_pkr) }}</td>
-          <td><span [class]="pill(o.status)">{{ o.status }}</span></td>
-          <td class="num"><a class="adm-link" [routerLink]="[o.id]">Open</a></td>
+          <td><span [class]="pill(o.status)">{{ statusLabel(o.status) }}</span></td>
+          <td class="num"><a class="adm-link" [routerLink]="[o.id]">{{ i18n.t('admin.orders.open') }}</a></td>
         </tr>
         }
       </tbody>
@@ -117,9 +120,9 @@
 
   @if (totalPages() > 1) {
   <div class="adm-pager">
-    <span class="adm-pager__at">Page {{ page() }} of {{ totalPages() }}</span>
-    <button type="button" [disabled]="page() === 1" (click)="goto(page() - 1)">Previous</button>
-    <button type="button" [disabled]="page() === totalPages()" (click)="goto(page() + 1)">Next</button>
+    <span class="adm-pager__at">{{ i18n.t('admin.common.pageOf').replace('{page}', '' + page()).replace('{total}', '' + totalPages()) }}</span>
+    <button type="button" [disabled]="page() === 1" (click)="goto(page() - 1)">{{ i18n.t('admin.common.previous') }}</button>
+    <button type="button" [disabled]="page() === totalPages()" (click)="goto(page() + 1)">{{ i18n.t('admin.common.next') }}</button>
   </div>
   }
   }

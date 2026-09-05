@@ -21,6 +21,14 @@ const {
   deleteMessage,
 } = require('../controllers/contactController');
 
+// Customer management
+const {
+  adminListCustomers,
+  adminGetCustomer,
+  adminUpdateCustomer,
+  adminDeleteCustomer,
+} = require('../controllers/customerController');
+
 const router = express.Router();
 
 // All admin routes require authentication + admin role
@@ -72,5 +80,21 @@ router.put('/contact/:id/status', updateMessageStatus);
 
 // Delete a message
 router.delete('/contact/:id', deleteMessage);
+
+// ============================================
+// CUSTOMER MANAGEMENT
+// ============================================
+
+// List all customers (search, sort, pagination)
+router.get('/customers', adminListCustomers);
+
+// Get a single customer
+router.get('/customers/:id', adminGetCustomer);
+
+// Update a customer's details
+router.put('/customers/:id', adminUpdateCustomer);
+
+// Delete a customer
+router.delete('/customers/:id', adminDeleteCustomer);
 
 module.exports = router;

@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 
 import { AdminApi, adminMoney, adminProductName, type RevenueData } from '../admin-api';
+import { I18nService } from '../../core/services/i18n.service';
 
 /* =============================================================
    REVENUE (admin)
@@ -17,6 +18,7 @@ import { AdminApi, adminMoney, adminProductName, type RevenueData } from '../adm
 })
 export class RevenueComponent implements OnInit {
   private readonly api = inject(AdminApi);
+  protected readonly i18n = inject(I18nService);
 
   protected readonly money = adminMoney;
   protected readonly productName = adminProductName;

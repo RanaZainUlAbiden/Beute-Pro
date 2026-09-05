@@ -46,9 +46,36 @@ const changePasswordSchema = Joi.object({
   }),
 });
 
+// Admin: editing a customer record — same signup rules (Pakistani phone, address length).
+const adminCustomerUpdateSchema = Joi.object({
+  full_name: Joi.string().min(2).required().messages({
+    'string.empty': 'Name is required.',
+    'string.min': 'Name is too short.',
+  }),
+  email: Joi.string().email().required(),
+  phone: Joi.string()
+    .required()
+    .custom((value, helpers) => {
+      const normalized = value.replace(/[\s-]/g, '');
+      if (!PK_PHONE.test(normalized)) return helpers.error('any.invalid');
+      return normalized;
+    })
+    .messages({
+      'string.empty': 'Phone number is required.',
+      'any.required': 'Phone number is required.',
+      'any.invalid': 'Enter a valid Pakistani mobile number as 03XXXXXXXXX or +923XXXXXXXXX.',
+    }),
+  address: Joi.string().min(5).required().messages({
+    'string.empty': 'Address is required.',
+    'any.required': 'Address is required.',
+    'string.min': 'Address is too short — include street, area and city.',
+  }),
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
   updateProfileSchema,
   changePasswordSchema, // ✅ Export the new schema
+  adminCustomerUpdateSchema,
 };

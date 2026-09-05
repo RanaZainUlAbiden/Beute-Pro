@@ -3,6 +3,8 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { AdminApi, adminDate, type ContactMessage } from '../admin-api';
 import { ConfirmDialog } from '../ui/confirm-dialog/confirm-dialog';
 import { ToastService } from '../../core/services/toast.service';
+import { I18nService } from '../../core/services/i18n.service';
+import type { TranslationKey } from '../../core/data/i18n.data';
 
 /* =============================================================
    MESSAGES (admin)
@@ -23,9 +25,12 @@ import { ToastService } from '../../core/services/toast.service';
 export class ContactMessagesComponent implements OnInit {
   private readonly api = inject(AdminApi);
   private readonly toast = inject(ToastService);
+  protected readonly i18n = inject(I18nService);
 
   protected readonly date = adminDate;
   protected readonly filters = ['unread', 'read', 'replied'] as const;
+  protected readonly statusLabel = (status: string) =>
+    this.i18n.t(`admin.messages.status.${status}` as TranslationKey);
 
   protected readonly messages = signal<readonly ContactMessage[]>([]);
   protected readonly busy = signal(true);
@@ -94,9 +99,11 @@ export class ContactMessagesComponent implements OnInit {
         this.messages.update((list) =>
           list.map((m) => (m.id === message.id ? { ...m, status: status as ContactMessage['status'] } : m)),
         );
-        if (!quiet) this.toast.show(`Marked ${status}`);
+        if (!quiet) {
+          this.toast.show(this.i18n.t('admin.messages.markedNote').replace('{status}', this.statusLabel(status)));
+        }
       },
-      error: () => this.toast.show("That didn't save — try again"),
+      error: () => this.toast.show(this.i18n.t('admin.messages.statusErr')),
     });
   }
 
@@ -108,14 +115,14 @@ export class ContactMessagesComponent implements OnInit {
       next: () => {
         this.deleting.set(false);
         this.pendingDelete.set(null);
-        this.toast.show('Message deleted');
+        this.toast.show(this.i18n.t('admin.messages.deletedNote'));
         // the page it came from may now be short a row
         this.load();
       },
       error: () => {
         this.deleting.set(false);
         this.pendingDelete.set(null);
-        this.toast.show("The message wasn't deleted — try again");
+        this.toast.show(this.i18n.t('admin.messages.deleteErr'));
       },
     });
   }

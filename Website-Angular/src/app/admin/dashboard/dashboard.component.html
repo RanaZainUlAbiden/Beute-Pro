@@ -1,14 +1,17 @@
 <div class="adm-head">
   <div>
-    <h1>Dashboard</h1>
-    <p>Everything that moved since you were last here.</p>
+    <h1>{{ i18n.t('admin.dashboard.title') }}</h1>
+    <p>{{ i18n.t('admin.dashboard.sub') }}</p>
   </div>
-  <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">Refresh</button>
+  <div class="adm-head__acts">
+    <button type="button" class="btn btn--outline btn--sm" [attr.aria-label]="i18n.t('admin.common.language')" (click)="i18n.toggle()">{{ i18n.toggleLabel() }}</button>
+    <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">{{ i18n.t('admin.common.refresh') }}</button>
+  </div>
 </div>
 
 @if (busy()) {
 <div class="adm-stats">
-  @for (n of [1, 2, 3, 4]; track n) {
+  @for (n of [1, 2]; track n) {
   <div class="adm-stat">
     <div class="adm-skel" style="width:52%"></div>
     <div class="adm-skel dash__skel-v"></div>
@@ -25,102 +28,65 @@
 } @else if (failed()) {
 <div class="adm-panel">
   <div class="adm-state">
-    <p class="adm-state__t">The dashboard didn't load</p>
-    <p>The API didn't answer. Nothing is lost — try again, and check the backend is up if it keeps failing.</p>
-    <button type="button" class="btn btn--gold btn--sm" (click)="load()">Try again</button>
+    <p class="adm-state__t">{{ i18n.t('admin.dashboard.errTitle') }}</p>
+    <p>{{ i18n.t('admin.common.apiDown') }}</p>
+    <button type="button" class="btn btn--gold btn--sm" (click)="load()">{{ i18n.t('admin.common.tryAgain') }}</button>
   </div>
 </div>
 } @else if (data(); as d) {
 
 <div class="adm-stats">
   <div class="adm-stat adm-stat--accent">
-    <div class="adm-stat__k">Revenue, all time</div>
-    <div class="adm-stat__v">{{ money(d.summary.totalRevenue) }}</div>
-    <div class="adm-stat__n">Cancelled orders excluded</div>
-  </div>
-  <div class="adm-stat">
-    <div class="adm-stat__k">Today</div>
+    <div class="adm-stat__k">{{ i18n.t('admin.dashboard.revenueToday') }}</div>
     <div class="adm-stat__v">{{ money(d.summary.todayRevenue) }}</div>
-    <div class="adm-stat__n">Since midnight</div>
+    <div class="adm-stat__n">{{ i18n.t('admin.dashboard.allTime').replace('{amount}', money(d.summary.totalRevenue)) }}</div>
   </div>
   <div class="adm-stat">
-    <div class="adm-stat__k">Orders</div>
+    <div class="adm-stat__k">{{ i18n.t('admin.dashboard.orders') }}</div>
     <div class="adm-stat__v">{{ d.summary.totalOrders }}</div>
-    <div class="adm-stat__n">{{ openOrders() }} still to ship</div>
-  </div>
-  <div class="adm-stat">
-    <div class="adm-stat__k">Customers</div>
-    <div class="adm-stat__v">{{ d.summary.totalCustomers }}</div>
-    <div class="adm-stat__n">{{ d.summary.newCustomers }} in the last 7 days</div>
+    <div class="adm-stat__n">{{ i18n.t('admin.dashboard.pendingFulfilment').replace('{n}', '' + openOrders()) }}</div>
   </div>
 </div>
 
-<div class="dash__cols">
-  <section class="adm-panel">
-    <div class="adm-panel__head">
-      <h2>Last seven days</h2>
-      <span class="adm-count">Peak {{ money(peak()) }}</span>
-    </div>
-    <div class="adm-panel__body">
-      @if (d.dailyRevenue.length) {
-      <ol class="dash__bars">
-        @for (day of d.dailyRevenue; track day.date) {
-        <li class="dash__bar">
-          <span class="dash__bar-fill" [style.height]="barHeight(day.revenue)"
-                [attr.title]="date(day.date) + ' · ' + money(day.revenue)"></span>
-          <span class="dash__bar-day">{{ weekday(day.date) }}</span>
-        </li>
-        }
-      </ol>
-      } @else {
-      <div class="adm-state">
-        <p class="adm-state__t">No takings in the last seven days</p>
-        <p>The strip fills in as orders come through.</p>
-      </div>
+<section class="adm-panel">
+  <div class="adm-panel__head">
+    <h2>{{ i18n.t('admin.dashboard.pendingSection') }}</h2>
+    <a class="adm-link" routerLink="../orders">{{ i18n.t('admin.dashboard.allOrders') }}</a>
+  </div>
+  <div class="adm-panel__body">
+    @if (d.ordersByStatus.length) {
+    <ul class="dash__statuses">
+      @for (row of d.ordersByStatus; track row.status) {
+      <li>
+        <span [class]="pill(row.status)">{{ statusLabel(row.status) }}</span>
+        <b>{{ row.count }}</b>
+      </li>
       }
+    </ul>
+    } @else {
+    <div class="adm-state">
+      <p class="adm-state__t">{{ i18n.t('admin.dashboard.noStatusesTitle') }}</p>
+      <p>{{ i18n.t('admin.dashboard.noStatusesBody') }}</p>
     </div>
-  </section>
-
-  <section class="adm-panel">
-    <div class="adm-panel__head">
-      <h2>Orders by status</h2>
-      <a class="adm-link" routerLink="../orders">All orders</a>
-    </div>
-    <div class="adm-panel__body">
-      @if (d.ordersByStatus.length) {
-      <ul class="dash__statuses">
-        @for (row of d.ordersByStatus; track row.status) {
-        <li>
-          <span [class]="pill(row.status)">{{ row.status }}</span>
-          <b>{{ row.count }}</b>
-        </li>
-        }
-      </ul>
-      } @else {
-      <div class="adm-state">
-        <p class="adm-state__t">No orders yet</p>
-        <p>Statuses appear here as soon as the first order lands.</p>
-      </div>
-      }
-    </div>
-  </section>
-</div>
+    }
+  </div>
+</section>
 
 <section class="adm-panel dash__recent">
   <div class="adm-panel__head">
-    <h2>Recent orders</h2>
-    <a class="adm-link" routerLink="../orders">All orders</a>
+    <h2>{{ i18n.t('admin.dashboard.recentOrders') }}</h2>
+    <a class="adm-link" routerLink="../orders">{{ i18n.t('admin.dashboard.allOrders') }}</a>
   </div>
   @if (d.recentOrders.length) {
   <div class="adm-scroll">
     <table class="adm-table">
       <thead>
         <tr>
-          <th><span>Order</span></th>
-          <th><span>Placed</span></th>
-          <th><span>Customer</span></th>
-          <th><span>Status</span></th>
-          <th class="num"><span>Total</span></th>
+          <th><span>{{ i18n.t('admin.dashboard.colOrder') }}</span></th>
+          <th><span>{{ i18n.t('admin.dashboard.colPlaced') }}</span></th>
+          <th><span>{{ i18n.t('admin.dashboard.colCustomer') }}</span></th>
+          <th><span>{{ i18n.t('admin.dashboard.colStatus') }}</span></th>
+          <th class="num"><span>{{ i18n.t('admin.dashboard.colTotal') }}</span></th>
         </tr>
       </thead>
       <tbody>
@@ -129,7 +95,7 @@
           <td class="mono"><a class="adm-link" [routerLink]="['../orders', o.id]">{{ o.orderNumber }}</a></td>
           <td class="muted">{{ date(o.createdAt) }}</td>
           <td class="clip">{{ o.customerName }}</td>
-          <td><span [class]="pill(o.status)">{{ o.status }}</span></td>
+          <td><span [class]="pill(o.status)">{{ statusLabel(o.status) }}</span></td>
           <td class="num">{{ money(o.total) }}</td>
         </tr>
         }
@@ -138,42 +104,8 @@
   </div>
   } @else {
   <div class="adm-state">
-    <p class="adm-state__t">No orders yet</p>
-    <p>When the first order arrives it will show here, newest first.</p>
-  </div>
-  }
-</section>
-
-<section class="adm-panel">
-  <div class="adm-panel__head">
-    <h2>Top products</h2>
-    <a class="adm-link" routerLink="../revenue">Revenue detail</a>
-  </div>
-  @if (d.topProducts.length) {
-  <div class="adm-scroll">
-    <table class="adm-table">
-      <thead>
-        <tr>
-          <th><span>Product</span></th>
-          <th class="num"><span>Units</span></th>
-          <th class="num"><span>Revenue</span></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (p of d.topProducts; track p.productId) {
-        <tr>
-          <td>{{ productName(p.productId) }}</td>
-          <td class="num">{{ p.totalQuantity }}</td>
-          <td class="num">{{ money(p.revenue) }}</td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-  } @else {
-  <div class="adm-state">
-    <p class="adm-state__t">Nothing sold yet</p>
-    <p>This ranks products by revenue once orders start coming in.</p>
+    <p class="adm-state__t">{{ i18n.t('admin.dashboard.noStatusesTitle') }}</p>
+    <p>{{ i18n.t('admin.dashboard.noRecentBody') }}</p>
   </div>
   }
 </section>

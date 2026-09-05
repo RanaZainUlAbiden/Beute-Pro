@@ -53,6 +53,11 @@ export class AuthService {
       try {
         const user = JSON.parse(userJson);
         this.userSubject.next(user);
+        // ✅ Restore the wishlist too — a page reload keeps the session
+        // in localStorage but the in-memory wishlist signal starts empty.
+        this.wishlist.loadWishlist().subscribe({
+          error: (err) => console.warn('Failed to load wishlist on session restore', err),
+        });
       } catch {
         this.logout();
       }
@@ -123,6 +128,7 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
     this.userSubject.next(null);
+    this.wishlist.clear();
     this.router.navigate(['/login']);
   }
 

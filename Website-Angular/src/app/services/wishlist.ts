@@ -1,6 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -8,23 +8,24 @@ export class WishlistService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
 
-  private wishlistSubject = new BehaviorSubject<string[]>([]);
-  public wishlist$ = this.wishlistSubject.asObservable();
+  private readonly ids = signal<readonly string[]>([]);
+  /** Saved product ids, as a signal — reactive for OnPush components and effects. */
+  readonly items = this.ids.asReadonly();
 
   /**
    * Load wishlist from server
    */
   loadWishlist(): Observable<{ items: string[] }> {
     return this.http.get<{ items: string[] }>(`${this.apiUrl}/wishlist`).pipe(
-      tap(res => this.wishlistSubject.next(res.items))
+      tap(res => this.ids.set(res.items ?? []))
     );
   }
 
   /**
    * Get current wishlist value
    */
-  getWishlist(): string[] {
-    return this.wishlistSubject.value;
+  getWishlist(): readonly string[] {
+    return this.ids();
   }
 
   /**
@@ -37,8 +38,7 @@ export class WishlistService {
     ).pipe(
       tap(res => {
         if (res.added) {
-          const current = this.wishlistSubject.value;
-          this.wishlistSubject.next([...current, productId]);
+          this.ids.update(current => current.includes(productId) ? current : [...current, productId]);
         }
       })
     );
@@ -53,8 +53,7 @@ export class WishlistService {
     ).pipe(
       tap(res => {
         if (res.removed) {
-          const current = this.wishlistSubject.value;
-          this.wishlistSubject.next(current.filter(id => id !== productId));
+          this.ids.update(current => current.filter(id => id !== productId));
         }
       })
     );
@@ -73,8 +72,7 @@ export class WishlistService {
    * Toggle product in wishlist (add if not present, remove if present)
    */
   toggle(productId: string): Observable<{ added: boolean; removed: boolean }> {
-    const current = this.wishlistSubject.value;
-    const exists = current.includes(productId);
+    const exists = this.ids().includes(productId);
     if (exists) {
       return this.remove(productId).pipe(
         tap(() => ({ added: false, removed: true }))
@@ -90,6 +88,12 @@ export class WishlistService {
    * Check if product is in wishlist synchronously (from cached state)
    */
   isInWishlist(productId: string): boolean {
-    return this.wishlistSubject.value.includes(productId);
+    return this.ids().includes(productId);
+  }
+
+  /** Drop all local state — call on logout so a signed-out session, or the
+   *  next user to sign in, doesn't briefly see the previous user's hearts. */
+  clear(): void {
+    this.ids.set([]);
   }
 }

@@ -1,11 +1,12 @@
 const express = require('express');
-const { protect } = require('../middleware/auth');
+const { protect, requireAuth } = require('../middleware/auth');
 const { getMe, updateMe, changePassword } = require('../controllers/authController'); // ✅ Added changePassword
 
 const router = express.Router();
 
 // All routes here are protected
 router.use(protect);
+router.use(requireAuth);
 
 router.get('/me', getMe);
 router.put('/me', updateMe);

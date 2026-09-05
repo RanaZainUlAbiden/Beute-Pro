@@ -1,9 +1,12 @@
 <div class="adm-head">
   <div>
-    <h1>Revenue</h1>
-    <p>Takings to date, and what they came from. Cancelled orders are excluded.</p>
+    <h1>{{ i18n.t('admin.revenue.title') }}</h1>
+    <p>{{ i18n.t('admin.revenue.sub') }}</p>
   </div>
-  <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">Refresh</button>
+  <div class="adm-head__acts">
+    <button type="button" class="btn btn--outline btn--sm" [attr.aria-label]="i18n.t('admin.common.language')" (click)="i18n.toggle()">{{ i18n.toggleLabel() }}</button>
+    <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">{{ i18n.t('admin.common.refresh') }}</button>
+  </div>
 </div>
 
 @if (busy()) {
@@ -18,41 +21,41 @@
 } @else if (failed()) {
 <div class="adm-panel">
   <div class="adm-state">
-    <p class="adm-state__t">The revenue figures didn't load</p>
-    <p>The API didn't answer. Try again, and check the backend is up if it keeps failing.</p>
-    <button type="button" class="btn btn--gold btn--sm" (click)="load()">Try again</button>
+    <p class="adm-state__t">{{ i18n.t('admin.revenue.errTitle') }}</p>
+    <p>{{ i18n.t('admin.common.apiDown') }}</p>
+    <button type="button" class="btn btn--gold btn--sm" (click)="load()">{{ i18n.t('admin.common.tryAgain') }}</button>
   </div>
 </div>
 } @else if (data(); as d) {
 
 <div class="adm-stats">
   <div class="adm-stat adm-stat--accent">
-    <div class="adm-stat__k">All time</div>
+    <div class="adm-stat__k">{{ i18n.t('admin.revenue.allTime') }}</div>
     <div class="adm-stat__v">{{ money(d.totalRevenue) }}</div>
   </div>
   <div class="adm-stat">
-    <div class="adm-stat__k">This month</div>
+    <div class="adm-stat__k">{{ i18n.t('admin.revenue.thisMonth') }}</div>
     <div class="adm-stat__v">{{ money(d.monthRevenue) }}</div>
   </div>
   <div class="adm-stat">
-    <div class="adm-stat__k">Today</div>
+    <div class="adm-stat__k">{{ i18n.t('admin.revenue.today') }}</div>
     <div class="adm-stat__v">{{ money(d.todayRevenue) }}</div>
   </div>
 </div>
 
 <section class="adm-panel">
   <div class="adm-panel__head">
-    <h2>Top products</h2>
-    <span class="adm-count">By revenue</span>
+    <h2>{{ i18n.t('admin.revenue.topProducts') }}</h2>
+    <span class="adm-count">{{ i18n.t('admin.revenue.byRevenue') }}</span>
   </div>
   @if (ranked().length) {
   <div class="adm-scroll">
     <table class="adm-table">
       <thead>
         <tr>
-          <th><span>Product</span></th>
-          <th class="num"><span>Revenue</span></th>
-          <th class="num"><span>Share</span></th>
+          <th><span>{{ i18n.t('admin.revenue.colProduct') }}</span></th>
+          <th class="num"><span>{{ i18n.t('admin.revenue.colRevenue') }}</span></th>
+          <th class="num"><span>{{ i18n.t('admin.revenue.colShare') }}</span></th>
         </tr>
       </thead>
       <tbody>
@@ -76,8 +79,8 @@
   </div>
   } @else {
   <div class="adm-state">
-    <p class="adm-state__t">Nothing sold yet</p>
-    <p>Once orders come through, the products behind the takings are ranked here.</p>
+    <p class="adm-state__t">{{ i18n.t('admin.revenue.emptyTitle') }}</p>
+    <p>{{ i18n.t('admin.revenue.emptyBody') }}</p>
   </div>
   }
 </section>

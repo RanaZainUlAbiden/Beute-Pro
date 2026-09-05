@@ -2,13 +2,17 @@
    .footer__thumbs is genuinely local to this component (used nowhere
    else), so it lives here rather than in the global sheet.
 
-   The three source photos are landscape (1375x768, 1365x768, 1372x768)
-   and close but not identical in ratio. Stacked full-width with their
-   native ratio they'd read as three mismatched wide bands, so
-   object-fit:cover onto a fixed portrait tile crops all three to one
-   consistent shape regardless of the source dimensions. */
+   The three source photos are landscape but close in ratio. We crop
+   them to a small consistent landscape tile. Explicit max-height
+   prevents any recurrence of oversized images. */
 .footer__thumbs{display:flex;flex-direction:column;gap:.5rem}
 .footer__thumbs img{
-  width:100%;aspect-ratio:4/5;object-fit:cover;
-  border-radius:var(--r);background:var(--green-2)
+  width:100%;
+  height:auto;
+  max-height:120px;
+  aspect-ratio:16/7;
+  object-fit:cover;
+  border-radius:var(--r);
+  background:var(--green-2);
+  display:block;
 }
