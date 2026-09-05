@@ -123,10 +123,16 @@
         <dd>{{ o.customer_name }}</dd>
         <dt>Email</dt>
         <dd><a class="adm-link" [href]="'mailto:' + o.customer_email">{{ o.customer_email }}</a></dd>
-        <dt>Phone</dt>
-        <dd><a class="adm-link" [href]="'tel:' + o.customer_phone">{{ o.customer_phone }}</a></dd>
         <dt>Address</dt>
         <dd>{{ o.shipping_address }}</dd>
+        <dt>Phone</dt>
+        <dd>
+          @if (o.customer_phone) {
+          <a class="adm-link" [href]="'tel:' + o.customer_phone">{{ o.customer_phone }}</a>
+          } @else {
+          <span class="muted">Not provided</span>
+          }
+        </dd>
         <dt>Account</dt>
         <dd>{{ o.user_id ? 'Registered customer' : 'Guest checkout' }}</dd>
       </dl>

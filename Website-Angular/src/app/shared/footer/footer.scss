@@ -2,15 +2,13 @@
    .footer__thumbs is genuinely local to this component (used nowhere
    else), so it lives here rather than in the global sheet.
 
-   The three source photos (1375x768, 1365x768, 1372x768) are close but
-   not identical in ratio, and .footer__thumbs never had layout rules in
-   the static site either — the <img> tags just stacked full-width and
-   full-height, one per line. object-fit:cover onto a fixed 1:1 tile (the
-   same small-square-thumbnail pattern as .mega__feat-frame/.pcard__stage
-   in styles.scss) makes all three read as one consistent row regardless
-   of the source dimensions. */
-.footer__thumbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem}
+   The three source photos are landscape (1375x768, 1365x768, 1372x768)
+   and close but not identical in ratio. Stacked full-width with their
+   native ratio they'd read as three mismatched wide bands, so
+   object-fit:cover onto a fixed portrait tile crops all three to one
+   consistent shape regardless of the source dimensions. */
+.footer__thumbs{display:flex;flex-direction:column;gap:.5rem}
 .footer__thumbs img{
-  width:100%;aspect-ratio:1/1;object-fit:cover;
+  width:100%;aspect-ratio:4/5;object-fit:cover;
   border-radius:var(--r);background:var(--green-2)
 }
