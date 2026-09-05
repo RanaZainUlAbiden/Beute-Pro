@@ -35,6 +35,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'https://beute-pro.vercel.app',
   'https://beute-pro-rana-zain-ul-abidens-projects.vercel.app',
+  'https://beutepro.com',
+  'https://www.beutepro.com',
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
