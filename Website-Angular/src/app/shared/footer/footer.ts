@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { NgOptimizedImage } from '@angular/common';
 
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
 import { CATEGORIES } from '../../core/data/products';
@@ -10,7 +11,7 @@ import { I18nService } from '../../core/services/i18n.service';
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ImgFallbackDirective],
+  imports: [RouterLink, ImgFallbackDirective, NgOptimizedImage],
 })
 export class Footer {
   protected readonly i18n = inject(I18nService);

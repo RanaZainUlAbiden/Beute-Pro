@@ -1,76 +1,67 @@
-import { Component, ElementRef, HostListener, inject, output, viewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
-import { AuthService, User } from '../../../services/auth';
+import { Component, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
+import { I18nService } from '../../../core/services/i18n.service';
+import { AuthService, type User } from '../../../services/auth';
+
+/* =============================================================
+   ACCOUNT MENU (in the topbar)
+
+   The signed-in half of the topbar's first slot. It renders on
+   the header's dark ground, so the trigger is light-on-green and
+   the panel is the same white card the account pages use.
+
+   Closed, the panel is `visibility:hidden` rather than merely
+   transparent, so it is out of the tab order between uses.
+   ============================================================= */
 @Component({
   selector: 'app-profile-dropdown',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [RouterLink],
   templateUrl: './profile-dropdown.html',
-  styleUrls: ['./profile-dropdown.scss'],
+  styleUrl: './profile-dropdown.scss',
 })
 export class ProfileDropdownComponent {
-  private auth = inject(AuthService);
-  private router = inject(Router);
+  private readonly auth = inject(AuthService);
+  protected readonly i18n = inject(I18nService);
 
-  isOpen = false;
-  user: User | null = null;
+  protected readonly open = signal(false);
+  protected readonly user = signal<User | null>(null);
 
-  // Element refs for click outside detection
-  private dropdownRef = viewChild<ElementRef>('dropdownContainer');
+  private readonly root = viewChild<ElementRef<HTMLElement>>('root');
 
   constructor() {
-    this.auth.user$.subscribe(user => {
-      this.user = user;
-    });
+    this.auth.user$.subscribe((user) => this.user.set(user));
   }
 
-  toggle(): void {
-    this.isOpen = !this.isOpen;
+  protected toggle(): void {
+    this.open.update((v) => !v);
   }
 
-  close(): void {
-    this.isOpen = false;
+  protected close(): void {
+    this.open.set(false);
   }
 
-  logout(): void {
+  protected logout(): void {
     this.close();
     this.auth.logout();
   }
 
-  goToOrders(): void {
-    this.close();
-    this.router.navigate(['/orders']);
+  protected initials(): string {
+    const name = this.user()?.full_name?.trim() ?? '';
+    if (!name) return '?';
+    const parts = name.split(/\s+/);
+    return (parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : name.slice(0, 2)).toUpperCase();
   }
 
-  goToProfile(): void {
-    this.close();
-    this.router.navigate(['/profile']);
-  }
-
-  // Click outside to close
   @HostListener('document:click', ['$event'])
-  onClickOutside(event: Event): void {
-    const container = this.dropdownRef()?.nativeElement;
-    if (container && !container.contains(event.target)) {
-      this.close();
-    }
+  protected onDocumentClick(event: Event): void {
+    if (!this.open()) return;
+    const el = this.root()?.nativeElement;
+    if (el && !el.contains(event.target as Node)) this.close();
   }
 
-  // Escape key to close
   @HostListener('document:keydown.escape')
-  onEscape(): void {
+  protected onEscape(): void {
     this.close();
-  }
-
-  getInitials(): string {
-    if (!this.user) return '?';
-    const name = this.user.full_name || '';
-    const parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
   }
 }

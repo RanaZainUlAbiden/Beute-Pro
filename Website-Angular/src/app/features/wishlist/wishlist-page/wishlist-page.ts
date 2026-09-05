@@ -1,44 +1,54 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { WishlistService } from '../../../services/wishlist';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
 import { PRODUCTS } from '../../../core/data/products';
 import { I18nService } from '../../../core/services/i18n.service';
+import type { Product } from '../../../core/models/product';
 import { ProductCard } from '../../../shared/product-card/product-card';
+import { WishlistService } from '../../../services/wishlist';
 
+/* =============================================================
+   WISHLIST
+
+   The saved ids come back from the API; the products themselves
+   come from the local catalogue, so the grid is the same card
+   the shop renders — including its own heart, which is how a
+   product leaves this page.
+   ============================================================= */
 @Component({
   selector: 'app-wishlist-page',
-  standalone: true,
-  imports: [CommonModule, RouterModule, ProductCard],
+  imports: [RouterLink, ProductCard],
   templateUrl: './wishlist-page.html',
-  styleUrls: ['./wishlist-page.scss'],
+  styleUrl: './wishlist-page.scss',
 })
 export class WishlistPageComponent implements OnInit {
-  private wishlist = inject(WishlistService);
-  private i18n = inject(I18nService);
+  private readonly wishlist = inject(WishlistService);
+  protected readonly i18n = inject(I18nService);
 
-  wishlistItems: string[] = [];
-  isLoading = true;
+  private readonly ids = signal<readonly string[]>([]);
+  protected readonly busy = signal(true);
+  protected readonly failed = signal(false);
 
-  get products() {
-    return this.wishlistItems
-      .map(id => PRODUCTS.find(p => p.id === id))
-      .filter(p => p !== undefined);
-  }
+  /** Saved ids, resolved against the catalogue and in its order. */
+  protected readonly products = computed<Product[]>(() => {
+    const saved = new Set(this.ids());
+    return PRODUCTS.filter((p) => saved.has(p.id));
+  });
 
   ngOnInit(): void {
-    this.wishlist.wishlist$.subscribe(items => {
-      this.wishlistItems = items;
-      this.isLoading = false;
+    this.wishlist.wishlist$.subscribe((items) => this.ids.set(items ?? []));
+    this.load();
+  }
+
+  protected load(): void {
+    this.busy.set(true);
+    this.failed.set(false);
+    this.wishlist.loadWishlist().subscribe({
+      next: () => this.busy.set(false),
+      error: () => {
+        this.busy.set(false);
+        this.failed.set(true);
+      },
     });
-    this.wishlist.loadWishlist().subscribe();
-  }
-
-  getProductName(product: any): string {
-    return this.i18n.copy(product).name;
-  }
-
-  getProductPrice(product: any): string {
-    return this.i18n.money(product.price);
   }
 }

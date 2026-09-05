@@ -1,4 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -19,7 +19,7 @@ import { RouterLink } from '@angular/router';
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
 import { RevealDirective } from '../../core/directives/reveal.directive';
 import { CATEGORIES, PRODUCTS } from '../../core/data/products';
-import { catSrc, imgSrc, spinSrc } from '../../core/image';
+import { catSrc, imgSrc, imgDims, spinSrc } from '../../core/image';
 import type { Product } from '../../core/models/product';
 import { I18nService } from '../../core/services/i18n.service';
 import { MotionService } from '../../core/services/motion.service';
@@ -44,6 +44,7 @@ const ROUTINE_CHIP_ID = 'aloe-vera-mist';
     PageHero,
     ProductCarousel,
     VideoFigure,
+    NgOptimizedImage,
   ],
 })
 export class Home implements OnDestroy {
@@ -56,6 +57,7 @@ export class Home implements OnDestroy {
 
   protected readonly catSrc = catSrc;
   protected readonly imgSrc = imgSrc;
+  protected readonly imgDims = imgDims;
   protected readonly categories = CATEGORIES;
   protected readonly chip: Product =
     PRODUCTS.find((p) => p.id === ROUTINE_CHIP_ID) ?? PRODUCTS[0];
@@ -86,7 +88,7 @@ export class Home implements OnDestroy {
 
   constructor() {
     afterNextRender(() => {
-      void this.initSpotlight();
+      this.initSpotlight();
 
       // a drag that started on the media keeps tracking once the pointer
       // leaves it. Outside the zone: mousemove would otherwise run change
@@ -125,14 +127,14 @@ export class Home implements OnDestroy {
   /* =============================================================
      SPOTLIGHT — the scroll-scrubbed 360° video section
 
-     The first product, in products.ts order, with a real video
-     file. A throwaway <video> per candidate: preload="metadata"
-     only pulls the header, so testing the full range costs almost
-     nothing. If none has one, the section stays hidden and the
-     page skips straight to Our Floor.
+     The first product, in products.ts order, flagged `spin: true`.
+     No network probing: the data field is the source of truth, so
+     the homepage no longer tests all 18 spin videos on first paint.
+     If none is flagged, the section stays hidden and the page skips
+     straight to Our Floor.
      ============================================================= */
-  private async initSpotlight(): Promise<void> {
-    const product = await this.findSpotProduct();
+  private initSpotlight(): void {
+    const product = PRODUCTS.find((p) => p.spin) ?? null;
     if (product) this.spotProduct.set(product);
   }
 
@@ -147,6 +149,7 @@ export class Home implements OnDestroy {
     this.spotAttached = true;
 
     video.poster = imgSrc(product.id, 1);
+    video.muted = true; // the `muted` attribute alone doesn't always take before playback
     if (this.motion.reduced) video.removeAttribute('autoplay'); // poster frame only, ever
     video.src = spinSrc(product.id);
 
@@ -159,23 +162,6 @@ export class Home implements OnDestroy {
       { rootMargin: '20% 0px' },
     );
     this.spotIo.observe(el);
-  }
-
-  private findSpotProduct(): Promise<Product | null> {
-    if (!this.isBrowser) return Promise.resolve(null);
-    const probe = (p: Product) =>
-      new Promise<boolean>((res) => {
-        const v = document.createElement('video');
-        v.preload = 'metadata';
-        v.muted = true;
-        v.onloadedmetadata = () => res(true);
-        v.onerror = () => res(false);
-        v.src = spinSrc(p.id);
-      });
-    return Promise.all(PRODUCTS.map(probe)).then((flags) => {
-      const i = flags.findIndex(Boolean);
-      return i === -1 ? null : PRODUCTS[i];
-    });
   }
 
   private scrubToScroll(): void {

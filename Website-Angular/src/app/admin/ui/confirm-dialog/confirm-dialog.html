@@ -1,0 +1,18 @@
+<div class="adm-modal" (click)="dismissed.emit()">
+  <div class="adm-modal__box" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title"
+       (click)="$event.stopPropagation()">
+    <h2 id="confirm-title">{{ heading() }}</h2>
+    @if (body()) {
+    <p>{{ body() }}</p>
+    }
+    <div class="adm-modal__acts">
+      <button type="button" class="btn btn--outline btn--sm" #cancelBtn
+              [disabled]="busy()" (click)="dismissed.emit()">{{ cancelLabel() }}</button>
+      <button type="button" class="btn btn--sm" [class.btn--danger]="danger()" [class.btn--green]="!danger()"
+              [class.is-busy]="busy()" [disabled]="busy()" (click)="confirmed.emit()">
+        @if (busy()) {<span class="spinner spinner--sm" aria-hidden="true"></span>}
+        {{ confirmLabel() }}
+      </button>
+    </div>
+  </div>
+</div>

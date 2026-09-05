@@ -1,0 +1,13 @@
+/* Local to the shell. The rail, its nav and the working area are
+   `.adm*` in styles.scss — shared with every admin screen inside
+   the outlet. Only the quieter of the two rail buttons is here. */
+
+.adm__out--quiet {
+  color: color-mix(in srgb, var(--ivory) 72%, transparent);
+  font-weight: 600;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ivory) 10%, transparent);
+    color: var(--ivory);
+  }
+}

@@ -1,45 +1,42 @@
-<div class="dropdown-container" #dropdownContainer>
-  <!-- Trigger Button -->
-  <button class="profile-trigger" (click)="toggle()" [attr.aria-expanded]="isOpen" aria-label="User menu">
-    <span class="avatar">{{ getInitials() }}</span>
-    <span class="user-name">{{ user?.full_name || 'Account' }}</span>
-    <svg class="chevron" viewBox="0 0 24 24" [class.is-open]="isOpen">
-      <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none"/>
+<div class="pdrop" #root>
+  <button type="button" class="pdrop__trigger"
+          [attr.aria-expanded]="open()"
+          [attr.aria-label]="i18n.t('acct.menu')"
+          aria-haspopup="menu"
+          aria-controls="account-menu"
+          (click)="toggle()">
+    <span class="pdrop__avatar" aria-hidden="true">{{ initials() }}</span>
+    <span class="pdrop__name">{{ user()?.full_name || i18n.t('acct.account') }}</span>
+    <svg class="pdrop__caret" viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" [class.is-open]="open()">
+      <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/>
     </svg>
   </button>
 
-  <!-- Dropdown Panel -->
-  <div class="dropdown-panel" [class.is-open]="isOpen">
-    <!-- User Info -->
-    <div class="dropdown-header">
-      <div class="avatar-large">{{ getInitials() }}</div>
-      <div class="user-info">
-        <div class="user-name-full">{{ user?.full_name || 'User' }}</div>
-        <div class="user-email">{{ user?.email || '' }}</div>
-        <div *ngIf="user?.phone" class="user-phone">{{ user?.phone }}</div>
-      </div>
+  <div class="pdrop__panel" id="account-menu" role="menu" [class.is-open]="open()">
+    <div class="pdrop__who">
+      <span class="pdrop__avatar pdrop__avatar--lg" aria-hidden="true">{{ initials() }}</span>
+      <span class="pdrop__id">
+        <b>{{ user()?.full_name || i18n.t('acct.account') }}</b>
+        <span>{{ user()?.email }}</span>
+      </span>
     </div>
 
-    <!-- Divider -->
-    <div class="divider"></div>
-
-    <!-- Menu Items -->
-    <div class="dropdown-menu">
-      <button class="menu-item" (click)="goToProfile()">
-        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-        <span>Profile Settings</span>
-      </button>
-
-      <button class="menu-item" (click)="goToOrders()">
-        <svg viewBox="0 0 24 24"><path d="M6 7h12l-1.2 12H7.2z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M9 7a3 3 0 0 1 6 0" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-        <span>My Orders</span>
-      </button>
-
-      <div class="divider"></div>
-
-      <button class="menu-item menu-item--danger" (click)="logout()">
-        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="2" fill="none"/><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2"/></svg>
-        <span>Logout</span>
+    <div class="pdrop__list">
+      <a class="pdrop__item" role="menuitem" routerLink="/profile" (click)="close()">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 20v-1.5a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4V20"/><circle cx="12" cy="7.5" r="3.5"/></svg>
+        <span>{{ i18n.t('acct.profile') }}</span>
+      </a>
+      <a class="pdrop__item" role="menuitem" routerLink="/orders" (click)="close()">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 7.5h12l-1.1 12.2a1.4 1.4 0 0 1-1.4 1.3H8.5a1.4 1.4 0 0 1-1.4-1.3z"/><path d="M9.2 7.5a2.8 2.8 0 0 1 5.6 0"/></svg>
+        <span>{{ i18n.t('acct.orders') }}</span>
+      </a>
+      <a class="pdrop__item" role="menuitem" routerLink="/wishlist" (click)="close()">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 20.6 4.9 13.4A4.4 4.4 0 0 1 12 7.7a4.4 4.4 0 0 1 7.1 5.7z"/></svg>
+        <span>{{ i18n.t('acct.wishlist') }}</span>
+      </a>
+      <button type="button" class="pdrop__item pdrop__item--out" role="menuitem" (click)="logout()">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9.5 20.5H6a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2h3.5"/><path d="m15.5 16 4.5-4-4.5-4"/><path d="M20 12H9.5"/></svg>
+        <span>{{ i18n.t('acct.logout') }}</span>
       </button>
     </div>
   </div>

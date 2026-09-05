@@ -35,8 +35,8 @@
   <div class="nav">
     <div class="wrap nav__in">
       <a class="nav__logo" routerLink="/">
-        @if (logoStep() === 0) {<img src="/assets/img/brand/logo-white.png" alt="Béute Pro" (error)="onLogoError()">}
-        @else if (logoStep() === 1) {<img src="/assets/img/brand/logo.png" alt="Béute Pro" (error)="onLogoError()">}
+        @if (logoStep() === 0) {<img src="/assets/img/brand/logo-white.png" width="871" height="145" alt="Béute Pro" (error)="onLogoError()">}
+        @else if (logoStep() === 1) {<img src="/assets/img/brand/logo.png" width="871" height="145" alt="Béute Pro" (error)="onLogoError()">}
         @else {<span class="nav__logo-fallback">B&eacute;ute Pro</span>}
       </a>
       <nav class="nav__links" aria-label="Primary">
@@ -71,7 +71,7 @@
                 <h4>{{ i18n.t('nav.megamenu.featured') }}</h4>
                 <a class="mega__all" role="menuitem" routerLink="/shop">{{ i18n.t('nav.shopall') }}</a>
                 <a class="mega__feat" role="menuitem" [routerLink]="['/product', featured.id]">
-                  <span class="mega__feat-frame"><img [src]="imgSrc(featured.id, 1)" [alt]="i18n.copy(featured).name" data-fallback></span>
+                  <span class="mega__feat-frame"><img [ngSrc]="imgSrc(featured.id, 1)" [width]="imgDims(featured.id).width" [height]="imgDims(featured.id).height" [alt]="i18n.copy(featured).name" data-fallback></span>
                   <span class="mega__feat-name">{{ i18n.copy(featured).name }}</span>
                   <span class="mega__feat-price">{{ i18n.money(featured.price) }}</span>
                 </a>
@@ -104,8 +104,11 @@
     </div>
   </div>
 
-  <!-- SEARCH COMPONENT -->
-  <app-search></app-search>
+  <!-- SEARCH COMPONENT — deferred: it pulls in @angular/forms, which has
+       no other reason to be in the initial bundle every visitor downloads. -->
+  @defer (on idle) {
+    <app-search></app-search>
+  }
 </header>
 
 <!-- Mobile menu -->

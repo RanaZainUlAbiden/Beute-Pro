@@ -1,162 +1,133 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
-import { environment } from '../../../environments/environment';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+
+import { AdminApi, adminDate, type ContactMessage } from '../admin-api';
+import { ConfirmDialog } from '../ui/confirm-dialog/confirm-dialog';
 import { ToastService } from '../../core/services/toast.service';
 
+/* =============================================================
+   MESSAGES (admin)
+
+   The contact form's inbox. Rows are dense and one click deep:
+   the message expands in place rather than opening a screen,
+   because reading it and marking it read is the whole task.
+
+   Deleting is permanent and there is no undo behind it, so it
+   goes through the confirm dialog and names the sender.
+   ============================================================= */
 @Component({
   selector: 'app-contact-messages',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
-    <div class="contact-messages">
-      <h1 class="h-lg">Contact Messages</h1>
-      <div class="filters">
-        <select (change)="filterStatus($event)" class="filter-select">
-          <option value="">All</option>
-          <option value="unread">Unread</option>
-          <option value="read">Read</option>
-          <option value="replied">Replied</option>
-        </select>
-      </div>
-
-      <div *ngIf="loading" class="loading-state">
-        <div class="spinner"></div>
-        <p>Loading messages...</p>
-      </div>
-
-      <div *ngIf="!loading && messages.length === 0" class="empty-state">
-        <p>No messages found.</p>
-      </div>
-
-      <div *ngIf="!loading && messages.length > 0" class="messages-table">
-        <div class="table-header">
-          <span>Name</span>
-          <span>Email</span>
-          <span>Message</span>
-          <span>Status</span>
-          <span>Actions</span>
-        </div>
-        <div *ngFor="let msg of messages" class="table-row">
-          <span class="name">{{ msg.name }}</span>
-          <span class="email">{{ msg.email }}</span>
-          <span class="message">{{ msg.message | slice:0:60 }}{{ msg.message.length > 60 ? '…' : '' }}</span>
-          <span class="status-badge" [class]="'status-'+msg.status">{{ msg.status }}</span>
-          <div class="actions">
-            <select (change)="updateStatus(msg.id, $event)" [value]="msg.status" class="status-select">
-              <option value="unread">Unread</option>
-              <option value="read">Read</option>
-              <option value="replied">Replied</option>
-            </select>
-            <button (click)="deleteMessage(msg.id)" class="delete-btn" aria-label="Delete">🗑</button>
-          </div>
-        </div>
-      </div>
-
-      <div *ngIf="totalPages > 1" class="pagination">
-        <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
-        <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .contact-messages { padding: 1rem; }
-    .filters { margin-bottom: 1.5rem; }
-    .filter-select, .status-select { padding: 0.4rem 0.8rem; border-radius: var(--r); border: 1px solid var(--ivory-3); background: white; }
-    .loading-state { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 2rem 0; }
-    .spinner { width: 40px; height: 40px; border: 3px solid var(--ivory-3); border-top: 3px solid var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .empty-state { text-align: center; padding: 2rem 0; color: var(--green-soft); }
-    .messages-table { background: white; border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow); }
-    .table-header, .table-row { display: grid; grid-template-columns: 1.5fr 1.5fr 3fr 1fr 2fr; gap: 1rem; padding: 0.8rem 1.5rem; align-items: center; }
-    .table-header { background: var(--green); color: var(--ivory); font-weight: 700; }
-    .table-row { border-bottom: 1px solid var(--ivory-3); }
-    .name, .email { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .status-badge { padding: 0.2rem 0.6rem; border-radius: var(--r); font-size: 0.7rem; font-weight: 700; text-transform:capitalize; }
-    .status-unread { background: #fef3c7; color:#b45309; }
-    .status-read { background: #dbeafe; color:#1e40af; }
-    .status-replied { background: #d1fae5; color:#065f46; }
-    .actions { display: flex; gap: 0.5rem; align-items: center; }
-    .delete-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; }
-    .pagination { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; align-items: center; }
-    .pagination button { padding: 0.4rem 1rem; border-radius: var(--r); border: 1px solid var(--ivory-3); background: white; cursor: pointer; }
-    .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
-  `],
+  imports: [ConfirmDialog],
+  templateUrl: './contact-messages.html',
+  styleUrl: './contact-messages.scss',
 })
 export class ContactMessagesComponent implements OnInit {
-  private http = inject(HttpClient);
-  private toast = inject(ToastService);
+  private readonly api = inject(AdminApi);
+  private readonly toast = inject(ToastService);
 
-  messages: any[] = [];
-  loading = true;
-  currentPage = 1;
-  limit = 10;
-  totalPages = 1;
-  statusFilter = '';
+  protected readonly date = adminDate;
+  protected readonly filters = ['unread', 'read', 'replied'] as const;
 
-  ngOnInit() {
-    this.loadMessages();
+  protected readonly messages = signal<readonly ContactMessage[]>([]);
+  protected readonly busy = signal(true);
+  protected readonly failed = signal(false);
+
+  protected readonly page = signal(1);
+  protected readonly limit = 20;
+  protected readonly totalPages = signal(1);
+  protected readonly total = signal(0);
+  protected readonly status = signal('');
+
+  /** The row whose full message is open, and the row waiting to be deleted. */
+  protected readonly openId = signal<number | null>(null);
+  protected readonly pendingDelete = signal<ContactMessage | null>(null);
+  protected readonly deleting = signal(false);
+
+  protected readonly unread = computed(
+    () => this.messages().filter((m) => m.status === 'unread').length,
+  );
+
+  ngOnInit(): void {
+    this.load();
   }
 
-  loadMessages() {
-    this.loading = true;
-    let url = `${environment.apiUrl}/admin/contact?page=${this.currentPage}&limit=${this.limit}`;
-    if (this.statusFilter) {
-      url += `&status=${this.statusFilter}`;
-    }
-    this.http.get<any>(url).subscribe({
+  protected load(): void {
+    this.busy.set(true);
+    this.failed.set(false);
+    this.api.messages(this.page(), this.limit, this.status() || undefined).subscribe({
       next: (res) => {
-        this.messages = res.messages;
-        this.totalPages = res.totalPages;
-        this.loading = false;
+        this.messages.set(res.messages ?? []);
+        this.total.set(res.total ?? 0);
+        this.totalPages.set(Math.max(1, res.totalPages ?? 1));
+        this.busy.set(false);
       },
-      error: (err) => {
-        console.error('Failed to load messages', err);
-        this.loading = false;
-      }
+      error: () => {
+        this.busy.set(false);
+        this.failed.set(true);
+      },
     });
   }
 
-  filterStatus(event: any) {
-    this.statusFilter = event.target.value;
-    this.currentPage = 1;
-    this.loadMessages();
+  protected onFilter(value: string): void {
+    this.status.set(value);
+    this.page.set(1);
+    this.openId.set(null);
+    this.load();
   }
 
-  changePage(page: number) {
-    this.currentPage = page;
-    this.loadMessages();
+  protected goto(page: number): void {
+    if (page < 1 || page > this.totalPages() || page === this.page()) return;
+    this.page.set(page);
+    this.openId.set(null);
+    this.load();
   }
 
-  updateStatus(id: number, event: any) {
-    const status = event.target.value;
-    this.http.put(`${environment.apiUrl}/admin/contact/${id}/status`, { status })
-      .subscribe({
-        next: () => {
-          this.toast.show('Status updated');
-          this.loadMessages();
-        },
-        error: (err) => {
-          console.error(err);
-          this.toast.show('Failed to update status');
-        },
-      });
+  protected toggle(message: ContactMessage): void {
+    const opening = this.openId() !== message.id;
+    this.openId.set(opening ? message.id : null);
+    // reading it is what marks it read — one less thing to click
+    if (opening && message.status === 'unread') this.setStatus(message, 'read', true);
   }
 
-  deleteMessage(id: number) {
-    if (!confirm('Delete this message?')) return;
-    this.http.delete(`${environment.apiUrl}/admin/contact/${id}`)
-      .subscribe({
-        next: () => {
-          this.toast.show('Message deleted');
-          this.loadMessages();
-        },
-        error: (err) => {
-          console.error(err);
-          this.toast.show('Failed to delete message');
-        },
-      });
+  protected setStatus(message: ContactMessage, status: string, quiet = false): void {
+    this.api.setMessageStatus(message.id, status).subscribe({
+      next: () => {
+        this.messages.update((list) =>
+          list.map((m) => (m.id === message.id ? { ...m, status: status as ContactMessage['status'] } : m)),
+        );
+        if (!quiet) this.toast.show(`Marked ${status}`);
+      },
+      error: () => this.toast.show("That didn't save — try again"),
+    });
+  }
+
+  protected confirmDelete(): void {
+    const message = this.pendingDelete();
+    if (!message) return;
+    this.deleting.set(true);
+    this.api.deleteMessage(message.id).subscribe({
+      next: () => {
+        this.deleting.set(false);
+        this.pendingDelete.set(null);
+        this.toast.show('Message deleted');
+        // the page it came from may now be short a row
+        this.load();
+      },
+      error: () => {
+        this.deleting.set(false);
+        this.pendingDelete.set(null);
+        this.toast.show("The message wasn't deleted — try again");
+      },
+    });
+  }
+
+  protected pillClass(status: string): string {
+    switch (status) {
+      case 'unread':
+        return 'pill pill--pending';
+      case 'read':
+        return 'pill pill--processing';
+      default:
+        return 'pill pill--shipped';
+    }
   }
 }

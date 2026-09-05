@@ -1,93 +1,148 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { OrderService, Order } from '../../../services/order';
-import { I18nService } from '../../../core/services/i18n.service';
-import { ToastService } from '../../../core/services/toast.service';
+import { Component, afterNextRender, computed, inject, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
+import { I18nService } from '../../../core/services/i18n.service';
+import {
+  ORDER_FLOW,
+  itemName,
+  statusIndex,
+  statusKey,
+  statusNoteKey,
+  statusPill,
+  type OrderStatus,
+} from '../order-view';
+import { OrderService, type Order, type OrderItem } from '../../../services/order';
+
+/* =============================================================
+   TRACK ORDER
+
+   The one account page a visitor reaches without an account, so
+   it carries its own explanation: what an order number looks
+   like, where to find it, and what to do when it isn't found.
+
+   Four states, and only one is on screen at a time — idle (the
+   page as it loads, an invitation rather than a blank), busy,
+   not-found, and the order itself.
+   ============================================================= */
 @Component({
   selector: 'app-track-order',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './track-order.html',
-  styleUrls: ['./track-order.scss'],
+  styleUrl: './track-order.scss',
 })
 export class TrackOrderComponent {
-  private fb = inject(FormBuilder);
-  private orderService = inject(OrderService);
-  private i18n = inject(I18nService);
-  private toast = inject(ToastService);
+  private readonly fb = inject(FormBuilder);
+  private readonly orders = inject(OrderService);
+  private readonly route = inject(ActivatedRoute);
+  protected readonly i18n = inject(I18nService);
 
-  trackForm: FormGroup;
-  order: Order | null = null;
-  isLoading = false;
-  errorMessage = '';
-  searched = false;
+  protected readonly form: FormGroup;
+  protected readonly busy = signal(false);
+  protected readonly notFound = signal(false);
+  protected readonly order = signal<Order | null>(null);
+
+  protected readonly flow = ORDER_FLOW;
+  /** How far along the four-step rail this order has got. */
+  protected readonly reached = computed(() => statusIndex(this.order()?.status));
+  protected readonly cancelled = computed(() => this.order()?.status === 'cancelled');
+  protected readonly itemCount = computed(() =>
+    (this.order()?.items ?? []).reduce((n, i) => n + i.quantity, 0),
+  );
 
   constructor() {
-    this.trackForm = this.fb.group({
-      orderNumber: ['', [Validators.required, Validators.pattern(/^BP-\d{4}$/)]],
+    this.form = this.fb.group({
+      // BP-0001: the format the backend mints, so a typo is caught here
+      // rather than as a 404 from the server
+      orderNumber: ['', [Validators.required, Validators.pattern(/^\s*[Bb][Pp]-\d{4}\s*$/)]],
     });
+
+    /* A guest who has just checked out arrives as /track?number=BP-0001,
+       so the one thing they want is on screen without them retyping it.
+       The lookup waits for the browser: this route is prerendered, and
+       the build must not go to the API for it. */
+    const number = this.route.snapshot.queryParamMap.get('number');
+    if (number) {
+      this.form.patchValue({ orderNumber: number });
+      afterNextRender(() => this.submit());
+    }
   }
 
-  get f() { return this.trackForm.controls; }
+  protected get invalid(): boolean {
+    const c = this.form.get('orderNumber');
+    return !!c && c.invalid && c.touched;
+  }
 
-  onSubmit(): void {
-    if (this.trackForm.invalid) {
-      this.trackForm.markAllAsTouched();
+  protected get fieldError(): string {
+    const c = this.form.get('orderNumber');
+    if (!c || c.valid) return '';
+    return this.i18n.t(c.errors?.['required'] ? 'track.err.empty' : 'track.err.format');
+  }
+
+  protected submit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 
-    const orderNumber = this.trackForm.value.orderNumber.trim();
-    this.searched = true;
-    this.isLoading = true;
-    this.errorMessage = '';
-    this.order = null;
+    const number = String(this.form.value.orderNumber).trim().toUpperCase();
+    this.busy.set(true);
+    this.notFound.set(false);
+    this.order.set(null);
 
-    this.orderService.getOrderByNumber(orderNumber).subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        this.order = response.order;
+    this.orders.getOrderByNumber(number).subscribe({
+      next: (res) => {
+        this.busy.set(false);
+        if (res.order) this.order.set(res.order);
+        else this.notFound.set(true);
       },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.error || 'Order not found. Please check the order number.';
-        this.toast.show(this.errorMessage);
+      error: () => {
+        this.busy.set(false);
+        this.notFound.set(true);
       },
     });
   }
 
-  getStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      pending: 'Pending',
-      processing: 'Processing',
-      shipped: 'Shipped',
-      delivered: 'Delivered',
-      cancelled: 'Cancelled',
-    };
-    return labels[status] || status;
+  protected reset(): void {
+    this.order.set(null);
+    this.notFound.set(false);
+    this.form.reset({ orderNumber: '' });
   }
 
-  getStatusClass(status: string): string {
-    return `status-badge status-badge--${status}`;
+  protected statusLabel(status: string): string {
+    return this.i18n.t(statusKey(status));
   }
 
-  formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('en-US', {
+  protected statusNote(status: string): string {
+    return this.i18n.t(statusNoteKey(status));
+  }
+
+  protected statusPill(status: string): string {
+    return statusPill(status);
+  }
+
+  protected itemName(item: OrderItem): string {
+    return itemName(item, this.i18n.lang());
+  }
+
+  protected stepState(step: OrderStatus): string {
+    if (this.cancelled()) return '';
+    const at = this.reached();
+    const i = ORDER_FLOW.indexOf(step as (typeof ORDER_FLOW)[number]);
+    if (i < at) return 'is-done';
+    if (i === at) return 'is-now';
+    return '';
+  }
+
+  protected date(value: string): string {
+    return new Date(value).toLocaleDateString(this.i18n.isRTL() ? 'ar-EG' : 'en-GB', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
     });
   }
 
-  formatPrice(amount: string): string {
-    return this.i18n.money(parseFloat(amount));
-  }
-
-  getTotalItems(): number {
-    return this.order?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+  protected money(amount: string | number): string {
+    return this.i18n.money(typeof amount === 'number' ? amount : parseFloat(amount));
   }
 }

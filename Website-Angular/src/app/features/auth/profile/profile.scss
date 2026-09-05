@@ -1,369 +1,49 @@
-@import '../../../../styles.scss';
+/* Local to /profile — the identity card in the side column. The two
+   forms are built entirely from the shared account CSS. */
 
-.profile-page {
-  padding-top: calc(var(--head-h) + 3rem);
-  padding-bottom: 5rem;
-  min-height: 80vh;
-  background: var(--ivory);
-}
-
-.page-header {
-  margin-bottom: 2.5rem;
-  .header-content {
-    max-width: 600px;
-    h1 {
-      color: var(--green);
-      margin-bottom: 0.25rem;
-    }
-    .lede {
-      color: var(--green-soft);
-      font-size: 1rem;
-    }
-  }
-}
-
-.profile-grid {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 2.5rem;
-  align-items: start;
-}
-
-/* ---------- Sidebar ---------- */
-.profile-sidebar {
-  position: sticky;
-  top: calc(var(--head-h) + 1.5rem);
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.user-card {
-  background: var(--white);
-  border-radius: var(--r-lg);
-  border: 1px solid var(--ivory-3);
-  padding: 2rem 1.5rem;
+.profile__who {
   text-align: center;
-  box-shadow: 0 4px 12px rgba(15, 42, 29, 0.06);
-  transition: box-shadow 0.3s ease;
-  &:hover {
-    box-shadow: 0 8px 24px rgba(15, 42, 29, 0.10);
-  }
+  background: var(--ivory-2);
 }
 
-.avatar-wrapper {
-  position: relative;
-  display: inline-block;
-  margin-bottom: 0.75rem;
-}
-
-.avatar-large {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: var(--gold);
-  color: var(--green);
+.profile__avatar {
   display: grid;
   place-items: center;
-  font-size: 2.4rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  box-shadow: 0 4px 12px rgba(201, 164, 76, 0.3);
-  margin: 0 auto;
-}
-
-.status-dot {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  width: 14px;
-  height: 14px;
-  background: #2ecc71;
+  width: 62px;
+  height: 62px;
+  margin: 0 auto .9rem;
   border-radius: 50%;
-  border: 2px solid var(--white);
+  background: var(--green);
+  color: var(--gold-lt);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: .02em;
 }
 
-.user-details {
-  .user-name {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--green);
-    margin-bottom: 0.2rem;
-  }
-  .user-email {
-    font-size: 0.9rem;
-    color: var(--green-soft);
-    word-break: break-all;
-  }
-  .user-role {
-    margin-top: 0.5rem;
-    .role-badge {
-      display: inline-block;
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--white);
-      background: var(--green-2);
-      padding: 0.2rem 0.8rem;
-      border-radius: 999px;
-    }
-  }
+.profile__name {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 800;
 }
 
-.quick-stats {
-  background: var(--white);
-  border-radius: var(--r-lg);
-  border: 1px solid var(--ivory-3);
-  padding: 1.2rem 1.5rem;
-  display: flex;
-  justify-content: space-around;
-  .stat-item {
-    text-align: center;
-    .stat-label {
-      display: block;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--green-soft);
-    }
-    .stat-value {
-      display: block;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--green);
-      margin-top: 0.15rem;
-    }
-  }
-}
-
-.sidebar-note {
-  background: var(--ivory-2);
-  border-radius: var(--r);
-  padding: 0.8rem 1rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  font-size: 0.75rem;
+.profile__mail {
+  margin: .2rem 0 .8rem;
+  font-size: .84rem;
   color: var(--green-soft);
-  svg {
-    flex-shrink: 0;
-    margin-top: 0.1rem;
-    stroke: var(--gold);
-  }
-  span {
-    line-height: 1.4;
-  }
+  overflow-wrap: anywhere;
 }
 
-/* ---------- Forms ---------- */
-.profile-forms {
+.profile__facts {
+  margin-top: 1.3rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--ivory-3);
+  text-align: start;
+}
+
+.profile__links {
   display: flex;
-  flex-direction: column;
-  gap: 1.8rem;
-}
-
-.form-card {
-  background: var(--white);
-  border-radius: var(--r-lg);
-  border: 1px solid var(--ivory-3);
-  padding: 2rem 2rem 2.5rem;
-  box-shadow: 0 4px 12px rgba(15, 42, 29, 0.04);
-  transition: box-shadow 0.3s ease;
-  &:hover {
-    box-shadow: 0 8px 24px rgba(15, 42, 29, 0.08);
-  }
-
-  .card-header {
-    margin-bottom: 1.5rem;
-    h2 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--green);
-      margin-bottom: 0.1rem;
-    }
-    .card-subtitle {
-      font-size: 0.82rem;
-      color: var(--green-soft);
-    }
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-  }
-
-  .form-group {
-    margin-bottom: 0.2rem;
-    label {
-      display: block;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--green);
-      margin-bottom: 0.15rem;
-    }
-    .input-wrapper {
-      position: relative;
-      svg {
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        stroke: var(--green-soft);
-        opacity: 0.7;
-      }
-      input {
-        width: 100%;
-        padding: 0.7rem 1rem 0.7rem 2.4rem;
-        border: 1.5px solid var(--ivory-3);
-        border-radius: var(--r);
-        font-size: 0.9rem;
-        background: var(--white);
-        transition: border-color 0.3s, box-shadow 0.3s;
-        &:focus {
-          border-color: var(--gold);
-          box-shadow: 0 0 0 4px rgba(201, 164, 76, 0.15);
-          outline: none;
-        }
-        &::placeholder {
-          color: var(--ivory-3);
-        }
-      }
-    }
-    .error {
-      font-size: 0.72rem;
-      color: #a8443c;
-      margin-top: 0.2rem;
-      padding-left: 0.2rem;
-    }
-  }
-
-  .error-message {
-    background: #fde8e6;
-    color: #a8443c;
-    padding: 0.6rem 0.9rem;
-    border-radius: var(--r);
-    font-size: 0.8rem;
-    margin: 0.5rem 0 0.2rem;
-    border-left: 3px solid #a8443c;
-  }
-
-  .success-message {
-    background: #d1fae5;
-    color: #065f46;
-    padding: 0.6rem 0.9rem;
-    border-radius: var(--r);
-    font-size: 0.8rem;
-    margin: 0.5rem 0 0.2rem;
-    border-left: 3px solid #065f46;
-  }
-
-  .btn {
-    align-self: flex-start;
-    margin-top: 0.75rem;
-    min-width: 180px;
-    padding: 0.75rem 1.8rem;
-    border-radius: var(--r);
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    transition: all 0.3s ease;
-  }
-
-  .btn--gold {
-    background: var(--gold);
-    color: var(--green);
-    &:hover:not(:disabled) {
-      background: var(--gold-lt);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(201, 164, 76, 0.35);
-    }
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
-  .btn--outline {
-    border: 2px solid var(--green);
-    color: var(--green);
-    background: transparent;
-    &:hover:not(:disabled) {
-      background: var(--green);
-      color: var(--ivory);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(15, 42, 29, 0.2);
-    }
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-}
-
-/* ---------- Responsive ---------- */
-@media (max-width: 992px) {
-  .profile-grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-  .profile-sidebar {
-    position: static;
-  }
-  .user-card {
-    display: flex;
-    align-items: center;
-    text-align: left;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    .avatar-wrapper {
-      margin: 0;
-    }
-    .avatar-large {
-      width: 72px;
-      height: 72px;
-      font-size: 1.8rem;
-    }
-    .user-details {
-      text-align: left;
-    }
-  }
-  .quick-stats {
-    justify-content: flex-start;
-    gap: 2.5rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .profile-page {
-    padding-top: calc(var(--head-h) + 1.5rem);
-    padding-bottom: 2rem;
-  }
-  .user-card {
-    flex-direction: column;
-    text-align: center;
-    .user-details {
-      text-align: center;
-    }
-  }
-  .quick-stats {
-    flex-direction: column;
-    gap: 0.8rem;
-    align-items: center;
-  }
-  .form-card {
-    padding: 1.2rem;
-    .btn {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-  .page-header {
-    .header-content h1 {
-      font-size: 1.6rem;
-    }
-  }
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1.3rem;
 }

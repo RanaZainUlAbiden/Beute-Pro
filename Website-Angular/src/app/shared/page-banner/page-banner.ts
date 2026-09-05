@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 
 import { SplitHeading, type SplitSegment } from '../split-heading/split-heading';
 
@@ -27,11 +28,19 @@ import { SplitHeading, type SplitSegment } from '../split-heading/split-heading'
   templateUrl: './page-banner.html',
   styleUrl: './page-banner.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SplitHeading],
+  imports: [SplitHeading, NgOptimizedImage],
 })
 export class PageBanner {
   /** Photo behind the copy. Omit it for the gradient on its own. */
   readonly image = input<string | null>(null);
+  /** Same photo as WebP, tried first via a <picture> <source>. */
+  protected readonly webpImage = computed(() => {
+    const src = this.image();
+    return src ? src.replace(/\.(?:jpe?g|png)$/i, '.webp') : null;
+  });
+  /** Intrinsic size of [image] — most banner photos are 1920×800. */
+  readonly imageWidth = input<number>(1920);
+  readonly imageHeight = input<number>(800);
   /** Alt text for [image]; empty by default — the banner is decorative. */
   readonly alt = input('');
   readonly eyebrow = input<string | null>(null);

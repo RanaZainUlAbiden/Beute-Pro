@@ -5,7 +5,7 @@
 <app-page-hero
   sectionId="hero"
   video="/assets/video/hero.mp4"
-  poster="/assets/img/model/slide-1.jpg"
+  poster="/assets/img/model/slide-1.webp"
   focus="center 28%"
   [heading]="i18n.t('s1.title')"
   [copy]="i18n.t('s1.lede')">
@@ -25,7 +25,7 @@
     <div class="cats" id="cats">
       @for (c of categories; track c.id) {
       <a class="cat" [routerLink]="['/shop', c.id]">
-        <span class="cat__frame"><img [src]="catSrc(c.id)" [alt]="i18n.catName(c)" data-fallback loading="lazy"></span>
+        <span class="cat__frame"><img [ngSrc]="catSrc(c.id)" width="1264" height="842" [alt]="i18n.catName(c)" data-fallback></span>
         <h3 class="cat__name">{{ i18n.catName(c) }}</h3>
         <span class="cat__go">{{ i18n.t('cat.shop') }}</span>
       </a>
@@ -105,13 +105,16 @@
        role="group" stays, so the three are still announced as one set. -->
   <div class="floor__band reveal" role="group" [attr.aria-label]="i18n.t('floor.gallery')">
     <app-video-figure
-      src="/assets/video/factory/factory-inside-view.mp4"
+      src="/assets/video/factory/factory-inside-view-web.mp4"
+      poster="/assets/video/factory/factory-inside-view-poster.jpg"
       [caption]="i18n.t('floor.cap1')" />
     <app-video-figure
-      src="/assets/video/factory/mist-bottle-filling.mp4"
+      src="/assets/video/factory/mist-bottle-filling-web.mp4"
+      poster="/assets/video/factory/mist-bottle-filling-poster.jpg"
       [caption]="i18n.t('floor.cap2')" />
     <app-video-figure
-      src="/assets/video/factory/mist-bottle-chcek.mp4"
+      src="/assets/video/factory/mist-bottle-chcek-web.mp4"
+      poster="/assets/video/factory/mist-bottle-chcek-poster.jpg"
       [caption]="i18n.t('floor.cap3')" />
   </div>
 
@@ -173,7 +176,7 @@
     </div>
 
     <div class="feature__media">
-      <img src="/assets/img/model/feature.jpg" alt="Béute Pro skincare routine" data-fallback loading="lazy">
+      <img ngSrc="/assets/img/model/feature.webp" width="1122" height="1402" alt="Béute Pro skincare routine" data-fallback>
       <!-- The static page renders the price alone here, and its spotlight
            section never appears at all. Both are the same bug, in one
            line of index.html's paintHome():
@@ -187,7 +190,7 @@
            This port renders what the markup was written to render. See
            the build summary. -->
       <span class="feature__chip" id="feature-chip">
-        <img [src]="imgSrc(chip.id, 1)" [alt]="i18n.copy(chip).name" data-fallback>
+        <img [ngSrc]="imgSrc(chip.id, 1)" [width]="imgDims(chip.id).width" [height]="imgDims(chip.id).height" [alt]="i18n.copy(chip).name" data-fallback>
         <span><b>{{ i18n.copy(chip).name }}</b><span>{{ i18n.money(chip.price) }}</span></span>
       </span>
     </div>

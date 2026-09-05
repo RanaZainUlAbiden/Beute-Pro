@@ -3,7 +3,7 @@
   <div class="wrap">
     <div class="footer__grid">
       <div>
-        @if (!logoFailed()) {<img class="footer__logo" src="/assets/img/brand/logo-white.png" alt="Béute Pro" (error)="logoFailed.set(true)">}
+        @if (!logoFailed()) {<img class="footer__logo" src="/assets/img/brand/logo-white.png" width="871" height="145" alt="Béute Pro" (error)="logoFailed.set(true)">}
         @else {<div class="nav__logo-fallback" style="margin-bottom:1.2rem">B&eacute;ute Pro</div>}
         <p class="footer__about">{{ i18n.t('foot.about') }}</p>
       </div>
@@ -30,9 +30,9 @@
       <div>
         <h4>{{ i18n.t('foot.life') }}</h4>
         <div class="footer__thumbs">
-          <img src="/assets/img/about/factory-1.jpg" alt="" data-fallback loading="lazy">
-          <img src="/assets/img/about/factory-2.jpg" alt="" data-fallback loading="lazy">
-          <img src="/assets/img/about/factory-3.jpg" alt="" data-fallback loading="lazy">
+          <img ngSrc="/assets/img/about/factory-1.webp" width="1375" height="768" alt="" data-fallback>
+          <img ngSrc="/assets/img/about/factory-2.webp" width="1365" height="768" alt="" data-fallback>
+          <img ngSrc="/assets/img/about/factory-3.webp" width="1372" height="768" alt="" data-fallback>
         </div>
       </div>
     </div>

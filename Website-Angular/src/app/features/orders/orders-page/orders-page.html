@@ -1,55 +1,63 @@
-<div class="orders-page">
+<section class="section acct">
   <div class="wrap">
-    <!-- Page Header -->
-    <div class="page-header">
-      <h1 class="h-lg">My Orders</h1>
-      <p class="lede">View and track all your past orders</p>
-    </div>
+    <div class="acct-narrow">
 
-    <!-- Loading State -->
-    <div *ngIf="isLoading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading your orders...</p>
-    </div>
-
-    <!-- Error State -->
-    <div *ngIf="errorMessage" class="error-state">
-      <p>{{ errorMessage }}</p>
-      <button class="btn btn--gold" (click)="loadOrders()">Try Again</button>
-    </div>
-
-    <!-- Empty State -->
-    <div *ngIf="!isLoading && !errorMessage && orders.length === 0" class="empty-state">
-      <svg viewBox="0 0 24 24" width="48" height="48"><path d="M6 7h12l-1.2 12H7.2z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M9 7a3 3 0 0 1 6 0" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-      <h2>No orders yet</h2>
-      <p>Looks like you haven't placed any orders. Start shopping and come back here to track them!</p>
-      <a routerLink="/shop" class="btn btn--gold">Shop Now</a>
-    </div>
-
-    <!-- Orders List -->
-    <div *ngIf="!isLoading && !errorMessage && orders.length > 0" class="orders-list">
-      <div *ngFor="let order of orders" class="order-card" [routerLink]="['/orders', order.order_number]">
-        <div class="order-header">
-          <div class="order-info">
-            <span class="order-number">#{{ order.order_number }}</span>
-            <span class="order-date">{{ formatDate(order.created_at) }}</span>
-          </div>
-          <span class="order-total">{{ formatPrice(order.total_amount_pkr) }}</span>
-        </div>
-
-        <div class="order-body">
-          <div class="order-items">
-            <span>{{ getTotalItems(order) }} items</span>
-          </div>
-          <span class="order-status" [class]="getStatusClass(order.status)">
-            {{ getStatusLabel(order.status) }}
-          </span>
-        </div>
-
-        <div class="order-footer">
-          <span class="order-cta">View Details →</span>
-        </div>
+      <div class="acct__head">
+        <p class="eyebrow">{{ i18n.t('acct.account') }}</p>
+        <h1 class="h-lg">{{ i18n.t('orders.title') }}</h1>
+        <p class="lede">{{ i18n.t('orders.lede') }}</p>
       </div>
+
+      <div aria-live="polite">
+        @if (busy()) {
+        <div class="state">
+          <div class="spinner" aria-hidden="true"></div>
+          <p>{{ i18n.t('orders.loading') }}</p>
+        </div>
+        } @else if (failed()) {
+        <div class="state state--err">
+          <svg class="state__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+          <h2 class="state__title">{{ i18n.t('orders.err') }}</h2>
+          <p>{{ i18n.t('form.problem') }}</p>
+          <div class="state__cta">
+            <button type="button" class="btn btn--gold btn--sm" (click)="load()">{{ i18n.t('form.retry') }}</button>
+            <a class="btn btn--outline btn--sm" routerLink="/track">{{ i18n.t('topbar.track') }}</a>
+          </div>
+        </div>
+        } @else if (orders().length === 0) {
+        <div class="state">
+          <svg class="state__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7.5h12l-1.1 12.2a1.4 1.4 0 0 1-1.4 1.3H8.5a1.4 1.4 0 0 1-1.4-1.3z"/><path d="M9.2 7.5a2.8 2.8 0 0 1 5.6 0"/></svg>
+          <h2 class="state__title">{{ i18n.t('orders.empty.title') }}</h2>
+          <p>{{ i18n.t('orders.empty.body') }}</p>
+          <div class="state__cta">
+            <a class="btn btn--gold btn--sm" routerLink="/shop">{{ i18n.t('orders.empty.cta') }}</a>
+            <a class="btn btn--outline btn--sm" routerLink="/wishlist">{{ i18n.t('acct.wishlist') }}</a>
+          </div>
+        </div>
+        } @else {
+        <ul class="orders__list">
+          @for (o of orders(); track o.id) {
+          <li class="orow">
+            <div>
+              <h2 class="orow__no">
+                <a [routerLink]="['/orders', o.order_number]">{{ o.order_number }}</a>
+              </h2>
+              <p class="orow__meta">
+                {{ date(o.created_at) }}
+                ·
+                {{ itemCount(o) }} {{ itemCount(o) === 1 ? i18n.t('orders.item') : i18n.t('orders.items') }}
+              </p>
+            </div>
+            <div class="orow__right">
+              <span [class]="statusPill(o.status)">{{ statusLabel(o.status) }}</span>
+              <span class="orow__total">{{ money(o.total_amount_pkr) }}</span>
+            </div>
+          </li>
+          }
+        </ul>
+        }
+      </div>
+
     </div>
   </div>
-</div>
+</section>

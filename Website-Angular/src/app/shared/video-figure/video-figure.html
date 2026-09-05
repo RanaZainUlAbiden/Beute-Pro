@@ -8,11 +8,13 @@
       [attr.preload]="preload()"
       [controls]="started()"
       [attr.aria-label]="caption()"
+      muted
       playsinline
       webkit-playsinline
       (play)="onPlay()"
       (pause)="onPause()"
-      (ended)="onPause()"></video>
+      (ended)="onPause()"
+      (volumechange)="onVolumeChange()"></video>
 
     @if (!started()) {
     <button class="vfig__play" type="button" [attr.aria-label]="playLabel()" (click)="start()">

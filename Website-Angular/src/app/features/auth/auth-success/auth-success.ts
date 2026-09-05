@@ -1,70 +1,51 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Component, afterNextRender, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { I18nService } from '../../../core/services/i18n.service';
 import { AuthService } from '../../../services/auth';
 
+/* =============================================================
+   /auth/success — the Google round trip lands here
+
+   A held frame, not a page: it exchanges the token in the query
+   string for a profile and moves on. It still looks like the
+   site, because a blank white flash mid-sign-in is exactly what
+   a hijacked redirect looks like.
+
+   The exchange waits for the browser. This route is prerendered
+   with everything else, and the build has no token to exchange.
+   ============================================================= */
 @Component({
   selector: 'app-auth-success',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
-    <div class="auth-success">
-      <div class="loading-spinner"></div>
-      <p>Authenticating...</p>
-    </div>
-  `,
-  styles: [`
-    .auth-success {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      background: var(--ivory);
-      gap: 1rem;
-    }
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid var(--ivory-3);
-      border-top: 3px solid var(--gold);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-  `]
+  templateUrl: './auth-success.html',
+  styleUrl: './auth-success.scss',
 })
-export class AuthSuccessComponent implements OnInit {
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private auth: AuthService
-  ) {}
+export class AuthSuccessComponent {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
+  protected readonly i18n = inject(I18nService);
 
-  ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      const token = params['token'];
-      const error = params['error'];
-      if (error) {
-        this.router.navigate(['/login'], { queryParams: { error: 'Google authentication failed' } });
-        return;
-      }
-      if (token) {
-        // Store token and fetch user
-        localStorage.setItem('beute_token', token);
-        this.auth.getCurrentUser().subscribe({
-          next: (user) => {
-            localStorage.setItem('beute_user', JSON.stringify(user));
-            this.auth['userSubject'].next(user);
-            this.router.navigate(['/']);
-          },
-          error: () => {
-            this.router.navigate(['/login'], { queryParams: { error: 'Failed to fetch user profile' } });
-          }
-        });
-      } else {
-        this.router.navigate(['/login'], { queryParams: { error: 'No token received' } });
-      }
+  constructor() {
+    afterNextRender(() => this.exchange());
+  }
+
+  private exchange(): void {
+    const params = this.route.snapshot.queryParamMap;
+    const token = params.get('token');
+
+    if (params.get('error') || !token) {
+      this.failed();
+      return;
+    }
+
+    this.auth.completeExternalLogin(token).subscribe({
+      next: () => this.router.navigate(['/']),
+      error: () => this.failed(),
     });
+  }
+
+  private failed(): void {
+    this.router.navigate(['/login'], { queryParams: { error: 'google' } });
   }
 }

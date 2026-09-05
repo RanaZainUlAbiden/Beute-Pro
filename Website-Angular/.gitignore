@@ -28,6 +28,9 @@ yarn-error.log
 !.vscode/extensions.json
 .history/*
 
+# Raw asset masters kept locally, out of public/ and out of the repo
+/masters
+
 # Miscellaneous
 /.angular/cache
 .sass-cache/

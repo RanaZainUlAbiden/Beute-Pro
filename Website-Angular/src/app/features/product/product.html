@@ -33,7 +33,7 @@
                (touchmove)="zoomTouchMove($event)"
                (touchend)="zoomTouchEnd($event)">
             <div class="zoom__frame">
-              <img class="zoom__img" id="zoom-img" #zoomImg [src]="imgSrc(product().id, activeImg())" alt="" data-fallback>
+              <img class="zoom__img" id="zoom-img" #zoomImg [ngSrc]="imgSrc(product().id, activeImg())" width="1536" height="1024" priority alt="" data-fallback>
               <span class="zoom__lens" id="zoom-lens" #zoomLens></span>
               <span class="zoom__hint">
                 <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg>
@@ -45,7 +45,7 @@
           <div class="thumbs" id="thumbs" [style.display]="photos().length > 1 ? '' : 'none'">
             @for (n of photos(); track n) {
             <button class="thumb" [class.is-active]="n === activeImg()" (click)="pickPhoto(n)">
-              <img [src]="imgSrc(product().id, n)" [alt]="copy().name + ' ' + n" data-fallback>
+              <img [ngSrc]="imgSrc(product().id, n)" width="1536" height="1024" [alt]="copy().name + ' ' + n" data-fallback>
             </button>
             }
           </div>

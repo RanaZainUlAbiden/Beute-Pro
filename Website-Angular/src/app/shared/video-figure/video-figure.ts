@@ -89,8 +89,17 @@ export class VideoFigure implements OnDestroy {
     const v = this.videoRef()?.nativeElement;
     if (!v) return;
     this.started.set(true);
+    v.muted = true; // the `muted` attribute alone doesn't always take before playback
     v.preload = 'auto';
     v.play().catch(() => this.started.set(false)); // blocked: keep the poster
+  }
+
+  /* The site is silent by design — the native controls stay (for play,
+     pause and scrub) but their volume slider is a dead end: any attempt
+     to unmute snaps straight back. */
+  protected onVolumeChange(): void {
+    const v = this.videoRef()?.nativeElement;
+    if (v && !v.muted) v.muted = true;
   }
 
   protected onPlay(): void {

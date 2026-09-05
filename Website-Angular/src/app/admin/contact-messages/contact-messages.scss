@@ -1,0 +1,154 @@
+/* Local to the messages inbox. It is a list of expanding rows
+   rather than a table: the message body is the content, and a
+   cell that has to hold a paragraph stops being a table cell. */
+
+.msg__vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.msg__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.msg {
+  border-bottom: 1px solid var(--ivory-3);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.msg__row {
+  display: grid;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr) auto auto 14px;
+  align-items: center;
+  gap: .9rem;
+  width: 100%;
+  padding: .6rem 1rem;
+  text-align: start;
+  font-size: .82rem;
+  transition: background-color .2s;
+
+  &:hover {
+    background: var(--ivory-2);
+  }
+}
+
+.msg.is-unread .msg__name {
+  font-weight: 800;
+}
+
+/* the gold rule is the only "you have not read this" marker the row
+   needs beside its pill */
+.msg.is-unread {
+  box-shadow: inset 3px 0 0 var(--gold);
+}
+
+.msg__who {
+  min-width: 0;
+}
+
+.msg__name,
+.msg__mail,
+.msg__peek {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.msg__name {
+  font-weight: 600;
+}
+
+.msg__mail,
+.msg__when {
+  font-size: .72rem;
+  color: var(--green-soft);
+}
+
+.msg__when {
+  white-space: nowrap;
+}
+
+.msg__peek {
+  color: var(--green-soft);
+}
+
+.msg__caret {
+  stroke: var(--green-soft);
+  fill: none;
+  stroke-width: 2;
+  transition: transform .2s var(--ease);
+}
+
+.msg.is-open .msg__caret {
+  transform: rotate(180deg);
+}
+
+.msg__body {
+  padding: 0 1rem 1.1rem;
+  background: var(--ivory-2);
+}
+
+.msg__subject {
+  margin: 0 0 .4rem;
+  font-size: .8rem;
+  font-weight: 800;
+}
+
+.msg__text {
+  margin: 0 0 1rem;
+  max-width: 78ch;
+  font-size: .87rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.msg__acts {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.msg__skel {
+  height: 16px;
+
+  + .msg__skel {
+    margin-top: .85rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .msg__row {
+    grid-template-columns: minmax(0, 1fr) auto 14px;
+    row-gap: .35rem;
+  }
+
+  .msg__peek {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .msg__when {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .msg__caret {
+    transition: none;
+  }
+}

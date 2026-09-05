@@ -1,85 +1,221 @@
-<div class="login-page">
-  <div class="login-card">
-    <!-- Left: Brand / Image -->
-    <div class="login-banner">
-      <div class="banner-content">
-        <h2 class="banner-title">Welcome Back</h2>
-        <p class="banner-sub">Sign in to access your orders and personalised recommendations.</p>
-        <div class="banner-image">
-          <!-- Replace with your product image -->
-          <img src="assets/img/banner-login.png" alt="Beauté Pro" />
-        </div>
-      </div>
-    </div>
+<section class="section acct">
+  <div class="wrap">
+    <div class="auth">
 
-    <!-- Right: Forms -->
-    <div class="login-forms">
-      <div class="form-header">
-        <h1>{{ isLoginMode ? 'Sign In' : 'Create Account' }}</h1>
-        <p class="form-toggle">
-          {{ isLoginMode ? "Don't have an account?" : "Already have an account?" }}
-          <button type="button" class="toggle-link" (click)="toggleMode()">
-            {{ isLoginMode ? 'Sign Up' : 'Sign In' }}
+      <!-- The half of the card that says who is on the other end of the
+           form. A password page with no maker on it reads as a phish. -->
+      <aside class="auth__aside">
+        <p class="eyebrow">{{ i18n.t('auth.eyebrow') }}</p>
+        <h2>{{ i18n.t('auth.aside.title') }}</h2>
+        <p>{{ i18n.t('auth.aside.body') }}</p>
+        <ul class="auth__proof">
+          <li>
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m5 13 4 4L19 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>{{ i18n.t('auth.aside.p1') }}</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m5 13 4 4L19 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>{{ i18n.t('auth.aside.p2') }}</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m5 13 4 4L19 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>{{ i18n.t('auth.aside.p3') }}</span>
+          </li>
+        </ul>
+      </aside>
+
+      <div class="auth__form">
+        <div class="segmented" role="tablist" [attr.aria-label]="i18n.t('auth.eyebrow')">
+          <button type="button" role="tab" id="tab-signin"
+                  [attr.aria-selected]="mode() === 'signin'"
+                  (click)="setMode('signin')">{{ i18n.t('auth.tab.signin') }}</button>
+          <button type="button" role="tab" id="tab-register"
+                  [attr.aria-selected]="mode() === 'register'"
+                  (click)="setMode('register')">{{ i18n.t('auth.tab.register') }}</button>
+        </div>
+
+        <h1>{{ title() }}</h1>
+        <p class="auth__sub">{{ subtitle() }}</p>
+
+        @if (formError()) {
+        <p class="alert alert--err" role="alert">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+          <span>{{ formError() }}</span>
+        </p>
+        }
+        @if (done()) {
+        <p class="alert alert--ok" role="status">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>
+          <span>{{ submitLabel() }}</span>
+        </p>
+        }
+
+        @if (mode() === 'signin') {
+        <form [formGroup]="signinForm" (ngSubmit)="submit()" novalidate>
+          <div class="ffield" [class.is-invalid]="showError(signinForm, 'email')">
+            <label class="ffield__label" for="si-email">{{ i18n.t('auth.email') }}</label>
+            <div class="ffield__box ffield__box--icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>
+              <input id="si-email" type="email" inputmode="email" autocomplete="email"
+                     formControlName="email" [placeholder]="i18n.t('auth.email.ph')"
+                     [attr.aria-invalid]="showError(signinForm, 'email') || null"
+                     [attr.aria-describedby]="showError(signinForm, 'email') ? 'si-email-err' : null">
+            </div>
+            @if (showError(signinForm, 'email')) {
+            <p class="ffield__err" id="si-email-err">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+              <span>{{ errorFor(signinForm, 'email') }}</span>
+            </p>
+            }
+          </div>
+
+          <div class="ffield" [class.is-invalid]="showError(signinForm, 'password')">
+            <label class="ffield__label" for="si-password">{{ i18n.t('auth.password') }}</label>
+            <div class="ffield__box ffield__box--icon ffield__box--reveal">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></svg>
+              <input id="si-password" [type]="reveal() ? 'text' : 'password'" autocomplete="current-password"
+                     formControlName="password" [placeholder]="i18n.t('auth.password.ph')"
+                     [attr.aria-invalid]="showError(signinForm, 'password') || null"
+                     [attr.aria-describedby]="showError(signinForm, 'password') ? 'si-password-err' : null">
+              <button type="button" class="ffield__reveal" (click)="reveal.set(!reveal())">
+                {{ reveal() ? i18n.t('form.hide') : i18n.t('form.show') }}
+              </button>
+            </div>
+            @if (showError(signinForm, 'password')) {
+            <p class="ffield__err" id="si-password-err">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+              <span>{{ errorFor(signinForm, 'password') }}</span>
+            </p>
+            }
+          </div>
+
+          <button type="submit" class="btn btn--gold btn--full" [class.is-busy]="busy()"
+                  [disabled]="busy() || done()">
+            @if (busy()) {<span class="spinner spinner--sm" aria-hidden="true"></span>}
+            {{ submitLabel() }}
           </button>
+        </form>
+        } @else {
+        <form [formGroup]="registerForm" (ngSubmit)="submit()" novalidate>
+          <div class="ffield" [class.is-invalid]="showError(registerForm, 'full_name')">
+            <label class="ffield__label" for="rg-name">{{ i18n.t('auth.name') }}</label>
+            <div class="ffield__box ffield__box--icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 20v-1.5a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4V20"/><circle cx="12" cy="7.5" r="3.5"/></svg>
+              <input id="rg-name" type="text" autocomplete="name"
+                     formControlName="full_name" [placeholder]="i18n.t('auth.name.ph')"
+                     [attr.aria-invalid]="showError(registerForm, 'full_name') || null"
+                     [attr.aria-describedby]="showError(registerForm, 'full_name') ? 'rg-name-err' : null">
+            </div>
+            @if (showError(registerForm, 'full_name')) {
+            <p class="ffield__err" id="rg-name-err">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+              <span>{{ errorFor(registerForm, 'full_name') }}</span>
+            </p>
+            }
+          </div>
+
+          <div class="ffield" [class.is-invalid]="showError(registerForm, 'email')">
+            <label class="ffield__label" for="rg-email">{{ i18n.t('auth.email') }}</label>
+            <div class="ffield__box ffield__box--icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>
+              <input id="rg-email" type="email" inputmode="email" autocomplete="email"
+                     formControlName="email" [placeholder]="i18n.t('auth.email.ph')"
+                     [attr.aria-invalid]="showError(registerForm, 'email') || null"
+                     [attr.aria-describedby]="showError(registerForm, 'email') ? 'rg-email-err' : null">
+            </div>
+            @if (showError(registerForm, 'email')) {
+            <p class="ffield__err" id="rg-email-err">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+              <span>{{ errorFor(registerForm, 'email') }}</span>
+            </p>
+            }
+          </div>
+
+          <div class="ffield" [class.is-invalid]="showError(registerForm, 'phone')">
+            <label class="ffield__label" for="rg-phone">
+              <span>{{ i18n.t('auth.phone') }}</span>
+              <span class="ffield__opt">{{ i18n.t('form.optional') }}</span>
+            </label>
+            <div class="ffield__box ffield__box--icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M21 16.9v2.6a2 2 0 0 1-2.2 2 19.4 19.4 0 0 1-8.5-3A19.1 19.1 0 0 1 4.4 12 19.4 19.4 0 0 1 1.5 3.4 2 2 0 0 1 3.5 1.2h2.6a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L7.1 8.9a16 16 0 0 0 6 6l1.2-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z"/></svg>
+              <input id="rg-phone" type="tel" inputmode="tel" autocomplete="tel"
+                     formControlName="phone" [placeholder]="i18n.t('auth.phone.ph')"
+                     [attr.aria-invalid]="showError(registerForm, 'phone') || null"
+                     [attr.aria-describedby]="showError(registerForm, 'phone') ? 'rg-phone-err' : 'rg-phone-hint'">
+            </div>
+            @if (showError(registerForm, 'phone')) {
+            <p class="ffield__err" id="rg-phone-err">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+              <span>{{ errorFor(registerForm, 'phone') }}</span>
+            </p>
+            } @else {
+            <p class="ffield__hint" id="rg-phone-hint">{{ i18n.t('auth.phone.hint') }}</p>
+            }
+          </div>
+
+          <div class="ffield">
+            <label class="ffield__label" for="rg-address">
+              <span>{{ i18n.t('auth.address') }}</span>
+              <span class="ffield__opt">{{ i18n.t('form.optional') }}</span>
+            </label>
+            <div class="ffield__box ffield__box--icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 10c0 6.2-8 12-8 12s-8-5.8-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.8"/></svg>
+              <input id="rg-address" type="text" autocomplete="street-address"
+                     formControlName="address" [placeholder]="i18n.t('auth.address.ph')">
+            </div>
+          </div>
+
+          <div class="ffield" [class.is-invalid]="showError(registerForm, 'password')">
+            <label class="ffield__label" for="rg-password">{{ i18n.t('auth.password') }}</label>
+            <div class="ffield__box ffield__box--icon ffield__box--reveal">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></svg>
+              <input id="rg-password" [type]="reveal() ? 'text' : 'password'" autocomplete="new-password"
+                     formControlName="password" [placeholder]="i18n.t('auth.password.ph')"
+                     [attr.aria-invalid]="showError(registerForm, 'password') || null"
+                     [attr.aria-describedby]="showError(registerForm, 'password') ? 'rg-password-err' : 'rg-password-hint'">
+              <button type="button" class="ffield__reveal" (click)="reveal.set(!reveal())">
+                {{ reveal() ? i18n.t('form.hide') : i18n.t('form.show') }}
+              </button>
+            </div>
+            @if (showError(registerForm, 'password')) {
+            <p class="ffield__err" id="rg-password-err">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+              <span>{{ errorFor(registerForm, 'password') }}</span>
+            </p>
+            } @else {
+            <p class="ffield__hint" id="rg-password-hint">{{ i18n.t('auth.password.hint') }}</p>
+            }
+          </div>
+
+          <button type="submit" class="btn btn--gold btn--full" [class.is-busy]="busy()"
+                  [disabled]="busy() || done()">
+            @if (busy()) {<span class="spinner spinner--sm" aria-hidden="true"></span>}
+            {{ submitLabel() }}
+          </button>
+        </form>
+        }
+
+        <p class="orline">{{ i18n.t('auth.or') }}</p>
+
+        <button type="button" class="btn btn--google" (click)="googleLogin()" [disabled]="busy() || done()">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          {{ i18n.t('auth.google') }}
+        </button>
+
+        <p class="auth__foot">
+          @if (mode() === 'signin') {
+          {{ i18n.t('auth.noaccount') }}
+          <button type="button" (click)="setMode('register')">{{ i18n.t('auth.tab.register') }}</button>
+          } @else {
+          {{ i18n.t('auth.haveaccount') }}
+          <button type="button" (click)="setMode('signin')">{{ i18n.t('auth.tab.signin') }}</button>
+          }
+        </p>
+
+        <p class="auth__foot">
+          <a class="link-arrow" routerLink="/track">{{ i18n.t('topbar.track') }}</a>
         </p>
       </div>
-
-      <!-- Error message -->
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
-
-      <!-- Login Form -->
-      <form *ngIf="isLoginMode" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-          <label for="login-email">Email</label>
-          <input id="login-email" type="email" formControlName="email" placeholder="you@example.com" />
-        </div>
-        <div class="form-group">
-          <label for="login-password">Password</label>
-          <input id="login-password" type="password" formControlName="password" placeholder="••••••••" />
-        </div>
-        <button type="submit" class="btn btn--gold btn--full" [disabled]="isLoading">
-          {{ isLoading ? 'Signing in...' : 'Sign In' }}
-        </button>
-        <div class="divider">or</div>
-        <button type="button" class="btn btn--google" (click)="googleLogin()">
-          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Continue with Google
-        </button>
-      </form>
-
-      <!-- Register Form -->
-      <form *ngIf="!isLoginMode" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-          <label for="reg-name">Full Name</label>
-          <input id="reg-name" type="text" formControlName="full_name" placeholder="John Doe" />
-        </div>
-        <div class="form-group">
-          <label for="reg-email">Email</label>
-          <input id="reg-email" type="email" formControlName="email" placeholder="you@example.com" />
-        </div>
-        <div class="form-group">
-          <label for="reg-phone">Phone (optional)</label>
-          <input id="reg-phone" type="tel" formControlName="phone" placeholder="+92-300-1234567" />
-        </div>
-        <div class="form-group">
-          <label for="reg-password">Password</label>
-          <input id="reg-password" type="password" formControlName="password" placeholder="••••••••" />
-        </div>
-        <div class="form-group">
-          <label for="reg-address">Address (optional)</label>
-          <input id="reg-address" type="text" formControlName="address" placeholder="City, Country" />
-        </div>
-        <button type="submit" class="btn btn--gold btn--full" [disabled]="isLoading">
-          {{ isLoading ? 'Creating account...' : 'Create Account' }}
-        </button>
-        <div class="divider">or</div>
-        <button type="button" class="btn btn--google" (click)="googleLogin()">
-          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Continue with Google
-        </button>
-      </form>
     </div>
   </div>
-</div>
+</section>

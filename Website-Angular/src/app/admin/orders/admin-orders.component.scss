@@ -1,0 +1,65 @@
+/* Local to the orders table. The table, bar, pager and states are
+   `.adm*` in styles.scss — the messages screen reads the same ones. */
+
+.ord__search,
+.ord__filter {
+  display: block;
+}
+
+.ord__search {
+  flex: 0 1 300px;
+}
+
+/* label text that only a screen reader needs — the controls carry
+   their own placeholder and first option */
+.ord__vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ord__name {
+  display: block;
+  font-weight: 600;
+  max-width: 26ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ord__mail {
+  display: block;
+  font-size: .72rem;
+  color: var(--green-soft);
+  max-width: 26ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adm-table th svg {
+  transition: transform .2s var(--ease);
+
+  &.is-asc {
+    transform: rotate(180deg);
+  }
+}
+
+.ord__skel {
+  height: 16px;
+
+  + .ord__skel {
+    margin-top: .85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adm-table th svg {
+    transition: none;
+  }
+}

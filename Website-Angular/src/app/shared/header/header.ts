@@ -3,9 +3,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 
+import { NgOptimizedImage } from '@angular/common';
+
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
 import { CATEGORIES, PRODUCTS } from '../../core/data/products';
-import { imgSrc } from '../../core/image';
+import { imgSrc, imgDims } from '../../core/image';
 import { AudioService } from '../../core/services/audio.service';
 import { CartService } from '../../core/services/cart.service';
 import { I18nService } from '../../core/services/i18n.service';
@@ -43,6 +45,7 @@ export const CONCERNS = [
     ImgFallbackDirective,
     ProfileDropdownComponent,
     SearchComponent,
+    NgOptimizedImage,
   ],
   host: { '(document:keydown.escape)': 'closeMenu()' },
 })
@@ -59,6 +62,7 @@ export class Header {
   protected readonly categories = CATEGORIES;
   protected readonly concerns = CONCERNS;
   protected readonly imgSrc = imgSrc;
+  protected readonly imgDims = imgDims;
 
   // ✅ Expose admin path for template
   protected readonly adminPath = environment.adminPath;

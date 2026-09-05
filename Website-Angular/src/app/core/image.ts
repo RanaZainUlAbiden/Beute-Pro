@@ -22,17 +22,32 @@ export const PLACEHOLDER =
         letter-spacing="2" fill="#C08A85">PHOTO PENDING</text>
 </svg>`);
 
-/* PNG first (transparent cut-outs), then JPG, then the stand-in —
-   see ImgFallbackDirective for the walk down that chain. */
+/* WebP first, then PNG (transparent cut-outs), then JPG, then the
+   stand-in — see ImgFallbackDirective for the walk down that chain. */
 export function imgSrc(id: string, n = 1): string {
-  return `/assets/img/products/${id}/${id}-${n}.png`;
+  return `/assets/img/products/${id}/${id}-${n}.webp`;
 }
 
 export function catSrc(id: string): string {
-  return `/assets/img/categories/${id}.jpg`;
+  return `/assets/img/categories/${id}.webp`;
 }
 
 /** The short looping 360° clip, one per product where it exists. */
 export function spinSrc(id: string): string {
   return `/assets/video/spin/${id}.mp4`;
+}
+
+/* Intrinsic pixel size of each product's photo, for NgOptimizedImage's
+   required width/height (they stop the image reflowing the page as it
+   loads). Every product shares one shoot's dimensions except the three
+   listed here — CSS still governs the displayed size in every case. */
+const PRODUCT_IMG_DIMS: Record<string, { width: number; height: number }> = {
+  'charcoal-tea-tree-soap': { width: 1641, height: 941 },
+  'goat-milk-tea-tree-soap': { width: 1774, height: 887 },
+  'rose-water-mist': { width: 1440, height: 1108 },
+};
+const DEFAULT_IMG_DIMS = { width: 1536, height: 1024 };
+
+export function imgDims(id: string): { width: number; height: number } {
+  return PRODUCT_IMG_DIMS[id] ?? DEFAULT_IMG_DIMS;
 }

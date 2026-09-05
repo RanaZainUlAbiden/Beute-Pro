@@ -1,58 +1,72 @@
-﻿import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
+import { AdminApi, adminDate, adminMoney, adminProductName, type DashboardData } from '../admin-api';
+import { statusPill } from '../../features/orders/order-view';
+
+/* =============================================================
+   DASHBOARD
+
+   The answer to "what happened while I was away", in one screen:
+   the five totals, where the open orders are sitting, the last
+   seven days of takings, the five most recent orders and the top
+   products. Everything is a link into the screen that can act
+   on it — the dashboard itself does nothing but show.
+   ============================================================= */
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="dashboard">
-      <h1 class="h-lg">Dashboard</h1>
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-value">{{ summary.totalOrders }}</div><div class="stat-label">Total Orders</div></div>
-        <div class="stat-card"><div class="stat-value">{{ summary.totalRevenue | currency:'PKR' }}</div><div class="stat-label">Revenue</div></div>
-        <div class="stat-card"><div class="stat-value">{{ summary.todayRevenue | currency:'PKR' }}</div><div class="stat-label">Today</div></div>
-        <div class="stat-card"><div class="stat-value">{{ summary.totalCustomers }}</div><div class="stat-label">Customers</div></div>
-      </div>
-      <div class="recent-orders">
-        <h2>Recent Orders</h2>
-        <div class="order-list">
-          <div *ngFor="let order of recentOrders" class="order-row">
-            <span>{{ order.orderNumber }}</span>
-            <span>{{ order.customerName }}</span>
-            <span>{{ order.total | currency:'PKR' }}</span>
-            <span class="status-badge" [class]="'status-'+order.status">{{ order.status }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap:1.5rem; margin: 2rem 0; }
-    .stat-card { background: white; padding: 1.5rem; border-radius: var(--r-lg); box-shadow: var(--shadow); }
-    .stat-value { font-size: 2rem; font-weight: 800; color: var(--green); }
-    .stat-label { font-size: 0.8rem; color: var(--green-soft); }
-    .recent-orders { background: white; border-radius: var(--r-lg); padding: 1.5rem; }
-    .order-row { display: grid; grid-template-columns: 1fr 2fr 1fr 1fr; gap:1rem; padding:0.5rem 0; border-bottom:1px solid var(--ivory-3); }
-    .status-badge { padding: 0.2rem 0.6rem; border-radius: var(--r); font-size: 0.7rem; font-weight:700; text-transform:capitalize; }
-    .status-pending { background: #fef3c7; color:#b45309; }
-    .status-processing { background: #dbeafe; color:#1e40af; }
-    .status-shipped { background: #d1fae5; color:#065f46; }
-    .status-delivered { background: var(--green-2); color:var(--ivory); }
-    .status-cancelled { background: #fde8e6; color:#a8443c; }
-  `],
+  imports: [RouterLink],
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
-  private http = inject(HttpClient);
-  summary = { totalOrders: 0, totalRevenue: 0, todayRevenue: 0, totalCustomers: 0 };
-  recentOrders: any[] = [];
+  private readonly api = inject(AdminApi);
 
-  ngOnInit() {
-    this.http.get(`${environment.apiUrl}/admin/dashboard`).subscribe((data: any) => {
-      this.summary = data.summary;
-      this.recentOrders = data.recentOrders;
+  protected readonly data = signal<DashboardData | null>(null);
+  protected readonly busy = signal(true);
+  protected readonly failed = signal(false);
+
+  protected readonly money = adminMoney;
+  protected readonly date = adminDate;
+  protected readonly productName = adminProductName;
+  protected readonly pill = statusPill;
+
+  /** The tallest bar sets the scale for the seven-day strip. */
+  protected readonly peak = computed(() =>
+    Math.max(1, ...(this.data()?.dailyRevenue ?? []).map((d) => d.revenue)),
+  );
+
+  protected readonly openOrders = computed(() =>
+    (this.data()?.ordersByStatus ?? [])
+      .filter((r) => r.status === 'pending' || r.status === 'processing')
+      .reduce((n, r) => n + Number(r.count), 0),
+  );
+
+  ngOnInit(): void {
+    this.load();
+  }
+
+  protected load(): void {
+    this.busy.set(true);
+    this.failed.set(false);
+    this.api.dashboard().subscribe({
+      next: (data) => {
+        this.data.set(data);
+        this.busy.set(false);
+      },
+      error: () => {
+        this.busy.set(false);
+        this.failed.set(true);
+      },
     });
+  }
+
+  protected barHeight(revenue: number): string {
+    return `${Math.max(4, Math.round((revenue / this.peak()) * 100))}%`;
+  }
+
+  protected weekday(value: string): string {
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-GB', { weekday: 'short' });
   }
 }

@@ -1,78 +1,59 @@
-﻿import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 
-interface TopProduct {
-  product_id: string;
-  revenue: string;
-}
+import { AdminApi, adminMoney, adminProductName, type RevenueData } from '../admin-api';
 
-interface RevenueData {
-  totalRevenue: number;
-  todayRevenue: number;
-  monthRevenue: number;
-  topProducts: TopProduct[];
-}
+/* =============================================================
+   REVENUE (admin)
 
+   Three totals and the products behind them. The share column is
+   worked out here rather than asked of the API: it is the one
+   number that turns a list of amounts into a ranking you can act
+   on, and the endpoint already sends everything it needs.
+   ============================================================= */
 @Component({
   selector: 'app-revenue',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="revenue-page">
-      <h1 class="h-lg">Revenue</h1>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-value">{{ revenue.totalRevenue | currency:'PKR' }}</div>
-          <div class="stat-label">Total Revenue</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ revenue.todayRevenue | currency:'PKR' }}</div>
-          <div class="stat-label">Today</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ revenue.monthRevenue | currency:'PKR' }}</div>
-          <div class="stat-label">This Month</div>
-        </div>
-      </div>
-      <div class="top-products">
-        <h2>Top Products</h2>
-        <div *ngFor="let p of revenue.topProducts" class="product-row">
-          <span>{{ p.product_id }}</span>
-          <span>{{ p.revenue | currency:'PKR' }}</span>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .revenue-page { padding: 1rem; }
-    .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap:1.5rem; margin: 2rem 0; }
-    .stat-card { background: white; padding: 1.5rem; border-radius: var(--r-lg); box-shadow: var(--shadow); }
-    .stat-value { font-size: 2rem; font-weight: 800; color: var(--green); }
-    .stat-label { font-size: 0.8rem; color: var(--green-soft); }
-    .top-products { background: white; padding: 1.5rem; border-radius: var(--r-lg); box-shadow: var(--shadow); }
-    .product-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--ivory-3); }
-    .product-row:last-child { border-bottom: none; }
-  `],
+  templateUrl: './revenue.component.html',
+  styleUrl: './revenue.component.scss',
 })
 export class RevenueComponent implements OnInit {
-  private http = inject(HttpClient);
-  
-  revenue: RevenueData = {
-    totalRevenue: 0,
-    todayRevenue: 0,
-    monthRevenue: 0,
-    topProducts: [],
-  };
+  private readonly api = inject(AdminApi);
 
-  ngOnInit() {
-    this.http.get<RevenueData>(`${environment.apiUrl}/admin/revenue`).subscribe({
+  protected readonly money = adminMoney;
+  protected readonly productName = adminProductName;
+
+  protected readonly data = signal<RevenueData | null>(null);
+  protected readonly busy = signal(true);
+  protected readonly failed = signal(false);
+
+  /** Top products with their share of the top-product total. */
+  protected readonly ranked = computed(() => {
+    const products = this.data()?.topProducts ?? [];
+    const sum = products.reduce((n, p) => n + parseFloat(p.revenue), 0);
+    return products.map((p) => {
+      const revenue = parseFloat(p.revenue);
+      return {
+        id: p.product_id,
+        revenue,
+        share: sum > 0 ? Math.round((revenue / sum) * 100) : 0,
+      };
+    });
+  });
+
+  ngOnInit(): void {
+    this.load();
+  }
+
+  protected load(): void {
+    this.busy.set(true);
+    this.failed.set(false);
+    this.api.revenue().subscribe({
       next: (data) => {
-        this.revenue = data;
+        this.data.set(data);
+        this.busy.set(false);
       },
-      error: (err) => {
-        console.error('Failed to load revenue:', err);
+      error: () => {
+        this.busy.set(false);
+        this.failed.set(true);
       },
     });
   }

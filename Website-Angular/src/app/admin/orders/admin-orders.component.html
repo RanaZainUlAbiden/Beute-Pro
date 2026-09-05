@@ -1,0 +1,126 @@
+<div class="adm-head">
+  <div>
+    <h1>Orders</h1>
+    <p>Every order, newest first. Open one to change its status or add tracking.</p>
+  </div>
+  <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">Refresh</button>
+</div>
+
+<div class="adm-bar">
+  <label class="ord__search">
+    <span class="ord__vh">Search this page</span>
+    <input class="adm-field adm-field--search" type="search" placeholder="Search number, name, email, phone"
+           [value]="search()" (input)="search.set($any($event.target).value)">
+  </label>
+
+  <label class="ord__filter">
+    <span class="ord__vh">Filter by status</span>
+    <select class="adm-field" [value]="status()" (change)="onStatus($any($event.target).value)">
+      <option value="">All statuses</option>
+      @for (s of statuses; track s) {
+      <option [value]="s">{{ s }}</option>
+      }
+    </select>
+  </label>
+
+  <span class="adm-bar__spacer"></span>
+
+  <span class="adm-count">
+    @if (search()) {
+      {{ rows().length }} of {{ orders().length }} on this page · {{ total() }} in total
+    } @else {
+      {{ orders().length }} of {{ total() }} orders
+    }
+  </span>
+</div>
+
+<div class="adm-panel">
+  @if (busy()) {
+  <div class="adm-panel__body">
+    @for (n of [1, 2, 3, 4, 5, 6, 7, 8]; track n) {
+    <div class="adm-skel ord__skel"></div>
+    }
+  </div>
+  } @else if (failed()) {
+  <div class="adm-state">
+    <p class="adm-state__t">The orders didn't load</p>
+    <p>The API didn't answer. Nothing is lost — try again, and check the backend is up if it keeps failing.</p>
+    <button type="button" class="btn btn--gold btn--sm" (click)="load()">Try again</button>
+  </div>
+  } @else if (rows().length === 0) {
+  <div class="adm-state">
+    @if (search()) {
+    <p class="adm-state__t">Nothing on this page matches “{{ search() }}”</p>
+    <p>The search looks at the 25 orders loaded here. Clear it, or turn the page.</p>
+    <button type="button" class="btn btn--outline btn--sm" (click)="clearSearch()">Clear search</button>
+    } @else if (status()) {
+    <p class="adm-state__t">No {{ status() }} orders</p>
+    <p>Nothing is sitting at this status right now.</p>
+    <button type="button" class="btn btn--outline btn--sm" (click)="onStatus('')">Show all statuses</button>
+    } @else {
+    <p class="adm-state__t">No orders yet</p>
+    <p>Orders placed on the storefront land here straight away.</p>
+    }
+  </div>
+  } @else {
+  <div class="adm-scroll">
+    <table class="adm-table">
+      <thead>
+        <tr>
+          <th [class.is-sorted]="sortKey() === 'order_number'" [attr.aria-sort]="sortState('order_number')">
+            <button type="button" (click)="sortBy('order_number')">Order
+              <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('order_number') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </th>
+          <th [class.is-sorted]="sortKey() === 'created_at'" [attr.aria-sort]="sortState('created_at')">
+            <button type="button" (click)="sortBy('created_at')">Placed
+              <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('created_at') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </th>
+          <th [class.is-sorted]="sortKey() === 'customer_name'" [attr.aria-sort]="sortState('customer_name')">
+            <button type="button" (click)="sortBy('customer_name')">Customer
+              <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('customer_name') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </th>
+          <th class="num"><span>Items</span></th>
+          <th class="num" [class.is-sorted]="sortKey() === 'total_amount_pkr'" [attr.aria-sort]="sortState('total_amount_pkr')">
+            <button type="button" (click)="sortBy('total_amount_pkr')">Total
+              <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('total_amount_pkr') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </th>
+          <th [class.is-sorted]="sortKey() === 'status'" [attr.aria-sort]="sortState('status')">
+            <button type="button" (click)="sortBy('status')">Status
+              <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('status') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </th>
+          <th><span class="ord__vh">Open</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (o of rows(); track o.id) {
+        <tr>
+          <td class="mono"><a class="adm-link" [routerLink]="[o.id]">{{ o.order_number }}</a></td>
+          <td class="muted">{{ date(o.created_at) }}</td>
+          <td>
+            <span class="ord__name">{{ o.customer_name }}</span>
+            <span class="ord__mail">{{ o.customer_email }}</span>
+          </td>
+          <td class="num">{{ itemCount(o) }}</td>
+          <td class="num">{{ money(o.total_amount_pkr) }}</td>
+          <td><span [class]="pill(o.status)">{{ o.status }}</span></td>
+          <td class="num"><a class="adm-link" [routerLink]="[o.id]">Open</a></td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (totalPages() > 1) {
+  <div class="adm-pager">
+    <span class="adm-pager__at">Page {{ page() }} of {{ totalPages() }}</span>
+    <button type="button" [disabled]="page() === 1" (click)="goto(page() - 1)">Previous</button>
+    <button type="button" [disabled]="page() === totalPages()" (click)="goto(page() + 1)">Next</button>
+  </div>
+  }
+  }
+</div>

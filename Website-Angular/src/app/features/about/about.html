@@ -1,6 +1,8 @@
 <!-- ============ PAGE HERO (dark) ============ -->
 <app-page-banner
   image="/assets/img/about/factory-1.jpg"
+  [imageWidth]="1375"
+  [imageHeight]="768"
   [eyebrow]="i18n.t('story.eyebrow')"
   [heading]="i18n.t('story.title')"
   [copy]="i18n.t('about.hero.lede')">
@@ -42,10 +44,12 @@
     </div>
     <div class="storyvid__grid reveal" role="group" [attr.aria-label]="i18n.t('about.floor.gallery')">
       <app-video-figure
-        src="/assets/video/factory/Outside-View.mp4"
+        src="/assets/video/factory/Outside-View-web.mp4"
+        poster="/assets/video/factory/Outside-View-poster.jpg"
         [caption]="i18n.t('about.vid1')" />
       <app-video-figure
-        src="/assets/video/factory/company-reception.mp4"
+        src="/assets/video/factory/company-reception-web.mp4"
+        poster="/assets/video/factory/company-reception-poster.jpg"
         [caption]="i18n.t('about.vid2')" />
     </div>
   </div>

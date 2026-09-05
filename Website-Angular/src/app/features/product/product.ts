@@ -1,4 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -47,6 +47,7 @@ const photoCache = new Map<string, Promise<number[]>>();
     AccordionPanelDirective,
     ProductCard,
     SplitHeading,
+    NgOptimizedImage,
   ],
 })
 export class ProductPage implements OnDestroy {
@@ -140,7 +141,7 @@ protected inWishlist = signal(false);
       const id = this.product().id;
       if (id !== this.probedSpinFor) {
         this.probedSpinFor = id;
-        void this.initSpin(id);
+        this.initSpin(id);
       }
     });
 
@@ -352,36 +353,28 @@ protected inWishlist = signal(false);
 
   /* =============================================================
      2. THE 360° VIEWER
-     A short looping video per product at assets/video/spin/<id>.mp4.
-     preload="metadata" doubles as the existence probe — loadedmetadata
-     vs error tells us whether to show the tab at all, and only the
-     header is fetched until the visitor opens it and it starts playing.
+     A short looping video per product at assets/video/spin/<id>.mp4,
+     present only where products.ts flags `spin: true` — the same data
+     field the homepage spotlight reads, replacing what used to be a
+     per-product network probe (preload="metadata" as an existence
+     check) on every page load.
      ============================================================= */
-  private async initSpin(id: string): Promise<void> {
+  private initSpin(id: string): void {
     const video = this.spinVideo()?.nativeElement;
     const box = this.spinBox()?.nativeElement;
     if (!video || !box) return;
 
-    video.poster = imgSrc(id, 1);
-    if (this.motion.reduced) video.removeAttribute('autoplay'); // poster frame only, ever
-
-    const ok = await new Promise<boolean>((resolve) => {
-      const done = (result: boolean) => {
-        video.removeEventListener('loadedmetadata', onOk);
-        video.removeEventListener('error', onErr);
-        resolve(result);
-      };
-      const onOk = () => done(true);
-      const onErr = () => done(false);
-      video.addEventListener('loadedmetadata', onOk, { once: true });
-      video.addEventListener('error', onErr, { once: true });
-      video.src = spinSrc(id);
-      video.load();
-    });
-
-    if (id !== this.product().id) return; // moved on while probing
+    const ok = PRODUCTS.find((p) => p.id === id)?.spin ?? false;
     this.spinReady.set(ok);
-    if (!ok || this.motion.reduced) return;
+    if (!ok) return;
+
+    video.poster = imgSrc(id, 1);
+    video.muted = true; // the `muted` attribute alone doesn't always take before playback
+    if (this.motion.reduced) video.removeAttribute('autoplay'); // poster frame only, ever
+    video.src = spinSrc(id);
+    video.load();
+
+    if (this.motion.reduced) return;
 
     // pause off screen, resume once the tab is open and in view
     this.spinIo?.disconnect();

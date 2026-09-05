@@ -3,11 +3,14 @@ import {
   Component,
   ElementRef,
   afterNextRender,
+  computed,
   input,
   inject,
   signal,
   viewChild,
 } from '@angular/core';
+
+import { NgOptimizedImage } from '@angular/common';
 
 import { MotionService } from '../../core/services/motion.service';
 import { SplitHeading, type SplitSegment } from '../split-heading/split-heading';
@@ -42,13 +45,21 @@ import { SplitHeading, type SplitSegment } from '../split-heading/split-heading'
   templateUrl: './page-hero.html',
   styleUrl: './page-hero.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SplitHeading],
+  imports: [SplitHeading, NgOptimizedImage],
 })
 export class PageHero {
   private readonly motion = inject(MotionService);
 
   /** Still image behind the copy, e.g. `/assets/img/shop.jpg`. */
   readonly image = input<string | null>(null);
+  /** Same still as WebP, tried first via a <picture> <source>. */
+  protected readonly webpImage = computed(() => {
+    const src = this.image();
+    return src ? src.replace(/\.(?:jpe?g|png)$/i, '.webp') : null;
+  });
+  /** Intrinsic size of [image] — every current still is 1376×768. */
+  readonly imageWidth = input<number>(1376);
+  readonly imageHeight = input<number>(768);
   /** Looping clip behind the copy. Takes precedence over [image]. */
   readonly video = input<string | null>(null);
   /** First frame for [video], shown until it plays and under reduced motion. */
@@ -79,6 +90,7 @@ export class PageHero {
     const video = this.videoEl()?.nativeElement;
     if (!video) return;
 
+    video.muted = true; // the `muted` attribute alone doesn't always take before playback
     const fallback = () => this.empty.set(true);
     // capture, because a <source> element's error does not bubble
     video.addEventListener('error', fallback, true);

@@ -16,7 +16,7 @@
     } @else {
       @for (row of cart.rows(); track row.id) {
         <div class="citem">
-          <img class="citem__img" [src]="imgSrc(row.product.id)" [alt]="i18n.copy(row.product).name" data-fallback>
+          <img class="citem__img" [ngSrc]="imgSrc(row.product.id)" [width]="imgDims(row.product.id).width" [height]="imgDims(row.product.id).height" [alt]="i18n.copy(row.product).name" data-fallback>
           <div>
             <div class="citem__name">{{ i18n.copy(row.product).name }}</div>
             <div class="citem__price">{{ i18n.money(row.product.price) }}</div>

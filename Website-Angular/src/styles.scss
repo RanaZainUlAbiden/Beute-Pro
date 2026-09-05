@@ -24,7 +24,21 @@ app-product,
 app-about,
 app-contact,
 app-faq,
-app-policies{display:contents}
+app-policies,
+app-login,
+app-auth-success,
+app-track-order,
+app-checkout,
+app-profile,
+app-orders-page,
+app-order-detail,
+app-wishlist-page,
+app-admin-layout,
+app-dashboard,
+app-admin-orders,
+app-admin-order-detail,
+app-revenue,
+app-contact-messages{display:contents}
 router-outlet{display:none}
 
 /* =========================================================
@@ -43,6 +57,20 @@ router-outlet{display:none}
   --gold-lt:#E4C783;
   --ink:#132018;
   --white:#fff;
+
+  /* state — added for the account and admin screens: form errors,
+     order status and the admin table's row states. The five order
+     statuses each need a colour that survives on ivory and on white,
+     and #A8443C was already the sale/remove red before this block
+     named it. Nothing outside those screens reads them. */
+  --danger:#A8443C;
+  --danger-soft:#F7E7E4;
+  --ok:#2C6045;
+  --ok-soft:#E1EDE5;
+  --warn:#8A6A1F;
+  --warn-soft:#F4EBD5;
+  --info:#2A5470;
+  --info-soft:#E0E8EE;
 
   /* type */
   --sans:"Manrope","Helvetica Neue",Arial,sans-serif;
@@ -1257,4 +1285,536 @@ html[dir="rtl"] .pagehero::after{
 .prose a:hover{color:var(--green-3)}
 @media(max-width:1024px){
   .contact-grid{grid-template-columns:1fr}
+}
+
+/* =========================================================
+   ACCOUNT — sign in, register, track, checkout, orders,
+             order detail, profile, wishlist
+
+   These pages are storefront pages: same ivory ground, same
+   Manrope, same .wrap / .btn / .h-lg scale as the shop. What
+   they add is the vocabulary a transactional page needs and
+   the marketing pages never did — a field that can be wrong,
+   a request that can be in flight, a list that can be empty,
+   and an order that has a state.
+
+   Five pieces, shared by all eight pages so a form behaves
+   the same everywhere:
+
+     .ffield   one labelled control, with its error and hint
+     .alert    a form-level message (error / success / note)
+     .pill     an order status, one colour per state
+     .state    the loading / empty / error block
+     .card     the white panel everything else sits in
+
+   Everything is written with logical properties, so Arabic
+   needs no rule of its own below.
+   ========================================================= */
+.acct{padding-block:clamp(2rem,5vw,3.4rem) var(--section)}
+.acct__head{margin-bottom:clamp(1.6rem,3.5vw,2.4rem)}
+.acct__head h1{margin-bottom:.7rem}
+.acct__head .lede{margin:0}
+.acct__head--center{text-align:center}
+.acct__head--center .lede{margin-inline:auto}
+
+/* the "← back to …" link above a detail page's title */
+.backlink{
+  display:inline-flex;align-items:center;gap:.45rem;margin-bottom:1.1rem;
+  font-size:.78rem;font-weight:700;color:var(--green-soft);transition:color .3s
+}
+.backlink:hover{color:var(--green)}
+.backlink svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+html[dir="rtl"] .backlink svg{transform:scaleX(-1)}
+
+.card{
+  background:var(--white);border:1px solid var(--ivory-3);
+  border-radius:var(--r-lg);padding:clamp(1.15rem,2.6vw,1.9rem)
+}
+.card + .card{margin-top:clamp(1rem,2vw,1.4rem)}
+.card__head{margin-bottom:1.25rem}
+.card__head h2{font-size:clamp(1.05rem,1.8vw,1.25rem)}
+.card__head p{margin:.3rem 0 0;font-size:.85rem;color:var(--green-soft)}
+.card__title{
+  font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold);margin:0 0 .9rem
+}
+html[dir="rtl"] .card__title{letter-spacing:0}
+
+/* ---- fields --------------------------------------------- */
+.ffield{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.15rem}
+.ffield__label{
+  display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;
+  font-size:.78rem;font-weight:700;color:var(--green)
+}
+.ffield__opt{font-size:.72rem;font-weight:600;color:var(--green-soft)}
+.ffield__box{position:relative;display:flex;align-items:center}
+.ffield__box > svg{
+  position:absolute;inset-inline-start:.9rem;width:17px;height:17px;
+  stroke:var(--green-soft);fill:none;stroke-width:1.6;
+  pointer-events:none;transition:stroke .3s
+}
+.ffield input,.ffield select,.ffield textarea{
+  width:100%;padding:.85rem 1rem;border-radius:var(--r);
+  border:1.5px solid var(--ivory-3);background:var(--white);
+  font-family:inherit;font-size:.92rem;color:var(--ink);
+  transition:border-color .3s,box-shadow .3s,background-color .3s
+}
+.ffield__box--icon input{padding-inline-start:2.7rem}
+.ffield__box--reveal input{padding-inline-end:3.4rem}
+.ffield input:hover:not(:disabled),
+.ffield textarea:hover:not(:disabled){border-color:var(--green-soft)}
+.ffield input:focus,.ffield select:focus,.ffield textarea:focus{
+  outline:none;border-color:var(--gold);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 26%,transparent)
+}
+.ffield__box:focus-within > svg{stroke:var(--gold)}
+.ffield input:disabled,.ffield textarea:disabled{
+  background:var(--ivory-2);color:var(--green-soft);cursor:not-allowed;border-color:var(--ivory-3)
+}
+.ffield textarea{resize:vertical;min-height:120px}
+.ffield.is-invalid input,.ffield.is-invalid textarea{border-color:var(--danger)}
+.ffield.is-invalid input:focus,.ffield.is-invalid textarea:focus{
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--danger) 22%,transparent)
+}
+.ffield.is-invalid .ffield__box > svg{stroke:var(--danger)}
+.ffield.is-valid input{border-color:color-mix(in srgb,var(--ok) 50%,var(--ivory-3))}
+.ffield__err{
+  display:flex;gap:.4rem;align-items:flex-start;
+  font-size:.78rem;font-weight:600;line-height:1.5;color:var(--danger)
+}
+.ffield__err svg{width:14px;height:14px;flex:0 0 auto;margin-top:.2rem;stroke:currentColor;fill:none;stroke-width:2}
+.ffield__hint{font-size:.76rem;line-height:1.5;color:var(--green-soft)}
+/* the show/hide control inside a password field */
+.ffield__reveal{
+  position:absolute;inset-inline-end:.35rem;
+  padding:.4rem .6rem;border-radius:var(--r);
+  font-size:.72rem;font-weight:700;color:var(--green-soft);
+  transition:color .3s,background-color .3s
+}
+.ffield__reveal:hover{color:var(--green);background:var(--ivory-2)}
+
+/* radio / checkbox rows — payment method, and anything like it */
+.optrow{display:flex;flex-direction:column;gap:.55rem}
+.opt{
+  display:flex;align-items:flex-start;gap:.7rem;cursor:pointer;
+  padding:.85rem 1rem;border-radius:var(--r);
+  border:1.5px solid var(--ivory-3);background:var(--white);
+  transition:border-color .3s,background-color .3s
+}
+.opt:hover{border-color:var(--green-soft)}
+.opt:has(input:checked){border-color:var(--gold);background:color-mix(in srgb,var(--gold) 8%,var(--white))}
+.opt:has(input:focus-visible){outline:2px solid var(--gold);outline-offset:2px}
+.opt input{margin:.2rem 0 0;accent-color:var(--green);flex:0 0 auto}
+.opt__txt{min-width:0}
+.opt b{display:block;font-size:.9rem;font-weight:700;color:var(--ink)}
+.opt__txt > span{display:block;font-size:.78rem;color:var(--green-soft);line-height:1.5;margin-top:.12rem}
+
+/* ---- form-level messages -------------------------------- */
+.alert{
+  display:flex;gap:.65rem;align-items:flex-start;margin-bottom:1.2rem;
+  padding:.85rem 1rem;border-radius:var(--r);border-inline-start:3px solid;
+  font-size:.85rem;font-weight:600;line-height:1.6
+}
+.alert svg{width:17px;height:17px;flex:0 0 auto;margin-top:.14rem;stroke:currentColor;fill:none;stroke-width:2}
+.alert--err{background:var(--danger-soft);color:var(--danger);border-color:var(--danger)}
+.alert--ok{background:var(--ok-soft);color:var(--ok);border-color:var(--ok)}
+.alert--note{background:var(--ivory-2);color:var(--green);border-color:var(--gold)}
+
+/* ---- order status --------------------------------------- */
+.pill{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.34rem .75rem;border-radius:999px;
+  font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  white-space:nowrap
+}
+html[dir="rtl"] .pill{letter-spacing:0}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 auto}
+.pill--pending{background:var(--warn-soft);color:var(--warn)}
+.pill--processing{background:var(--info-soft);color:var(--info)}
+.pill--shipped{background:var(--ok-soft);color:var(--ok)}
+.pill--delivered{background:var(--green);color:var(--gold-lt)}
+.pill--cancelled{background:var(--danger-soft);color:var(--danger)}
+.pill--lg{font-size:.74rem;padding:.5rem 1rem}
+
+/* the four-beat progress rail on the track and order pages */
+.otrack{
+  list-style:none;margin:1.4rem 0 0;padding:0;
+  display:grid;grid-auto-flow:column;grid-auto-columns:1fr
+}
+.otrack__s{
+  position:relative;padding-top:1.75rem;padding-inline-end:.6rem;
+  font-size:.72rem;font-weight:700;line-height:1.4;color:var(--green-soft)
+}
+.otrack__s::before{
+  content:"";position:absolute;top:0;inset-inline-start:0;z-index:2;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--white);border:2px solid var(--ivory-3)
+}
+.otrack__s::after{
+  content:"";position:absolute;top:5px;inset-inline-start:0;
+  width:100%;height:2px;background:var(--ivory-3)
+}
+.otrack__s:last-child::after{display:none}
+.otrack__s.is-done{color:var(--green)}
+.otrack__s.is-done::before{background:var(--gold);border-color:var(--gold)}
+.otrack__s.is-done::after{background:var(--gold)}
+.otrack__s.is-now{color:var(--green)}
+.otrack__s.is-now::before{
+  background:var(--green);border-color:var(--gold);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--gold) 28%,transparent)
+}
+.otrack__note{
+  display:block;margin-top:.3rem;font-size:.72rem;font-weight:500;
+  color:var(--green-soft);max-width:24ch
+}
+
+/* ---- key / value rows ----------------------------------- */
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.7rem 1.4rem;margin:0}
+.kv dt{
+  font-size:.68rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--green-soft);padding-top:.12rem
+}
+html[dir="rtl"] .kv dt{letter-spacing:0}
+.kv dd{margin:0;font-size:.92rem;font-weight:600;line-height:1.6;overflow-wrap:anywhere}
+
+/* ---- order line items ----------------------------------- */
+.lines{display:flex;flex-direction:column}
+.line{
+  display:grid;grid-template-columns:minmax(0,1fr) auto auto;
+  gap:.3rem 1.1rem;align-items:baseline;
+  padding-block:.8rem;border-bottom:1px solid var(--ivory-3)
+}
+.line__name{font-size:.92rem;font-weight:700;min-width:0}
+.line__qty{font-size:.82rem;font-weight:600;color:var(--green-soft);font-variant-numeric:tabular-nums}
+.line__price{font-size:.92rem;font-weight:700;font-variant-numeric:tabular-nums;text-align:end}
+.line--total{
+  border-bottom:0;padding-top:1.05rem;
+  grid-template-columns:minmax(0,1fr) auto;font-size:1rem
+}
+.line--total .line__name{font-weight:800}
+.line--total .line__price{font-size:1.25rem;font-weight:800;color:var(--green)}
+
+/* ---- loading / empty / error ---------------------------- */
+.state{
+  text-align:center;background:var(--white);
+  border:1px dashed var(--ivory-3);border-radius:var(--r-lg);
+  padding:clamp(2.2rem,5vw,3.4rem) clamp(1.1rem,3vw,2rem)
+}
+.state__icon{width:44px;height:44px;margin:0 auto 1.05rem;stroke:var(--gold);fill:none;stroke-width:1.3}
+.state__title{font-size:clamp(1.08rem,2vw,1.35rem);font-weight:700;margin:0 0 .5rem}
+.state p{margin:0 auto;max-width:46ch;font-size:.92rem;line-height:1.7;color:var(--green-soft)}
+.state__cta{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem}
+.state--err{border-style:solid;border-color:color-mix(in srgb,var(--danger) 38%,var(--ivory-3))}
+.state--err .state__icon{stroke:var(--danger)}
+
+.spinner{
+  width:34px;height:34px;border-radius:50%;margin:0 auto 1rem;
+  border:2.5px solid var(--ivory-3);border-top-color:var(--gold);
+  animation:spin .9s linear infinite
+}
+.spinner--sm{width:15px;height:15px;border-width:2px;margin:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn .spinner--sm{
+  border-color:color-mix(in srgb,currentColor 28%,transparent);
+  border-top-color:currentColor
+}
+.btn[disabled],.btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
+/* a button that is waiting on the network keeps its width and its label */
+.btn.is-busy{cursor:progress}
+
+/* the third-party sign-in button — deliberately not a .btn--gold,
+   because Google's guidance is a neutral surface */
+.btn--google{
+  width:100%;border:1.5px solid var(--ivory-3);background:var(--white);color:var(--ink);
+  font-weight:700
+}
+.btn--google:hover{background:var(--ivory-2);border-color:var(--gold);box-shadow:none}
+.btn--google svg{width:17px;height:17px;stroke:none;fill:currentColor}
+html[dir="rtl"] .btn--google svg{transform:none}
+.btn--danger{border:1.5px solid var(--danger);color:var(--danger);background:var(--white)}
+.btn--danger:hover{background:var(--danger);color:var(--white)}
+
+/* "or" rule between the form and the Google button */
+.orline{display:flex;align-items:center;gap:.8rem;margin:1.2rem 0;font-size:.74rem;font-weight:700;color:var(--green-soft)}
+.orline::before,.orline::after{content:"";flex:1;height:1px;background:var(--ivory-3)}
+
+/* ---- the two-column sign-in / register card ------------- */
+.auth{
+  max-width:1020px;margin-inline:auto;
+  display:grid;grid-template-columns:.88fr 1.12fr;
+  background:var(--white);border:1px solid var(--ivory-3);
+  border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow)
+}
+.auth__aside{
+  background:var(--green);color:var(--ivory);
+  padding:clamp(1.7rem,3.4vw,2.6rem);
+  display:flex;flex-direction:column;gap:1rem
+}
+.auth__aside h2{color:var(--ivory);font-size:clamp(1.25rem,2.2vw,1.7rem);max-width:17ch}
+.auth__aside p{margin:0;max-width:38ch;font-size:.92rem;line-height:1.7;color:color-mix(in srgb,var(--ivory) 74%,transparent)}
+.auth__proof{list-style:none;margin:auto 0 0;padding:1.4rem 0 0;display:flex;flex-direction:column;gap:.7rem}
+.auth__proof li{
+  display:flex;gap:.6rem;align-items:flex-start;
+  font-size:.84rem;font-weight:600;line-height:1.5;
+  color:color-mix(in srgb,var(--ivory) 84%,transparent)
+}
+.auth__proof svg{width:15px;height:15px;flex:0 0 auto;margin-top:.24rem;stroke:var(--gold);fill:none;stroke-width:2.2}
+.auth__form{padding:clamp(1.4rem,3.4vw,2.6rem);min-width:0}
+.auth__form h1{font-size:clamp(1.4rem,2.6vw,1.9rem);margin-bottom:.4rem}
+.auth__sub{margin:0 0 1.4rem;font-size:.88rem;color:var(--green-soft)}
+.auth__foot{margin-top:1.4rem;font-size:.84rem;color:var(--green-soft);text-align:center}
+.auth__foot button{font-weight:700;color:var(--green);border-bottom:1.5px solid var(--gold);padding-bottom:.1rem}
+.auth__foot button:hover{color:var(--green-3)}
+
+/* sign in / create account switch */
+.segmented{
+  display:flex;gap:.25rem;padding:.25rem;margin-bottom:1.5rem;
+  background:var(--ivory-2);border-radius:var(--r)
+}
+.segmented button{
+  flex:1;padding:.62rem .7rem;border-radius:calc(var(--r) - 2px);
+  font-size:.78rem;font-weight:700;color:var(--green-soft);
+  transition:background-color .3s,color .3s
+}
+.segmented button:hover{color:var(--green)}
+.segmented button[aria-selected="true"]{background:var(--white);color:var(--green);border:1px solid var(--ivory-3)}
+
+/* ---- page-specific layouts ------------------------------ */
+.acct-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(1.2rem,3vw,2.2rem);align-items:start}
+.acct-grid > *{min-width:0}
+.acct-grid__side{position:sticky;top:calc(var(--head-h) - 38px + 1rem)}
+.acct-narrow{max-width:760px;margin-inline:auto}
+
+/* the order rows on /orders */
+.orow{
+  position:relative;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  gap:.6rem 1.2rem;align-items:center;
+  padding:clamp(1rem,2.2vw,1.35rem);
+  background:var(--white);border:1px solid var(--ivory-3);border-radius:var(--r-lg);
+  transition:border-color .3s var(--ease),box-shadow .35s var(--ease-out)
+}
+.orow + .orow{margin-top:.7rem}
+.orow:hover,.orow:focus-within{border-color:var(--gold);box-shadow:0 16px 34px -26px rgba(15,42,29,.5)}
+.orow__no{font-size:1rem;font-weight:800;letter-spacing:-.01em}
+.orow__no a::after{content:"";position:absolute;inset:0}
+.orow__meta{margin:.25rem 0 0;font-size:.8rem;color:var(--green-soft)}
+.orow__right{display:flex;align-items:center;gap:.9rem;justify-content:flex-end;flex-wrap:wrap}
+.orow__total{font-size:1.05rem;font-weight:800;font-variant-numeric:tabular-nums}
+
+@media(max-width:900px){
+  .auth{grid-template-columns:1fr}
+  .auth__aside{padding-block:clamp(1.4rem,4vw,2rem)}
+  .auth__proof{margin-top:0}
+  .acct-grid{grid-template-columns:1fr}
+  .acct-grid__side{position:static}
+}
+@media(max-width:560px){
+  .otrack{grid-auto-flow:row;grid-auto-columns:auto;row-gap:1rem}
+  .otrack__s{padding-top:0;padding-inline:1.75rem 0;min-height:1.2rem}
+  .otrack__s::before{top:1px}
+  .otrack__s::after{top:13px;inset-inline-start:5px;width:2px;height:calc(100% + 1rem - 13px)}
+  .otrack__note{max-width:none}
+  .kv{grid-template-columns:1fr;gap:.15rem}
+  .kv dd{margin-bottom:.75rem}
+  .kv dd:last-child{margin-bottom:0}
+  .line{grid-template-columns:minmax(0,1fr) auto}
+  .line__qty{grid-column:1;grid-row:2}
+  .line__price{grid-row:1}
+  .orow{grid-template-columns:1fr}
+  .orow__right{justify-content:space-between}
+}
+
+/* =========================================================
+   ADMIN
+
+   A different job from everything above: one person doing the
+   same task fifty times. So the brand is present in the frame
+   — the green rail, the gold accent, Manrope — and absent from
+   the working area, which is a white table on a light ground
+   with as little between the eye and the data as possible.
+
+   Rows are ~34px, the type is .82rem, numbers are tabular and
+   right-aligned, and the header row sticks so a long list keeps
+   its labels. English only, and forced LTR: these screens are
+   internal and their tables are read by column position.
+   ========================================================= */
+.adm{
+  direction:ltr;
+  display:grid;grid-template-columns:224px minmax(0,1fr);
+  min-height:calc(100vh - var(--head-h));
+  background:var(--ivory-2)
+}
+.adm__rail{
+  background:var(--green);color:var(--ivory);
+  padding:1.3rem 1rem;
+  display:flex;flex-direction:column;gap:1.4rem;
+  position:sticky;top:calc(var(--head-h) - 38px);align-self:start;
+  max-height:calc(100vh - var(--head-h) + 38px);overflow-y:auto
+}
+.adm__brand{display:flex;flex-direction:column;gap:.15rem;padding-inline:.6rem}
+.adm__brand b{font-size:.98rem;font-weight:800;color:var(--gold);letter-spacing:-.01em}
+.adm__brand span{font-size:.66rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,var(--ivory) 52%,transparent)}
+.adm__nav{display:flex;flex-direction:column;gap:.15rem}
+.adm__nav a{
+  display:flex;align-items:center;gap:.6rem;
+  padding:.55rem .6rem;border-radius:var(--r);
+  font-size:.85rem;font-weight:600;
+  color:color-mix(in srgb,var(--ivory) 78%,transparent);
+  transition:background-color .25s,color .25s
+}
+.adm__nav a svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.7;flex:0 0 auto}
+.adm__nav a:hover{background:color-mix(in srgb,var(--ivory) 10%,transparent);color:var(--ivory)}
+.adm__nav a.is-on{background:color-mix(in srgb,var(--ivory) 15%,transparent);color:var(--ivory);box-shadow:inset 3px 0 0 var(--gold)}
+.adm__foot{margin-top:auto;display:flex;flex-direction:column;gap:.6rem;padding-top:1rem;border-top:1px solid color-mix(in srgb,var(--ivory) 16%,transparent)}
+.adm__who{font-size:.74rem;line-height:1.5;color:color-mix(in srgb,var(--ivory) 60%,transparent);padding-inline:.6rem;overflow-wrap:anywhere}
+.adm__out{
+  display:flex;align-items:center;gap:.6rem;padding:.55rem .6rem;border-radius:var(--r);
+  font-size:.85rem;font-weight:700;color:var(--gold-lt);text-align:start;
+  transition:background-color .25s
+}
+.adm__out:hover{background:color-mix(in srgb,var(--gold) 18%,transparent)}
+.adm__out svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
+.adm__main{padding:clamp(1rem,2.4vw,1.8rem);min-width:0}
+
+.adm-head{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  gap:1rem;flex-wrap:wrap;margin-bottom:1.2rem
+}
+.adm-head h1{font-size:clamp(1.2rem,2.4vw,1.6rem)}
+.adm-head p{margin:.3rem 0 0;font-size:.82rem;color:var(--green-soft)}
+
+.adm-bar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.9rem}
+.adm-bar__spacer{flex:1 1 auto}
+.adm-field{
+  padding:.5rem .75rem;border-radius:var(--r);
+  border:1.5px solid var(--ivory-3);background:var(--white);
+  font-family:inherit;font-size:.82rem;color:var(--ink);
+  transition:border-color .25s,box-shadow .25s
+}
+.adm-field:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 24%,transparent)}
+.adm-field--search{min-width:min(260px,100%)}
+.adm-count{font-size:.78rem;font-weight:600;color:var(--green-soft);font-variant-numeric:tabular-nums}
+
+.adm-panel{background:var(--white);border:1px solid var(--ivory-3);border-radius:var(--r);overflow:hidden}
+.adm-panel__head{
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
+  padding:.85rem 1rem;border-bottom:1px solid var(--ivory-3)
+}
+.adm-panel__head h2{font-size:.9rem;font-weight:800}
+.adm-panel__body{padding:1rem}
+
+.adm-scroll{overflow-x:auto;overscroll-behavior-x:contain}
+.adm-table{width:100%;border-collapse:collapse;font-size:.82rem;min-width:640px}
+.adm-table th{
+  position:sticky;top:0;z-index:3;
+  background:var(--green);color:var(--ivory);text-align:start;
+  font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  padding:0;white-space:nowrap
+}
+.adm-table th > span,.adm-table th > button{
+  display:flex;align-items:center;gap:.35rem;width:100%;
+  padding:.6rem .8rem;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit
+}
+.adm-table th > button{transition:background-color .25s}
+.adm-table th > button:hover{background:color-mix(in srgb,var(--ivory) 14%,transparent)}
+.adm-table th svg{width:11px;height:11px;stroke:var(--gold);fill:none;stroke-width:2.6;opacity:0;transition:opacity .2s}
+.adm-table th.is-sorted svg{opacity:1}
+.adm-table td{padding:.5rem .8rem;border-bottom:1px solid var(--ivory-3);vertical-align:middle;line-height:1.45}
+.adm-table tbody tr{transition:background-color .2s}
+.adm-table tbody tr:hover{background:var(--ivory-2)}
+.adm-table tbody tr:last-child td{border-bottom:0}
+.adm-table .num{text-align:end;font-variant-numeric:tabular-nums;white-space:nowrap}
+.adm-table .mono{font-variant-numeric:tabular-nums;font-weight:700}
+.adm-table .clip{max-width:34ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-table .muted{color:var(--green-soft)}
+.adm-table td .pill{font-size:.62rem;padding:.25rem .55rem}
+.adm-link{font-weight:700;color:var(--green);border-bottom:1.5px solid var(--gold);padding-bottom:.05rem;transition:color .25s}
+.adm-link:hover{color:var(--green-3)}
+.adm-iconbtn{
+  width:30px;height:30px;border-radius:var(--r);display:grid;place-items:center;
+  color:var(--green-soft);transition:background-color .25s,color .25s
+}
+.adm-iconbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8}
+.adm-iconbtn:hover{background:var(--ivory-2);color:var(--green)}
+.adm-iconbtn--danger:hover{background:var(--danger-soft);color:var(--danger)}
+.adm-rowacts{display:flex;gap:.15rem;align-items:center;justify-content:flex-end}
+
+.adm-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;margin-bottom:1.2rem}
+.adm-stat{background:var(--white);border:1px solid var(--ivory-3);border-radius:var(--r);padding:.95rem 1.05rem}
+.adm-stat__k{font-size:.66rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--green-soft)}
+.adm-stat__v{font-size:clamp(1.35rem,2.6vw,1.8rem);font-weight:800;color:var(--green);line-height:1.15;margin-top:.35rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.adm-stat__n{font-size:.74rem;color:var(--green-soft);margin-top:.25rem}
+.adm-stat--accent{background:var(--green);border-color:var(--green)}
+.adm-stat--accent .adm-stat__k{color:color-mix(in srgb,var(--ivory) 62%,transparent)}
+.adm-stat--accent .adm-stat__v{color:var(--gold-lt)}
+.adm-stat--accent .adm-stat__n{color:color-mix(in srgb,var(--ivory) 58%,transparent)}
+
+.adm-pager{display:flex;align-items:center;justify-content:flex-end;gap:.5rem;padding:.7rem 1rem;border-top:1px solid var(--ivory-3);font-size:.78rem}
+.adm-pager__at{color:var(--green-soft);font-variant-numeric:tabular-nums;margin-inline-end:auto}
+.adm-pager button{
+  padding:.4rem .75rem;border-radius:var(--r);border:1.5px solid var(--ivory-3);
+  background:var(--white);font-size:.78rem;font-weight:700;transition:border-color .25s,color .25s
+}
+.adm-pager button:hover:not(:disabled){border-color:var(--gold)}
+.adm-pager button:disabled{opacity:.45;cursor:not-allowed}
+
+.adm-state{text-align:center;padding:clamp(1.8rem,4vw,2.8rem) 1rem;color:var(--green-soft)}
+.adm-state__t{font-size:.98rem;font-weight:700;color:var(--ink);margin:0 0 .35rem}
+.adm-state p{margin:0 auto;max-width:44ch;font-size:.84rem;line-height:1.6}
+.adm-state .btn{margin-top:1.1rem}
+.adm-skel{height:11px;border-radius:999px;background:var(--ivory-2);position:relative;overflow:hidden}
+.adm-skel::after{
+  content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ivory-3) 70%,transparent),transparent);
+  animation:skel 1.2s infinite
+}
+@keyframes skel{to{transform:translateX(100%)}}
+
+/* destructive actions ask first, in the page rather than in a
+   browser dialog — a native confirm() blocks the whole tab */
+.adm-modal{
+  position:fixed;inset:0;z-index:120;direction:ltr;
+  display:grid;place-items:center;padding:1rem;
+  background:color-mix(in srgb,var(--green) 55%,transparent);
+  backdrop-filter:blur(3px)
+}
+.adm-modal__box{
+  width:min(420px,100%);background:var(--white);
+  border-radius:var(--r-lg);box-shadow:var(--shadow-lg);
+  padding:clamp(1.2rem,3vw,1.7rem)
+}
+.adm-modal__box h2{font-size:1.05rem;margin-bottom:.5rem}
+.adm-modal__box p{margin:0;font-size:.87rem;line-height:1.65;color:var(--green-soft)}
+.adm-modal__acts{display:flex;gap:.55rem;justify-content:flex-end;margin-top:1.4rem;flex-wrap:wrap}
+
+@media(max-width:900px){
+  .adm{grid-template-columns:1fr}
+  .adm__rail{
+    position:static;max-height:none;flex-direction:row;flex-wrap:wrap;
+    align-items:center;gap:.8rem;padding:.8rem var(--gut)
+  }
+  .adm__brand{padding-inline:0}
+  .adm__nav{flex-direction:row;flex-wrap:wrap;flex:1 1 100%;gap:.3rem}
+  .adm__nav a{padding:.45rem .7rem;font-size:.8rem}
+  .adm__nav a.is-on{box-shadow:inset 0 -3px 0 var(--gold)}
+  .adm__foot{margin:0;flex-direction:row;align-items:center;gap:.8rem;padding-top:0;border-top:0;flex:1 1 100%}
+  .adm__who{padding-inline:0;flex:1 1 auto}
+  .adm__main{padding-inline:var(--gut)}
+}
+@media(max-width:560px){
+  .adm-bar{gap:.4rem}
+  .adm-field{width:100%}
+  .adm-field--search{min-width:0}
+  .adm-stats{grid-template-columns:1fr 1fr;gap:.5rem}
+  .adm-stat{padding:.75rem .85rem}
+}
+@media(max-width:360px){
+  .adm-stats{grid-template-columns:1fr}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .spinner{animation:none}
+  .adm-skel::after{animation:none}
+  .orow:hover,.orow:focus-within{box-shadow:none}
 }

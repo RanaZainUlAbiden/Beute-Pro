@@ -1,0 +1,108 @@
+<div class="adm-head">
+  <div>
+    <h1>Messages</h1>
+    <p>Everything sent through the contact form. Opening one marks it read.</p>
+  </div>
+  <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">Refresh</button>
+</div>
+
+<div class="adm-bar">
+  <label class="msg__filter">
+    <span class="msg__vh">Filter by status</span>
+    <select class="adm-field" [value]="status()" (change)="onFilter($any($event.target).value)">
+      <option value="">All messages</option>
+      @for (f of filters; track f) {
+      <option [value]="f">{{ f }}</option>
+      }
+    </select>
+  </label>
+
+  <span class="adm-bar__spacer"></span>
+
+  <span class="adm-count">
+    {{ messages().length }} of {{ total() }}
+    @if (unread()) { · {{ unread() }} unread on this page }
+  </span>
+</div>
+
+<div class="adm-panel">
+  @if (busy()) {
+  <div class="adm-panel__body">
+    @for (n of [1, 2, 3, 4, 5, 6]; track n) {
+    <div class="adm-skel msg__skel"></div>
+    }
+  </div>
+  } @else if (failed()) {
+  <div class="adm-state">
+    <p class="adm-state__t">The messages didn't load</p>
+    <p>The API didn't answer. Nothing is lost — try again, and check the backend is up if it keeps failing.</p>
+    <button type="button" class="btn btn--gold btn--sm" (click)="load()">Try again</button>
+  </div>
+  } @else if (messages().length === 0) {
+  <div class="adm-state">
+    @if (status()) {
+    <p class="adm-state__t">No {{ status() }} messages</p>
+    <p>Nothing is sitting at this status right now.</p>
+    <button type="button" class="btn btn--outline btn--sm" (click)="onFilter('')">Show all messages</button>
+    } @else {
+    <p class="adm-state__t">No messages yet</p>
+    <p>Anything sent through the contact form on the storefront arrives here.</p>
+    }
+  </div>
+  } @else {
+  <ul class="msg__list">
+    @for (m of messages(); track m.id) {
+    <li class="msg" [class.is-open]="openId() === m.id" [class.is-unread]="m.status === 'unread'">
+      <button type="button" class="msg__row" [attr.aria-expanded]="openId() === m.id" (click)="toggle(m)">
+        <span class="msg__who">
+          <span class="msg__name">{{ m.name }}</span>
+          <span class="msg__mail">{{ m.email }}</span>
+        </span>
+        <span class="msg__peek">{{ m.message }}</span>
+        <span [class]="pillClass(m.status)">{{ m.status }}</span>
+        <span class="msg__when">{{ date(m.created_at) }}</span>
+        <svg class="msg__caret" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+
+      @if (openId() === m.id) {
+      <div class="msg__body">
+        @if (m.subject) {
+        <p class="msg__subject">{{ m.subject }}</p>
+        }
+        <p class="msg__text">{{ m.message }}</p>
+        <div class="msg__acts">
+          <a class="btn btn--green btn--sm" [href]="'mailto:' + m.email">Reply by email</a>
+          @if (m.status !== 'replied') {
+          <button type="button" class="btn btn--outline btn--sm" (click)="setStatus(m, 'replied')">Mark replied</button>
+          }
+          @if (m.status !== 'unread') {
+          <button type="button" class="btn btn--outline btn--sm" (click)="setStatus(m, 'unread')">Mark unread</button>
+          }
+          <span class="adm-bar__spacer"></span>
+          <button type="button" class="btn btn--danger btn--sm" (click)="pendingDelete.set(m)">Delete</button>
+        </div>
+      </div>
+      }
+    </li>
+    }
+  </ul>
+
+  @if (totalPages() > 1) {
+  <div class="adm-pager">
+    <span class="adm-pager__at">Page {{ page() }} of {{ totalPages() }}</span>
+    <button type="button" [disabled]="page() === 1" (click)="goto(page() - 1)">Previous</button>
+    <button type="button" [disabled]="page() === totalPages()" (click)="goto(page() + 1)">Next</button>
+  </div>
+  }
+  }
+</div>
+
+@if (pendingDelete(); as m) {
+<app-confirm-dialog
+  heading="Delete this message?"
+  [body]="'The message from ' + m.name + ' (' + m.email + ') will be removed permanently. There is no undo.'"
+  confirmLabel="Delete message"
+  [busy]="deleting()"
+  (confirmed)="confirmDelete()"
+  (dismissed)="pendingDelete.set(null)" />
+}

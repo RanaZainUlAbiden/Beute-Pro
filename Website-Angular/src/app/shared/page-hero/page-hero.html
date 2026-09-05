@@ -5,7 +5,10 @@
       <source [src]="src" type="video/mp4">
     </video>
     } @else if (image(); as src) {
-    <img class="hero__img" [src]="src" [alt]="alt()" (error)="empty.set(true)" fetchpriority="high">
+    <picture>
+      <source [srcset]="webpImage()" type="image/webp">
+      <img class="hero__img" [ngSrc]="src" [width]="imageWidth()" [height]="imageHeight()" priority [alt]="alt()" (error)="empty.set(true)">
+    </picture>
     }
   </div>
   <div class="slide__scrim"></div>

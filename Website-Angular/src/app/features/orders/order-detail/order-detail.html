@@ -1,87 +1,132 @@
-<div class="order-detail-page">
+<section class="section acct">
   <div class="wrap">
-    <!-- Back Button -->
-    <button class="back-btn" (click)="goBack()">
-      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-      Back to Orders
-    </button>
+    <div class="acct-narrow">
 
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading order details...</p>
-    </div>
+      <a class="backlink" routerLink="/orders">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5.5 8.5 12l6.5 6.5"/></svg>
+        {{ i18n.t('orders.back') }}
+      </a>
 
-    <!-- Error -->
-    <div *ngIf="errorMessage" class="error-state">
-      <p>{{ errorMessage }}</p>
-      <button class="btn btn--gold" (click)="goBack()">Go Back</button>
-    </div>
-
-    <!-- Order Details -->
-    <div *ngIf="!isLoading && !errorMessage && order" class="order-detail">
-      <!-- Header -->
-      <div class="order-header">
-        <div>
-          <h1 class="h-lg">Order #{{ order.order_number }}</h1>
-          <p class="order-date">Placed on {{ formatDate(order.created_at) }}</p>
+      <div aria-live="polite">
+        @if (busy()) {
+        <div class="state">
+          <div class="spinner" aria-hidden="true"></div>
+          <p>{{ i18n.t('orders.loading') }}</p>
         </div>
-        <span class="order-status-large" [class]="getStatusClass(order.status)">
-          {{ getStatusLabel(order.status) }}
-        </span>
-      </div>
-
-      <!-- Tracking Info -->
-      <div *ngIf="order.tracking_number" class="tracking-section">
-        <h3>Tracking Information</h3>
-        <div class="tracking-info">
-          <span><strong>Courier:</strong> {{ order.courier_name || 'N/A' }}</span>
-          <span><strong>Tracking #:</strong> {{ order.tracking_number }}</span>
-        </div>
-      </div>
-
-      <!-- Order Items -->
-      <div class="items-section">
-        <h3>Order Items</h3>
-        <div class="items-list">
-          <div *ngFor="let item of order.items" class="item-row">
-            <div class="item-info">
-              <span class="item-name">{{ item.product_id | titlecase }}</span>
-              <span class="item-qty">× {{ item.quantity }}</span>
-            </div>
-            <span class="item-price">{{ formatPrice(item.unit_price_pkr) }}</span>
+        } @else if (failed() || !order()) {
+        <div class="state state--err">
+          <svg class="state__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+          <h1 class="state__title">{{ i18n.t('orders.detail.notfound') }}</h1>
+          <div class="state__cta">
+            <button type="button" class="btn btn--gold btn--sm" (click)="retry()">{{ i18n.t('form.retry') }}</button>
+            <a class="btn btn--outline btn--sm" routerLink="/orders">{{ i18n.t('orders.back') }}</a>
           </div>
         </div>
-        <div class="items-total">
-          <span>Total</span>
-          <span class="total-amount">{{ formatPrice(order.total_amount_pkr) }}</span>
-        </div>
+        } @else if (order(); as o) {
+        <article class="card od">
+          <header class="od__top">
+            <div>
+              <h1 class="h-md">{{ o.order_number }}</h1>
+              <p class="od__date">{{ i18n.t('orders.placed') }} · {{ date(o.created_at) }}</p>
+            </div>
+            <span [class]="statusPill(o.status) + ' pill--lg'">{{ statusLabel(o.status) }}</span>
+          </header>
+
+          @if (cancelled()) {
+          <p class="alert alert--err">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+            <span>{{ statusNote(o.status) }}</span>
+          </p>
+          } @else {
+          <ol class="otrack">
+            @for (s of flow; track s) {
+            <li class="otrack__s"
+                [class.is-done]="stepState(s) === 'is-done'"
+                [class.is-now]="stepState(s) === 'is-now'">
+              {{ statusLabel(s) }}
+              @if (s === o.status) {
+              <span class="otrack__note">{{ statusNote(s) }}</span>
+              }
+            </li>
+            }
+          </ol>
+          }
+
+          <section class="od__block">
+            <h2 class="card__title">{{ i18n.t('orders.tracking') }}</h2>
+            @if (o.tracking_number) {
+            <dl class="kv">
+              <dt>{{ i18n.t('orders.courier') }}</dt>
+              <dd>{{ o.courier_name || '—' }}</dd>
+              <dt>{{ i18n.t('orders.trackingno') }}</dt>
+              <dd>{{ o.tracking_number }}</dd>
+            </dl>
+            } @else {
+            <p class="ffield__hint">{{ i18n.t('orders.nottracked') }}</p>
+            }
+          </section>
+
+          <section class="od__block">
+            <h2 class="card__title">
+              {{ i18n.t('orders.items.title') }} ·
+              {{ itemCount() }} {{ itemCount() === 1 ? i18n.t('orders.item') : i18n.t('orders.items') }}
+            </h2>
+            <div class="lines">
+              @for (item of o.items; track item.id) {
+              <div class="line">
+                <span class="line__name">{{ itemName(item) }}</span>
+                <span class="line__qty">× {{ item.quantity }}</span>
+                <span class="line__price">{{ money(item.unit_price_pkr) }}</span>
+              </div>
+              }
+              <div class="line line--total">
+                <span class="line__name">{{ i18n.t('orders.total') }}</span>
+                <span class="line__price">{{ money(o.total_amount_pkr) }}</span>
+              </div>
+            </div>
+            @if (canReorder()) {
+            <button type="button" class="btn btn--gold btn--sm od__again" (click)="reorder()">
+              {{ i18n.t('orders.reorder') }}
+            </button>
+            }
+          </section>
+
+          <div class="od__cols">
+            <section class="od__block">
+              <h2 class="card__title">{{ i18n.t('orders.customer') }}</h2>
+              <dl class="kv">
+                <dt>{{ i18n.t('orders.name') }}</dt>
+                <dd>{{ o.customer_name }}</dd>
+                <dt>{{ i18n.t('orders.email') }}</dt>
+                <dd>{{ o.customer_email }}</dd>
+                <dt>{{ i18n.t('orders.phone') }}</dt>
+                <dd>{{ o.customer_phone }}</dd>
+                <dt>{{ i18n.t('orders.address') }}</dt>
+                <dd>{{ o.shipping_address }}</dd>
+              </dl>
+            </section>
+
+            <section class="od__block">
+              <h2 class="card__title">{{ i18n.t('orders.payment') }}</h2>
+              <dl class="kv">
+                <dt>{{ i18n.t('orders.method') }}</dt>
+                <dd>{{ payLabel(o.payment_method) }}</dd>
+                <dt>{{ i18n.t('orders.paystatus') }}</dt>
+                <dd>{{ o.payment_status }}</dd>
+              </dl>
+            </section>
+          </div>
+
+          <footer class="od__foot">
+            <p class="od__help">
+              {{ i18n.t('orders.help') }}
+              <a class="link-arrow" routerLink="/contact">{{ i18n.t('track.helpcta') }}</a>
+            </p>
+          </footer>
+        </article>
+        }
       </div>
 
-      <!-- Customer Info -->
-      <div class="customer-section">
-        <h3>Customer Details</h3>
-        <div class="customer-info">
-          <p><strong>Name:</strong> {{ order.customer_name }}</p>
-          <p><strong>Email:</strong> {{ order.customer_email }}</p>
-          <p><strong>Phone:</strong> {{ order.customer_phone }}</p>
-          <p><strong>Shipping Address:</strong> {{ order.shipping_address }}</p>
-        </div>
-      </div>
-
-      <!-- Payment Info -->
-      <div class="payment-section">
-        <h3>Payment Details</h3>
-        <div class="payment-info">
-          <span><strong>Method:</strong> {{ order.payment_method | uppercase }}</span>
-          <span><strong>Status:</strong> {{ order.payment_status | uppercase }}</span>
-        </div>
-      </div>
-
-      <!-- Reorder Button -->
-      <button class="btn btn--gold" (click)="reorder(order.items)" style="margin-top: 1.5rem;">
-        Reorder All Items
-      </button>
     </div>
   </div>
-</div>
+</section>

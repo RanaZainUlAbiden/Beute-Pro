@@ -1,0 +1,85 @@
+<div class="adm-head">
+  <div>
+    <h1>Revenue</h1>
+    <p>Takings to date, and what they came from. Cancelled orders are excluded.</p>
+  </div>
+  <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">Refresh</button>
+</div>
+
+@if (busy()) {
+<div class="adm-stats">
+  @for (n of [1, 2, 3]; track n) {
+  <div class="adm-stat">
+    <div class="adm-skel" style="width:48%"></div>
+    <div class="adm-skel rev__skel-v"></div>
+  </div>
+  }
+</div>
+} @else if (failed()) {
+<div class="adm-panel">
+  <div class="adm-state">
+    <p class="adm-state__t">The revenue figures didn't load</p>
+    <p>The API didn't answer. Try again, and check the backend is up if it keeps failing.</p>
+    <button type="button" class="btn btn--gold btn--sm" (click)="load()">Try again</button>
+  </div>
+</div>
+} @else if (data(); as d) {
+
+<div class="adm-stats">
+  <div class="adm-stat adm-stat--accent">
+    <div class="adm-stat__k">All time</div>
+    <div class="adm-stat__v">{{ money(d.totalRevenue) }}</div>
+  </div>
+  <div class="adm-stat">
+    <div class="adm-stat__k">This month</div>
+    <div class="adm-stat__v">{{ money(d.monthRevenue) }}</div>
+  </div>
+  <div class="adm-stat">
+    <div class="adm-stat__k">Today</div>
+    <div class="adm-stat__v">{{ money(d.todayRevenue) }}</div>
+  </div>
+</div>
+
+<section class="adm-panel">
+  <div class="adm-panel__head">
+    <h2>Top products</h2>
+    <span class="adm-count">By revenue</span>
+  </div>
+  @if (ranked().length) {
+  <div class="adm-scroll">
+    <table class="adm-table">
+      <thead>
+        <tr>
+          <th><span>Product</span></th>
+          <th class="num"><span>Revenue</span></th>
+          <th class="num"><span>Share</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of ranked(); track p.id) {
+        <tr>
+          <td>
+            <span class="rev__name">{{ productName(p.id) }}</span>
+            <span class="rev__id">{{ p.id }}</span>
+          </td>
+          <td class="num">{{ money(p.revenue) }}</td>
+          <td class="num">
+            <span class="rev__share">
+              <span class="rev__share-bar" [style.width.%]="p.share"></span>
+              <span class="rev__share-n">{{ p.share }}%</span>
+            </span>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  } @else {
+  <div class="adm-state">
+    <p class="adm-state__t">Nothing sold yet</p>
+    <p>Once orders come through, the products behind the takings are ranked here.</p>
+  </div>
+  }
+</section>
+
+}

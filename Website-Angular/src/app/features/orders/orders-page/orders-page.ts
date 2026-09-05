@@ -1,78 +1,72 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { OrderService, Order } from '../../../services/order';
-import { I18nService } from '../../../core/services/i18n.service';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
+import { I18nService } from '../../../core/services/i18n.service';
+import { statusKey, statusPill } from '../order-view';
+import { OrderService, type Order } from '../../../services/order';
+
+/* =============================================================
+   MY ORDERS
+
+   A list, not a dashboard: order number, date, item count, total
+   and status, with the whole row a link into the detail page.
+   Three states — loading, failed, and the empty state, which is
+   an invitation to the shop rather than a shrug.
+   ============================================================= */
 @Component({
   selector: 'app-orders-page',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [RouterLink],
   templateUrl: './orders-page.html',
-  styleUrls: ['./orders-page.scss'],
+  styleUrl: './orders-page.scss',
 })
 export class OrdersPageComponent implements OnInit {
-  private orderService = inject(OrderService);
-  protected i18n = inject(I18nService);
+  private readonly orderService = inject(OrderService);
+  protected readonly i18n = inject(I18nService);
 
-  orders: Order[] = [];
-  isLoading = true;
-  errorMessage = '';
+  protected readonly orders = signal<readonly Order[]>([]);
+  protected readonly busy = signal(true);
+  protected readonly failed = signal(false);
 
   ngOnInit(): void {
-    this.loadOrders();
+    this.load();
   }
 
-  loadOrders(): void {
-    this.isLoading = true;
-    this.errorMessage = '';
+  protected load(): void {
+    this.busy.set(true);
+    this.failed.set(false);
     this.orderService.getMyOrders().subscribe({
-      next: (response) => {
-        this.orders = response.orders || [];
-        this.isLoading = false;
+      next: (res) => {
+        this.orders.set(res.orders ?? []);
+        this.busy.set(false);
       },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.error || 'Failed to load orders. Please try again.';
-        console.error('Error loading orders:', err);
+      error: () => {
+        this.busy.set(false);
+        this.failed.set(true);
       },
     });
   }
 
-  getStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      pending: 'Pending',
-      processing: 'Processing',
-      shipped: 'Shipped',
-      delivered: 'Delivered',
-      cancelled: 'Cancelled',
-    };
-    return labels[status] || status;
+  protected statusLabel(status: string): string {
+    return this.i18n.t(statusKey(status));
   }
 
-  getStatusClass(status: string): string {
-    return `status-badge status-badge--${status}`;
+  protected statusPill(status: string): string {
+    return statusPill(status);
   }
 
-  getTotalItems(order: Order): number {
-    return order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+  protected itemCount(order: Order): number {
+    return (order.items ?? []).reduce((n, i) => n + i.quantity, 0);
   }
 
-  formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('en-US', {
+  protected date(value: string): string {
+    return new Date(value).toLocaleDateString(this.i18n.isRTL() ? 'ar-EG' : 'en-GB', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
     });
   }
 
-  formatPrice(amount: string): string {
+  protected money(amount: string): string {
     return this.i18n.money(parseFloat(amount));
-  }
-
-  trackOrder(order: Order): void {
-    // Navigate to order detail
-    // We'll implement this in the next phase
-    console.log('Track order:', order.order_number);
   }
 }

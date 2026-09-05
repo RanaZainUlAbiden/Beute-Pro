@@ -1,100 +1,150 @@
-<div class="checkout-page">
+<section class="section acct">
   <div class="wrap">
-    <div class="page-header">
-      <h1 class="h-lg">Checkout</h1>
-      <p class="lede">Review your order and complete your purchase</p>
+
+    <div class="acct__head">
+      <p class="eyebrow">{{ i18n.t('checkout.title') }}</p>
+      <h1 class="h-lg">{{ i18n.t('checkout.lede') }}</h1>
+      <p class="lede">{{ i18n.t('checkout.note') }}</p>
     </div>
 
-    <div class="checkout-grid">
-      <!-- Left: Order Summary -->
-      <div class="order-summary">
-        <h2>Order Summary</h2>
-
-        <div class="cart-items">
-          @if (cartItems.length === 0) {
-            <div class="empty-cart">
-              <p>Your cart is empty.</p>
-              <a routerLink="/shop" class="btn btn--gold">Continue Shopping</a>
-            </div>
-          } @else {
-            @for (row of cartItems; track row.id) {
-              <div class="cart-item">
-                <div class="item-details">
-                  <span class="item-name">{{ row.product.en.name }}</span>
-                  <span class="item-qty">× {{ row.qty }}</span>
-                </div>
-                <span class="item-total">{{ getItemTotal(row) }}</span>
-              </div>
-            }
-          }
-        </div>
-
-        <div class="order-total">
-          <span>Total</span>
-          <span class="total-amount">{{ getTotal() }}</span>
-        </div>
-
-        @if (cartItems.length > 0) {
-          <div class="cart-actions">
-            <button class="btn btn--outline" routerLink="/shop">Continue Shopping</button>
-          </div>
-        }
+    @if (empty()) {
+    <div class="state">
+      <svg class="state__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7.5h12l-1.1 12.2a1.4 1.4 0 0 1-1.4 1.3H8.5a1.4 1.4 0 0 1-1.4-1.3z"/><path d="M9.2 7.5a2.8 2.8 0 0 1 5.6 0"/></svg>
+      <h2 class="state__title">{{ i18n.t('checkout.empty.title') }}</h2>
+      <p>{{ i18n.t('checkout.empty.body') }}</p>
+      <div class="state__cta">
+        <a class="btn btn--gold btn--sm" routerLink="/shop">{{ i18n.t('checkout.empty.cta') }}</a>
+        <a class="btn btn--outline btn--sm" routerLink="/wishlist">{{ i18n.t('acct.wishlist') }}</a>
       </div>
+    </div>
+    } @else {
+    <div class="acct-grid">
 
-      <!-- Right: Checkout Form -->
-      <div class="checkout-form-wrapper">
-        <h2>Customer Details</h2>
+      <div class="card">
+        <div class="card__head">
+          <h2>{{ i18n.t('checkout.details') }}</h2>
+          <p>{{ i18n.t('auth.phone.hint') }}</p>
+        </div>
 
-        <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
-          <div class="form-group">
-            <label for="name">Full Name *</label>
-            <input id="name" type="text" formControlName="name" placeholder="John Doe" />
-            <div class="error" *ngIf="f['name'].invalid && f['name'].touched">
-              Name is required (min 2 characters)
+        @if (formError()) {
+        <p class="alert alert--err" role="alert">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+          <span>{{ formError() }}</span>
+        </p>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <div class="ffield" [class.is-invalid]="showError('name')">
+            <label class="ffield__label" for="co-name">{{ i18n.t('auth.name') }}</label>
+            <div class="ffield__box ffield__box--icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 20v-1.5a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4V20"/><circle cx="12" cy="7.5" r="3.5"/></svg>
+              <input id="co-name" type="text" autocomplete="name" formControlName="name"
+                     [placeholder]="i18n.t('auth.name.ph')"
+                     [attr.aria-invalid]="showError('name') || null"
+                     [attr.aria-describedby]="showError('name') ? 'co-name-err' : null">
             </div>
+            @if (showError('name')) {
+            <p class="ffield__err" id="co-name-err">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+              <span>{{ errorFor('name') }}</span>
+            </p>
+            }
           </div>
 
-          <div class="form-group">
-            <label for="email">Email Address *</label>
-            <input id="email" type="email" formControlName="email" placeholder="you@example.com" />
-            <div class="error" *ngIf="f['email'].invalid && f['email'].touched">
-              Valid email is required
+          <div class="ffield" [class.is-invalid]="showError('email')">
+            <label class="ffield__label" for="co-email">{{ i18n.t('auth.email') }}</label>
+            <div class="ffield__box ffield__box--icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>
+              <input id="co-email" type="email" inputmode="email" autocomplete="email" formControlName="email"
+                     [placeholder]="i18n.t('auth.email.ph')"
+                     [attr.aria-invalid]="showError('email') || null"
+                     [attr.aria-describedby]="showError('email') ? 'co-email-err' : null">
             </div>
+            @if (showError('email')) {
+            <p class="ffield__err" id="co-email-err">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+              <span>{{ errorFor('email') }}</span>
+            </p>
+            }
           </div>
 
-          <div class="form-group">
-            <label for="phone">Phone Number *</label>
-            <input id="phone" type="tel" formControlName="phone" placeholder="+92-300-1234567" />
-            <div class="error" *ngIf="f['phone'].invalid && f['phone'].touched">
-              Valid phone number is required
+          <div class="ffield" [class.is-invalid]="showError('phone')">
+            <label class="ffield__label" for="co-phone">{{ i18n.t('auth.phone') }}</label>
+            <div class="ffield__box ffield__box--icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M21 16.9v2.6a2 2 0 0 1-2.2 2 19.4 19.4 0 0 1-8.5-3A19.1 19.1 0 0 1 4.4 12 19.4 19.4 0 0 1 1.5 3.4 2 2 0 0 1 3.5 1.2h2.6a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L7.1 8.9a16 16 0 0 0 6 6l1.2-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z"/></svg>
+              <input id="co-phone" type="tel" inputmode="tel" autocomplete="tel" formControlName="phone"
+                     [placeholder]="i18n.t('auth.phone.ph')"
+                     [attr.aria-invalid]="showError('phone') || null"
+                     [attr.aria-describedby]="showError('phone') ? 'co-phone-err' : null">
             </div>
+            @if (showError('phone')) {
+            <p class="ffield__err" id="co-phone-err">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+              <span>{{ errorFor('phone') }}</span>
+            </p>
+            }
           </div>
 
-          <div class="form-group">
-            <label for="address">Shipping Address *</label>
-            <input id="address" type="text" formControlName="address" placeholder="City, Country, Full address" />
-            <div class="error" *ngIf="f['address'].invalid && f['address'].touched">
-              Shipping address is required (min 5 characters)
+          <div class="ffield" [class.is-invalid]="showError('address')">
+            <label class="ffield__label" for="co-address">{{ i18n.t('orders.address') }}</label>
+            <div class="ffield__box">
+              <textarea id="co-address" rows="3" autocomplete="street-address" formControlName="address"
+                        [placeholder]="i18n.t('auth.address.ph')"
+                        [attr.aria-invalid]="showError('address') || null"
+                        [attr.aria-describedby]="showError('address') ? 'co-address-err' : null"></textarea>
             </div>
+            @if (showError('address')) {
+            <p class="ffield__err" id="co-address-err">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+              <span>{{ errorFor('address') }}</span>
+            </p>
+            }
           </div>
 
-          <div class="form-group">
-            <label>Payment Method *</label>
-            <div class="payment-options">
-              <label *ngFor="let method of paymentMethods" class="payment-option">
-                <input type="radio" formControlName="paymentMethod" [value]="method" />
-                <span>{{ method | titlecase }}</span>
+          <fieldset class="checkout__pay">
+            <legend class="ffield__label">{{ i18n.t('checkout.pay') }}</legend>
+            <div class="optrow">
+              @for (m of methods; track m.id) {
+              <label class="opt">
+                <input type="radio" formControlName="paymentMethod" [value]="m.id">
+                <span class="opt__txt">
+                  <b>{{ i18n.t(m.label) }}</b>
+                  <span>{{ i18n.t(m.note) }}</span>
+                </span>
               </label>
+              }
             </div>
-          </div>
+          </fieldset>
 
-          <div class="form-actions">
-            <button type="submit" class="btn btn--gold btn--full" [disabled]="isSubmitting || cartItems.length === 0">
-              {{ isSubmitting ? 'Placing Order...' : 'Place Order' }}
-            </button>
-          </div>
+          <button type="submit" class="btn btn--gold btn--full checkout__go"
+                  [class.is-busy]="busy()" [disabled]="busy()">
+            @if (busy()) {<span class="spinner spinner--sm" aria-hidden="true"></span>}
+            {{ busy() ? i18n.t('checkout.busy') : i18n.t('checkout.submit') }}
+          </button>
         </form>
       </div>
+
+      <aside class="acct-grid__side">
+        <div class="card checkout__sum">
+          <h2 class="card__title">{{ i18n.t('checkout.summary') }}</h2>
+          <div class="lines">
+            @for (row of rows(); track row.id) {
+            <div class="line">
+              <span class="line__name">{{ i18n.copy(row.product).name }}</span>
+              <span class="line__qty">× {{ row.qty }}</span>
+              <span class="line__price">{{ lineTotal(row.product.price, row.qty) }}</span>
+            </div>
+            }
+            <div class="line line--total">
+              <span class="line__name">{{ i18n.t('orders.total') }}</span>
+              <span class="line__price">{{ money(total()) }}</span>
+            </div>
+          </div>
+          <a class="link-arrow checkout__back" routerLink="/shop">{{ i18n.t('checkout.keepshopping') }}</a>
+        </div>
+      </aside>
+
     </div>
+    }
   </div>
-</div>
+</section>

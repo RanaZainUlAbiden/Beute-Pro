@@ -15,7 +15,7 @@
     @if (product().badge; as badge) {
       <span class="pcard__badge pcard__badge--{{ badge }}">{{ badgeLabel() }}</span>
     }
-    <img class="pcard__img" [src]="imgSrc(product().id)" [alt]="i18n.copy(product()).name" data-fallback loading="lazy">
+    <img class="pcard__img" [ngSrc]="imgSrc(product().id)" [width]="dims().width" [height]="dims().height" [alt]="i18n.copy(product()).name" data-fallback>
     <span class="pcard__quick">
       <span class="btn btn--green btn--sm btn--full" (click)="add($event)">{{ i18n.t('pdp.add') }}</span>
     </span>

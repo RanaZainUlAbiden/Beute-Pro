@@ -1,149 +1,182 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { AuthService, User } from '../../../services/auth';
-import { ToastService } from '../../../core/services/toast.service';
-import { OrderService } from '../../../services/order'; // ✅ Import OrderService
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
+import { I18nService } from '../../../core/services/i18n.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { AuthService, type User } from '../../../services/auth';
+import { OrderService } from '../../../services/order';
+
+/* =============================================================
+   YOUR DETAILS
+
+   Two forms that fail independently, so each carries its own
+   error, its own success line and its own busy button — a failed
+   password change must not look like a failed address change.
+
+   The email address is rendered as a disabled field rather than
+   left out: it is the one thing on the page a visitor looks for,
+   and an explained lock beats an absence.
+   ============================================================= */
 @Component({
   selector: 'app-profile',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './profile.html',
-  styleUrls: ['./profile.scss'],
+  styleUrl: './profile.scss',
 })
 export class ProfileComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private auth = inject(AuthService);
-  private toast = inject(ToastService);
-  private orderService = inject(OrderService); // ✅ For order count
+  private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
+  private readonly toast = inject(ToastService);
+  private readonly orders = inject(OrderService);
+  protected readonly i18n = inject(I18nService);
 
-  user: User | null = null;
-  orderCount: number = 0; // ✅ Add orderCount
-  profileForm: FormGroup;
-  passwordForm: FormGroup;
+  protected readonly user = signal<User | null>(null);
+  protected readonly orderCount = signal<number | null>(null);
 
-  isSavingProfile = false;
-  isSavingPassword = false;
-  profileError = '';
-  passwordError = '';
-  passwordSuccess = '';
+  protected readonly detailsForm: FormGroup;
+  protected readonly passwordForm: FormGroup;
+
+  protected readonly savingDetails = signal(false);
+  protected readonly savedDetails = signal(false);
+  protected readonly detailsError = signal('');
+
+  protected readonly savingPassword = signal(false);
+  protected readonly savedPassword = signal('');
+  protected readonly passwordError = signal('');
 
   constructor() {
-    this.profileForm = this.fb.group({
+    this.detailsForm = this.fb.group({
       full_name: ['', [Validators.required, Validators.minLength(2)]],
-      phone: [''],
+      phone: ['', [Validators.pattern(/^\+?[0-9\s\-()]{7,}$/)]],
       address: [''],
     });
 
-    this.passwordForm = this.fb.group({
-      currentPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required],
-    }, { validators: this.passwordsMatchValidator });
+    this.passwordForm = this.fb.group(
+      {
+        currentPassword: ['', Validators.required],
+        newPassword: ['', [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ['', Validators.required],
+      },
+      { validators: matchPasswords },
+    );
   }
 
   ngOnInit(): void {
-    this.auth.user$.subscribe(user => {
-      this.user = user;
-      if (user) {
-        this.profileForm.patchValue({
-          full_name: user.full_name || '',
-          phone: user.phone || '',
-          address: user.address || '',
-        });
-        // ✅ Fetch order count if user is logged in
-        this.fetchOrderCount();
-      }
+    this.auth.user$.subscribe((user) => {
+      this.user.set(user);
+      if (!user) return;
+      this.detailsForm.patchValue({
+        full_name: user.full_name || '',
+        phone: user.phone || '',
+        address: user.address || '',
+      });
+      this.orders.getMyOrders().subscribe({
+        next: (res) => this.orderCount.set(res.orders?.length ?? 0),
+        error: () => this.orderCount.set(null),
+      });
     });
   }
 
-  /** ✅ Fetch user's order count */
-  private fetchOrderCount(): void {
-    this.orderService.getMyOrders().subscribe({
-      next: (res) => {
-        this.orderCount = res.orders?.length || 0;
-      },
-      error: () => {
-        this.orderCount = 0; // fallback
-      },
-    });
+  protected showError(form: FormGroup, name: string): boolean {
+    const c = form.get(name);
+    return !!c && c.invalid && c.touched;
   }
 
-  /** Custom validator: check if newPassword and confirmPassword match */
-  passwordsMatchValidator(group: FormGroup): { [key: string]: boolean } | null {
-    const newPassword = group.get('newPassword')?.value;
-    const confirmPassword = group.get('confirmPassword')?.value;
-    if (newPassword && confirmPassword && newPassword !== confirmPassword) {
-      return { mismatch: true };
+  protected errorFor(form: FormGroup, name: string): string {
+    const c = form.get(name);
+    if (!c || c.valid) return '';
+    switch (name) {
+      case 'full_name':
+        return this.i18n.t('auth.err.name');
+      case 'phone':
+        return this.i18n.t('auth.err.phone');
+      case 'currentPassword':
+        return this.i18n.t('profile.err.current');
+      case 'newPassword':
+        return this.i18n.t(c.errors?.['required'] ? 'auth.err.password.empty' : 'auth.err.password.short');
+      default:
+        return '';
     }
-    return null;
   }
 
-  /** Update profile */
-  onSubmitProfile(): void {
-    if (this.profileForm.invalid) {
-      this.profileForm.markAllAsTouched();
+  protected get mismatch(): boolean {
+    const confirm = this.passwordForm.get('confirmPassword');
+    return this.passwordForm.hasError('mismatch') && !!confirm?.touched;
+  }
+
+  protected saveDetails(): void {
+    if (this.savingDetails()) return;
+    this.detailsError.set('');
+    this.savedDetails.set(false);
+
+    if (this.detailsForm.invalid) {
+      this.detailsForm.markAllAsTouched();
       return;
     }
 
-    this.isSavingProfile = true;
-    this.profileError = '';
-
-    this.auth.updateProfile(this.profileForm.value).subscribe({
+    this.savingDetails.set(true);
+    this.auth.updateProfile(this.detailsForm.value).subscribe({
       next: () => {
-        this.isSavingProfile = false;
-        this.toast.show('Profile updated successfully');
+        this.savingDetails.set(false);
+        this.savedDetails.set(true);
+        this.detailsForm.markAsPristine();
+        this.toast.show(this.i18n.t('profile.saved'));
       },
-      error: (err) => {
-        this.isSavingProfile = false;
-        this.profileError = err.error?.error || 'Failed to update profile. Please try again.';
-        this.toast.show(this.profileError);
+      error: () => {
+        this.savingDetails.set(false);
+        this.detailsError.set(this.i18n.t('profile.err.save'));
       },
     });
   }
 
-  /** Change password */
-  onSubmitPassword(): void {
+  protected savePassword(): void {
+    if (this.savingPassword()) return;
+    this.passwordError.set('');
+    this.savedPassword.set('');
+
     if (this.passwordForm.invalid) {
       this.passwordForm.markAllAsTouched();
       return;
     }
 
-    this.isSavingPassword = true;
-    this.passwordError = '';
-    this.passwordSuccess = '';
-
+    this.savingPassword.set(true);
     const { currentPassword, newPassword } = this.passwordForm.value;
-
     this.auth.changePassword(currentPassword, newPassword).subscribe({
-      next: (res) => {
-        this.isSavingPassword = false;
-        this.passwordSuccess = res.message || 'Password updated successfully';
+      next: () => {
+        this.savingPassword.set(false);
+        this.savedPassword.set(this.i18n.t('profile.pwd.ok'));
         this.passwordForm.reset();
-        this.toast.show(this.passwordSuccess);
+        this.toast.show(this.i18n.t('profile.pwd.ok'));
       },
-      error: (err) => {
-        this.isSavingPassword = false;
-        this.passwordError = err.error?.error || 'Failed to change password.';
-        this.toast.show(this.passwordError);
+      error: () => {
+        this.savingPassword.set(false);
+        this.passwordError.set(this.i18n.t('profile.err.pwd'));
       },
     });
   }
 
-  /** Helper to get form controls for validation in template */
-  get pf() { return this.profileForm.controls; }
-  get psf() { return this.passwordForm.controls; }
-
-  /** Get user initials for avatar */
-  getInitials(): string {
-    if (!this.user) return '?';
-    const name = this.user.full_name || '';
-    const parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
+  /** Two letters for the avatar; "?" until the user arrives. */
+  protected initials(): string {
+    const name = this.user()?.full_name?.trim() ?? '';
+    if (!name) return '?';
+    const parts = name.split(/\s+/);
+    return (parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : name.slice(0, 2)).toUpperCase();
   }
+
+  protected memberSince(): string {
+    const at = this.user()?.created_at;
+    if (!at) return '—';
+    return new Date(at).toLocaleDateString(this.i18n.isRTL() ? 'ar-EG' : 'en-GB', {
+      year: 'numeric',
+      month: 'long',
+    });
+  }
+}
+
+/** The two new-password fields have to agree before the form is valid. */
+function matchPasswords(group: AbstractControl): ValidationErrors | null {
+  const next = group.get('newPassword')?.value;
+  const confirm = group.get('confirmPassword')?.value;
+  return next && confirm && next !== confirm ? { mismatch: true } : null;
 }

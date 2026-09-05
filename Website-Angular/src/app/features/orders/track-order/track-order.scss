@@ -1,272 +1,71 @@
-@import '../../../../styles.scss';
+/* Local to the track page. Everything else it renders — the card,
+   the field, the status pill, the rail, the key/value rows and the
+   three states — is shared account CSS in styles.scss. */
 
-.track-page {
-  padding-top: calc(var(--head-h) + 2rem);
-  padding-bottom: 4rem;
-  min-height: 70vh;
-  background: var(--ivory);
+.track__ask {
+  margin-bottom: 1.1rem;
 
-  .page-header {
-    margin-bottom: 2rem;
-    h1 {
-      color: var(--green);
-      margin-bottom: 0.25rem;
-    }
-    .lede {
-      color: var(--green-soft);
-    }
+  .btn {
+    margin-top: .3rem;
   }
 }
 
-.search-section {
-  max-width: 600px;
-  margin: 0 auto 2.5rem;
-
-  .search-row {
-    display: flex;
-    gap: 0.8rem;
-    align-items: flex-start;
-
-    .input-wrapper {
-      flex: 1;
-      input {
-        width: 100%;
-        padding: 0.7rem 1rem;
-        border: 1.5px solid var(--ivory-3);
-        border-radius: var(--r);
-        font-size: 0.9rem;
-        transition: border-color 0.3s, box-shadow 0.3s;
-        &:focus {
-          border-color: var(--gold);
-          box-shadow: 0 0 0 4px rgba(201, 164, 76, 0.15);
-          outline: none;
-        }
-      }
-      .error {
-        font-size: 0.72rem;
-        color: #a8443c;
-        margin-top: 0.2rem;
-      }
-    }
-
-    .btn {
-      flex-shrink: 0;
-      padding: 0.7rem 1.8rem;
-    }
-  }
+.track__result {
+  padding: 0;
 }
 
-.loading-state {
+.track__top {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem 0;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 1rem;
-  .spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid var(--ivory-3);
-    border-top: 3px solid var(--gold);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  p {
-    color: var(--green-soft);
+  flex-wrap: wrap;
+  padding: clamp(1.15rem, 2.6vw, 1.9rem);
+  border-bottom: 1px solid var(--ivory-3);
+
+  h2 {
+    letter-spacing: -.01em;
   }
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.error-state {
-  text-align: center;
-  padding: 2rem 0;
-  svg {
-    stroke: var(--green-soft);
-    margin-bottom: 0.5rem;
-  }
-  p {
-    color: #a8443c;
-    margin-bottom: 1rem;
-  }
-  .btn--outline {
-    border: 1.5px solid var(--green);
-    color: var(--green);
-    &:hover {
-      background: var(--green);
-      color: var(--ivory);
-    }
-  }
+.track__date {
+  margin: .35rem 0 0;
+  font-size: .82rem;
+  color: var(--green-soft);
 }
 
-.result-section {
-  max-width: 820px;
-  margin: 0 auto;
+.otrack {
+  padding: clamp(1.15rem, 2.6vw, 1.9rem);
+  padding-bottom: clamp(1.4rem, 3vw, 2.2rem);
 }
 
-.order-card {
-  background: var(--white);
-  border-radius: var(--r-lg);
-  border: 1px solid var(--ivory-3);
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(15, 42, 29, 0.04);
-
-  .order-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding-bottom: 1.2rem;
-    margin-bottom: 1.2rem;
-    border-bottom: 1px solid var(--ivory-3);
-
-    h2 {
-      color: var(--green);
-      margin-bottom: 0.2rem;
-    }
-    .order-date {
-      color: var(--green-soft);
-      font-size: 0.9rem;
-    }
-    .order-status-large {
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 0.4rem 1rem;
-      border-radius: var(--r);
-    }
-  }
-
-  .tracking-info {
-    margin-bottom: 1.5rem;
-    h3 {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--green);
-      margin-bottom: 0.4rem;
-    }
-    div {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      font-size: 0.9rem;
-      color: var(--green-soft);
-      strong {
-        color: var(--ink);
-      }
-    }
-  }
-
-  .items-section {
-    margin-bottom: 1.5rem;
-    h3 {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--green);
-      margin-bottom: 0.6rem;
-    }
-    .items-list {
-      .item-row {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.3rem 0;
-        border-bottom: 1px solid var(--ivory-2);
-        .item-name {
-          flex: 1;
-          font-weight: 600;
-          color: var(--ink);
-        }
-        .item-qty {
-          color: var(--green-soft);
-          font-size: 0.85rem;
-        }
-        .item-price {
-          font-weight: 700;
-          color: var(--gold);
-        }
-      }
-    }
-    .items-total {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 0.8rem;
-      margin-top: 0.5rem;
-      border-top: 2px solid var(--gold);
-      font-weight: 700;
-      .total-amount {
-        color: var(--gold);
-        font-size: 1.2rem;
-      }
-    }
-  }
-
-  .customer-section {
-    h3 {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--green);
-      margin-bottom: 0.4rem;
-    }
-    .customer-info {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.2rem 1.5rem;
-      p {
-        margin: 0.2rem 0;
-        font-size: 0.9rem;
-        color: var(--green-soft);
-        strong {
-          color: var(--ink);
-        }
-      }
-    }
-  }
+.track__result .alert {
+  margin: clamp(1.15rem, 2.6vw, 1.9rem);
 }
 
-.status-badge {
-  &--pending {
-    background: #fef3c7;
-    color: #b45309;
-  }
-  &--processing {
-    background: #dbeafe;
-    color: #1e40af;
-  }
-  &--shipped {
-    background: #d1fae5;
-    color: #065f46;
-  }
-  &--delivered {
-    background: var(--green-2);
-    color: var(--ivory);
-  }
-  &--cancelled {
-    background: #fde8e6;
-    color: #a8443c;
-  }
+.track__block {
+  padding: clamp(1.15rem, 2.6vw, 1.9rem);
+  border-top: 1px solid var(--ivory-3);
 }
 
-@media (max-width: 680px) {
-  .track-page {
-    padding-top: calc(var(--head-h) + 1rem);
-    padding-bottom: 2rem;
-  }
-  .search-section .search-row {
-    flex-direction: column;
-    .btn {
-      width: 100%;
-    }
-  }
-  .order-card {
-    padding: 1.2rem;
-    .order-header {
-      flex-direction: column;
-    }
-    .customer-info {
-      grid-template-columns: 1fr;
-    }
+.track__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .9rem 1.4rem;
+  flex-wrap: wrap;
+  padding: clamp(1.15rem, 2.6vw, 1.9rem);
+  border-top: 1px solid var(--ivory-3);
+  background: var(--ivory-2);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+}
+
+.track__help {
+  margin: 0;
+  font-size: .84rem;
+  color: var(--green-soft);
+
+  .link-arrow {
+    margin-inline-start: .4rem;
   }
 }

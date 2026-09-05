@@ -1,0 +1,45 @@
+/* Local to the revenue screen — the share bar in the last column.
+   Tiles, panel and table are `.adm*` in styles.scss. */
+
+.rev__name {
+  display: block;
+  font-weight: 600;
+}
+
+.rev__id {
+  display: block;
+  font-size: .7rem;
+  color: var(--green-soft);
+}
+
+.rev__share {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .5rem;
+  min-width: 132px;
+  padding: .2rem 0;
+}
+
+.rev__share-bar {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--gold) 55%, var(--ivory-2));
+}
+
+.rev__share-n {
+  position: relative;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.rev__skel-v {
+  height: 26px;
+  margin-top: .5rem;
+  width: 70%;
+}

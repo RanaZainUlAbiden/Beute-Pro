@@ -60,7 +60,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": "bestseller",
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "120 ml (4.06 OZ)",
     "en": {
       "name": "Aloe Vera Face Mist",
@@ -112,7 +112,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": "new",
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "120 ml (4.06 OZ)",
     "en": {
       "name": "Cucumber Face Mist",
@@ -164,7 +164,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": null,
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "120 ml (4.06 OZ)",
     "en": {
       "name": "Neem Face Mist",
@@ -210,7 +210,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": "new",
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "120 ml (4.06 OZ)",
     "en": {
       "name": "Face Mist Lemon & Mint",
@@ -264,7 +264,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": null,
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "120 ml (4.06 OZ)",
     "en": {
       "name": "Face Mist Rose Water",
@@ -310,7 +310,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": null,
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "120 ml (4.06 OZ)",
     "en": {
       "name": "Face Mist Botanical Essence",
@@ -370,7 +370,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": "bestseller",
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "120 ml (4.06 OZ)",
     "en": {
       "name": "Almond Oil",
@@ -412,7 +412,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": null,
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "120 ml (4.06 OZ)",
     "en": {
       "name": "Apricot Oil",
@@ -456,7 +456,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": null,
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "120 ml (4.06 OZ)",
     "en": {
       "name": "Black Seed Oil",
@@ -500,7 +500,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": "new",
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "120 ml (4.06 OZ)",
     "en": {
       "name": "Sesame Seed Oil",
@@ -574,7 +574,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": "new",
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "120 ml (4.06 OZ)",
     "en": {
       "name": "Amla Hair Oil",
@@ -616,7 +616,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": "new",
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "100 g",
     "en": {
       "name": "Rose & Almond Soap",
@@ -652,7 +652,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": null,
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "100 g",
     "en": {
       "name": "Aloe Vera & Cucumber Soap",
@@ -688,7 +688,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": null,
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "100 g",
     "en": {
       "name": "Charcoal Soap",
@@ -724,7 +724,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": null,
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "100 g",
     "en": {
       "name": "Goat Milk & Tea Tree Soap",
@@ -762,7 +762,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": "new",
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "100 g",
     "en": {
       "name": "Honey & Oats Soap",
@@ -798,7 +798,7 @@ export const PRODUCTS: readonly Product[] = [
     "oldPrice": null,
     "badge": null,
     "images": 1,
-    "spin": false,
+    "spin": true,
     "size": "100 g",
     "en": {
       "name": "Turmeric & Neem Soap",

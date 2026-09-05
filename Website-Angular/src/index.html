@@ -5,11 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <base href="/">
 <title>Béute Pro</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<!-- Loaded non-blocking: a synchronous stylesheet fetch here would hold up
+     first paint for a resource on a different origin. The preload swaps
+     itself to a stylesheet once fetched; noscript covers JS-off visitors. -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet"></noscript>
 <!-- The factory clips are the one thing on the homepage that waits for
      the scroll observer; with no JS at all they must still be visible.
      The play overlay is hidden in the same breath: nothing can hand it

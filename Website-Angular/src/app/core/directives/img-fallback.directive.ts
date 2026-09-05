@@ -5,8 +5,8 @@ import { PLACEHOLDER } from '../image';
 /* =============================================================
    Images that may not exist yet.
 
-   On error the src walks .png → .jpg → .jpeg → an inline SVG
-   stand-in, in that order, by rewriting the extension. The
+   On error the src walks .webp → .png → .jpg → .jpeg → an inline
+   SVG stand-in, in that order, by rewriting the extension. The
    stand-in also gets `.is-placeholder`, which CSS uses to inset
    it differently from a real cut-out photo.
 
@@ -26,6 +26,10 @@ export class ImgFallbackDirective {
     const src = this.img.getAttribute('src') ?? '';
     if (src === PLACEHOLDER || src === '') return; // nothing left to try
 
+    if (src.endsWith('.webp')) {
+      this.img.src = src.slice(0, -5) + '.png';
+      return;
+    }
     if (src.endsWith('.png')) {
       this.img.src = src.slice(0, -4) + '.jpg';
       return;

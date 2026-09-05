@@ -1,0 +1,103 @@
+/* Local to the admin order screen. Panels, fields, table and the
+   key/value rows are shared CSS in styles.scss. */
+
+.aod__do {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: .8rem;
+  margin-bottom: .8rem;
+}
+
+.aod__row {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+
+.aod__lab {
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--green-soft);
+}
+
+.aod__saving {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--green-soft);
+}
+
+.aod__track {
+  display: flex;
+  align-items: flex-end;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+
+.aod__field {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.aod__items {
+  margin-bottom: .8rem;
+}
+
+.aod__pname {
+  display: block;
+  font-weight: 600;
+}
+
+.aod__pid {
+  display: block;
+  font-size: .7rem;
+  color: var(--green-soft);
+}
+
+.aod__totlab {
+  font-weight: 700;
+  color: var(--green-soft);
+}
+
+.aod__tot {
+  font-weight: 800;
+  font-size: .95rem;
+}
+
+.adm-table tfoot td {
+  border-top: 2px solid var(--ivory-3);
+  border-bottom: 0;
+}
+
+.aod__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .8rem;
+
+  > * {
+    min-width: 0;
+  }
+}
+
+.aod__skel {
+  height: 16px;
+
+  + .aod__skel {
+    margin-top: .85rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .aod__do,
+  .aod__cols {
+    grid-template-columns: 1fr;
+  }
+}

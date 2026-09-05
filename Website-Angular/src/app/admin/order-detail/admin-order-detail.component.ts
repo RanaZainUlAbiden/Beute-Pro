@@ -1,86 +1,161 @@
-﻿import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
-import { environment } from '../../../environments/environment';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
+import { AdminApi, adminDate, adminMoney, adminProductName } from '../admin-api';
+import { ALL_STATUSES, statusPill } from '../../features/orders/order-view';
+import { ConfirmDialog } from '../ui/confirm-dialog/confirm-dialog';
+import type { Order } from '../../services/order';
+
+/* =============================================================
+   ORDER DETAIL (admin)
+
+   The two things this screen exists to do — move an order along
+   and attach a tracking number — sit at the top, above the read-
+   only record of what was bought and where it is going.
+
+   Cancelling asks first. It is the one status change a customer
+   sees as final, and it is one mis-click away from "shipped" in
+   the same dropdown.
+   ============================================================= */
 @Component({
   selector: 'app-admin-order-detail',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
-  template: `
-    <h1 class="h-lg">Order Detail</h1>
-    <div *ngIf="order" class="detail-card">
-      <div class="detail-row"><strong>Order #</strong> {{ order.order_number }}</div>
-      <div class="detail-row"><strong>Customer</strong> {{ order.customer_name }} ({{ order.customer_email }})</div>
-      <div class="detail-row"><strong>Address</strong> {{ order.shipping_address }}</div>
-      <div class="detail-row"><strong>Total</strong> {{ order.total_amount_pkr | currency:'PKR' }}</div>
-      <div class="detail-row"><strong>Status</strong>
-        <select [(ngModel)]="selectedStatus" (change)="updateStatus()">
-          <option value="pending">Pending</option>
-          <option value="processing">Processing</option>
-          <option value="shipped">Shipped</option>
-          <option value="delivered">Delivered</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-      </div>
-      <div class="detail-row"><strong>Tracking</strong>
-        <input [(ngModel)]="trackingNumber" placeholder="Tracking #" />
-        <input [(ngModel)]="courierName" placeholder="Courier" />
-        <button (click)="updateTracking()">Update</button>
-      </div>
-      <div class="items">
-        <h3>Items</h3>
-        <div *ngFor="let item of order.items" class="item-row">
-          <span>{{ item.product_id }}</span>
-          <span>{{ item.quantity }} × {{ item.unit_price_pkr | currency:'PKR' }}</span>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .detail-card { background: white; padding: 2rem; border-radius: var(--r-lg); box-shadow: var(--shadow); }
-    .detail-row { display: flex; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--ivory-3); }
-    .detail-row strong { width: 120px; }
-    select, input { padding: 0.3rem 0.6rem; border-radius: var(--r); border: 1px solid var(--ivory-3); }
-    .items { margin-top: 2rem; }
-    .item-row { display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid var(--ivory-2); }
-  `],
+  imports: [ReactiveFormsModule, RouterLink, ConfirmDialog],
+  templateUrl: './admin-order-detail.component.html',
+  styleUrl: './admin-order-detail.component.scss',
 })
 export class AdminOrderDetailComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private http = inject(HttpClient);
-  order: any;
-  selectedStatus = '';
-  trackingNumber = '';
-  courierName = '';
+  private readonly route = inject(ActivatedRoute);
+  private readonly api = inject(AdminApi);
+  private readonly fb = inject(FormBuilder);
 
-  ngOnInit() {
+  protected readonly statuses = ALL_STATUSES;
+  protected readonly money = adminMoney;
+  protected readonly date = adminDate;
+  protected readonly productName = adminProductName;
+  protected readonly pill = statusPill;
+
+  protected readonly order = signal<Order | null>(null);
+  protected readonly busy = signal(true);
+  protected readonly failed = signal(false);
+
+  protected readonly savingStatus = signal(false);
+  protected readonly savingTracking = signal(false);
+  protected readonly note = signal('');
+  protected readonly error = signal('');
+  /** A cancel waiting on the confirm dialog. */
+  protected readonly pendingCancel = signal(false);
+  /* What the dropdown is showing. Held separately from the order so a
+     dismissed cancel puts the control back where it was — the order
+     never changed, so binding to it would leave "cancelled" on screen. */
+  protected readonly selectedStatus = signal('');
+
+  protected readonly trackingForm: FormGroup;
+
+  protected readonly itemCount = computed(() =>
+    (this.order()?.items ?? []).reduce((n, i) => n + i.quantity, 0),
+  );
+
+  constructor() {
+    this.trackingForm = this.fb.group({ trackingNumber: [''], courierName: [''] });
+  }
+
+  ngOnInit(): void {
+    this.load();
+  }
+
+  protected load(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    this.http.get(`${environment.apiUrl}/admin/orders/${id}`).subscribe((data: any) => {
-      this.order = data.order;
-      this.selectedStatus = this.order.status;
-      this.trackingNumber = this.order.tracking_number || '';
-      this.courierName = this.order.courier_name || '';
+    if (!id) {
+      this.busy.set(false);
+      this.failed.set(true);
+      return;
+    }
+    this.busy.set(true);
+    this.failed.set(false);
+    this.api.order(id).subscribe({
+      next: (res) => {
+        this.order.set(res.order ?? null);
+        this.failed.set(!res.order);
+        this.selectedStatus.set(res.order?.status ?? '');
+        this.trackingForm.patchValue({
+          trackingNumber: res.order?.tracking_number ?? '',
+          courierName: res.order?.courier_name ?? '',
+        });
+        this.busy.set(false);
+      },
+      error: () => {
+        this.busy.set(false);
+        this.failed.set(true);
+      },
     });
   }
 
-  updateStatus() {
-    const id = this.order.id;
-    this.http.put(`${environment.apiUrl}/admin/orders/${id}/status`, { status: this.selectedStatus }).subscribe(() => {
-      this.order.status = this.selectedStatus;
+  /** Status changes apply straight away — except a cancel, which asks. */
+  protected chooseStatus(next: string): void {
+    const order = this.order();
+    if (!order || next === order.status) return;
+    this.selectedStatus.set(next);
+    if (next === 'cancelled') {
+      this.pendingCancel.set(true);
+      return;
+    }
+    this.applyStatus(next);
+  }
+
+  protected confirmCancel(): void {
+    this.applyStatus('cancelled');
+  }
+
+  /** Dismissed the confirm: put the dropdown back on the real status. */
+  protected abandonCancel(): void {
+    this.pendingCancel.set(false);
+    this.selectedStatus.set(this.order()?.status ?? '');
+  }
+
+  private applyStatus(next: string): void {
+    const order = this.order();
+    if (!order) return;
+    this.savingStatus.set(true);
+    this.error.set('');
+    this.note.set('');
+    this.api.setStatus(order.id, next).subscribe({
+      next: () => {
+        this.savingStatus.set(false);
+        this.pendingCancel.set(false);
+        this.order.set({ ...order, status: next as Order['status'] });
+        this.note.set(`Status set to ${next}.`);
+      },
+      error: () => {
+        this.savingStatus.set(false);
+        this.pendingCancel.set(false);
+        this.selectedStatus.set(order.status);
+        this.error.set("That status change didn't save. The order is unchanged — try again.");
+      },
     });
   }
 
-  updateTracking() {
-    const id = this.order.id;
-    this.http.put(`${environment.apiUrl}/admin/orders/${id}/tracking`, {
-      trackingNumber: this.trackingNumber,
-      courierName: this.courierName,
-    }).subscribe(() => {
-      this.order.tracking_number = this.trackingNumber;
-      this.order.courier_name = this.courierName;
+  protected saveTracking(): void {
+    const order = this.order();
+    if (!order || this.savingTracking()) return;
+    const { trackingNumber, courierName } = this.trackingForm.value;
+    this.savingTracking.set(true);
+    this.error.set('');
+    this.note.set('');
+    this.api.setTracking(order.id, trackingNumber ?? '', courierName ?? '').subscribe({
+      next: () => {
+        this.savingTracking.set(false);
+        this.order.set({
+          ...order,
+          tracking_number: trackingNumber || null,
+          courier_name: courierName || null,
+        });
+        this.note.set('Tracking saved. The customer can see it on the track page.');
+      },
+      error: () => {
+        this.savingTracking.set(false);
+        this.error.set("The tracking details didn't save. Try again.");
+      },
     });
   }
 }

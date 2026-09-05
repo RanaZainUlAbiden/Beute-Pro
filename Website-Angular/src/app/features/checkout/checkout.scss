@@ -1,223 +1,26 @@
-@import '../../../styles.scss';
+/* Local to /checkout. The two-column frame (.acct-grid), the card,
+   fields, options, lines and the empty state are shared account CSS
+   in styles.scss. */
 
-.checkout-page {
-  padding-top: calc(var(--head-h) + 2rem);
-  padding-bottom: 4rem;
-  min-height: 70vh;
-  background: var(--ivory);
+.checkout__pay {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1.4rem;
 
-  .page-header {
-    margin-bottom: 2rem;
-    h1 {
-      color: var(--green);
-      margin-bottom: 0.25rem;
-    }
-    .lede {
-      color: var(--green-soft);
-    }
+  legend {
+    padding: 0;
+    margin-bottom: .55rem;
   }
 }
 
-.checkout-grid {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 2.5rem;
-  align-items: start;
+.checkout__go {
+  margin-top: .3rem;
 }
 
-.order-summary {
-  background: var(--white);
-  border-radius: var(--r-lg);
-  border: 1px solid var(--ivory-3);
-  padding: 1.5rem 1.5rem 2rem;
-  box-shadow: 0 4px 12px rgba(15, 42, 29, 0.04);
-
-  h2 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--green);
-    margin-bottom: 1.2rem;
-  }
-
-  .cart-items {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    margin-bottom: 1.2rem;
-
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.4rem 0;
-      border-bottom: 1px solid var(--ivory-2);
-      .item-details {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        .item-name {
-          font-weight: 600;
-          color: var(--ink);
-        }
-        .item-qty {
-          color: var(--green-soft);
-          font-size: 0.85rem;
-        }
-      }
-      .item-total {
-        font-weight: 700;
-        color: var(--gold);
-      }
-    }
-
-    .empty-cart {
-      text-align: center;
-      padding: 1rem 0;
-      p {
-        color: var(--green-soft);
-        margin-bottom: 1rem;
-      }
-    }
-  }
-
-  .order-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 0.8rem;
-    margin-top: 0.5rem;
-    border-top: 2px solid var(--gold);
-    font-size: 1.1rem;
-    font-weight: 700;
-    .total-amount {
-      color: var(--gold);
-      font-size: 1.3rem;
-    }
-  }
-
-  .cart-actions {
-    margin-top: 1.5rem;
-    display: flex;
-    gap: 0.8rem;
-    .btn--outline {
-      border: 1.5px solid var(--green);
-      color: var(--green);
-      background: transparent;
-      &:hover {
-        background: var(--green);
-        color: var(--ivory);
-      }
-    }
-  }
+.checkout__sum {
+  background: var(--ivory-2);
 }
 
-.checkout-form-wrapper {
-  background: var(--white);
-  border-radius: var(--r-lg);
-  border: 1px solid var(--ivory-3);
-  padding: 1.5rem 1.5rem 2rem;
-  box-shadow: 0 4px 12px rgba(15, 42, 29, 0.04);
-
-  h2 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--green);
-    margin-bottom: 1.2rem;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-  }
-
-  .form-group {
-    margin-bottom: 0.2rem;
-    label {
-      display: block;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--green);
-      margin-bottom: 0.15rem;
-    }
-    input {
-      width: 100%;
-      padding: 0.7rem 1rem;
-      border: 1.5px solid var(--ivory-3);
-      border-radius: var(--r);
-      font-size: 0.9rem;
-      transition: border-color 0.3s, box-shadow 0.3s;
-      &:focus {
-        border-color: var(--gold);
-        box-shadow: 0 0 0 4px rgba(201, 164, 76, 0.15);
-        outline: none;
-      }
-    }
-    .error {
-      font-size: 0.72rem;
-      color: #a8443c;
-      margin-top: 0.2rem;
-    }
-  }
-
-  .payment-options {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-top: 0.2rem;
-    .payment-option {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--green-soft);
-      cursor: pointer;
-      input[type="radio"] {
-        accent-color: var(--gold);
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-      }
-    }
-  }
-
-  .form-actions {
-    margin-top: 1.2rem;
-    .btn--full {
-      width: 100%;
-      padding: 0.8rem;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-  }
-}
-
-@media (max-width: 992px) {
-  .checkout-grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-  .order-summary {
-    order: 2;
-  }
-  .checkout-form-wrapper {
-    order: 1;
-  }
-}
-
-@media (max-width: 640px) {
-  .checkout-page {
-    padding-top: calc(var(--head-h) + 1rem);
-    padding-bottom: 2rem;
-  }
-  .order-summary,
-  .checkout-form-wrapper {
-    padding: 1.2rem;
-  }
-  .payment-options {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+.checkout__back {
+  margin-top: 1.2rem;
 }

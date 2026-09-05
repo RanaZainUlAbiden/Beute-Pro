@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, effect } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
 import { CATEGORIES } from '../../core/data/products';
-import { imgSrc } from '../../core/image';
+import { imgSrc, imgDims } from '../../core/image';
 import type { Product } from '../../core/models/product';
 import { CartService } from '../../core/services/cart.service';
 import { I18nService } from '../../core/services/i18n.service';
@@ -13,7 +13,7 @@ import { WishlistService } from '../../services/wishlist';
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [RouterLink, ImgFallbackDirective, CommonModule],
+  imports: [RouterLink, ImgFallbackDirective, CommonModule, NgOptimizedImage],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +25,8 @@ export class ProductCard {
   protected readonly imgSrc = imgSrc;
 
   readonly product = input.required<Product>();
+
+  protected readonly dims = computed(() => imgDims(this.product().id));
 
   protected readonly categoryName = computed(() =>
     this.i18n.catName(CATEGORIES.find((c) => c.id === this.product().category)),

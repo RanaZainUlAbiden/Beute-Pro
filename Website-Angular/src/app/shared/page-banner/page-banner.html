@@ -1,7 +1,10 @@
 <section class="pagehero">
   <div class="pagehero__bg" [class.is-empty]="empty()">
     @if (image(); as src) {
-    <img [src]="src" [alt]="alt()" (error)="onError()" fetchpriority="high">
+    <picture>
+      <source [srcset]="webpImage()" type="image/webp">
+      <img [ngSrc]="src" [width]="imageWidth()" [height]="imageHeight()" priority [alt]="alt()" (error)="onError()">
+    </picture>
     }
   </div>
   <svg class="pagehero__leaf" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c3 4 6 6 6 10a6 6 0 1 1-12 0c0-4 3-6 6-10Z"/></svg>

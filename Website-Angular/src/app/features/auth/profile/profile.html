@@ -1,144 +1,200 @@
-<div class="profile-page">
+<section class="section acct">
   <div class="wrap">
-    <!-- Page Header -->
-    <div class="page-header">
-      <div class="header-content">
-        <h1 class="h-lg">Profile Settings</h1>
-        <p class="lede">Manage your personal information and password</p>
-      </div>
+
+    <div class="acct__head">
+      <p class="eyebrow">{{ i18n.t('acct.account') }}</p>
+      <h1 class="h-lg">{{ i18n.t('profile.title') }}</h1>
+      <p class="lede">{{ i18n.t('profile.lede') }}</p>
     </div>
 
-    <!-- Profile Content -->
-    <div class="profile-grid">
-      <!-- Left: User Card -->
-      <div class="profile-sidebar">
-        <div class="user-card">
-          <div class="avatar-wrapper">
-            <div class="avatar-large">{{ getInitials() }}</div>
-            <span class="status-dot" *ngIf="user?.email"></span>
-          </div>
-          <div class="user-details">
-            <div class="user-name">{{ user?.full_name || 'User' }}</div>
-            <div class="user-email">{{ user?.email || '' }}</div>
-            <div class="user-role" *ngIf="user?.is_admin">
-              <span class="role-badge">Administrator</span>
-            </div>
-          </div>
-        </div>
+    <div class="acct-grid">
 
-        <!-- Quick Stats (Optional) -->
-        <div class="quick-stats">
-          <div class="stat-item">
-            <span class="stat-label">Member since</span>
-            <span class="stat-value">{{ user?.created_at | date:'MMM d, y' }}</span>
+      <div>
+        <div class="card">
+          <div class="card__head">
+            <h2>{{ i18n.t('profile.personal') }}</h2>
+            <p>{{ i18n.t('profile.personal.sub') }}</p>
           </div>
-          <div class="stat-item">
-            <span class="stat-label">Orders</span>
-            <span class="stat-value">{{ orderCount || '—' }}</span>
-          </div>
-        </div>
 
-        <div class="sidebar-note">
-          <svg viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="12" y1="12" x2="12" y2="8" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="1.5"/></svg>
-          <span>Your email address cannot be changed. Contact support if you need to update it.</span>
-        </div>
-      </div>
+          @if (detailsError()) {
+          <p class="alert alert--err" role="alert">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+            <span>{{ detailsError() }}</span>
+          </p>
+          } @else if (savedDetails()) {
+          <p class="alert alert--ok" role="status">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>
+            <span>{{ i18n.t('profile.saved') }}</span>
+          </p>
+          }
 
-      <!-- Right: Forms -->
-      <div class="profile-forms">
-        <!-- Profile Update Form -->
-        <div class="form-card">
-          <div class="card-header">
-            <h2>Personal Information</h2>
-            <span class="card-subtitle">Update your basic details</span>
-          </div>
-          <form [formGroup]="profileForm" (ngSubmit)="onSubmitProfile()">
-            <div class="form-group">
-              <label for="fullName">Full Name</label>
-              <div class="input-wrapper">
-                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-                <input id="fullName" type="text" formControlName="full_name" placeholder="Your full name" />
+          <form [formGroup]="detailsForm" (ngSubmit)="saveDetails()" novalidate>
+            <div class="ffield" [class.is-invalid]="showError(detailsForm, 'full_name')">
+              <label class="ffield__label" for="pr-name">{{ i18n.t('auth.name') }}</label>
+              <div class="ffield__box ffield__box--icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 20v-1.5a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4V20"/><circle cx="12" cy="7.5" r="3.5"/></svg>
+                <input id="pr-name" type="text" autocomplete="name" formControlName="full_name"
+                       [placeholder]="i18n.t('auth.name.ph')"
+                       [attr.aria-invalid]="showError(detailsForm, 'full_name') || null"
+                       [attr.aria-describedby]="showError(detailsForm, 'full_name') ? 'pr-name-err' : null">
               </div>
-              <div class="error" *ngIf="pf['full_name'].invalid && pf['full_name'].touched">
-                Name is required (min 2 characters)
-              </div>
+              @if (showError(detailsForm, 'full_name')) {
+              <p class="ffield__err" id="pr-name-err">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+                <span>{{ errorFor(detailsForm, 'full_name') }}</span>
+              </p>
+              }
             </div>
 
-            <div class="form-group">
-              <label for="phone">Phone Number</label>
-              <div class="input-wrapper">
-                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.574 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-                <input id="phone" type="tel" formControlName="phone" placeholder="+92-300-1234567" />
+            <div class="ffield">
+              <label class="ffield__label" for="pr-email">{{ i18n.t('auth.email') }}</label>
+              <div class="ffield__box ffield__box--icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>
+                <input id="pr-email" type="email" [value]="user()?.email || ''" disabled
+                       aria-describedby="pr-email-hint">
+              </div>
+              <p class="ffield__hint" id="pr-email-hint">{{ i18n.t('profile.emailfixed') }}</p>
+            </div>
+
+            <div class="ffield" [class.is-invalid]="showError(detailsForm, 'phone')">
+              <label class="ffield__label" for="pr-phone">
+                <span>{{ i18n.t('auth.phone') }}</span>
+                <span class="ffield__opt">{{ i18n.t('form.optional') }}</span>
+              </label>
+              <div class="ffield__box ffield__box--icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M21 16.9v2.6a2 2 0 0 1-2.2 2 19.4 19.4 0 0 1-8.5-3A19.1 19.1 0 0 1 4.4 12 19.4 19.4 0 0 1 1.5 3.4 2 2 0 0 1 3.5 1.2h2.6a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L7.1 8.9a16 16 0 0 0 6 6l1.2-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z"/></svg>
+                <input id="pr-phone" type="tel" inputmode="tel" autocomplete="tel" formControlName="phone"
+                       [placeholder]="i18n.t('auth.phone.ph')"
+                       [attr.aria-invalid]="showError(detailsForm, 'phone') || null"
+                       [attr.aria-describedby]="showError(detailsForm, 'phone') ? 'pr-phone-err' : null">
+              </div>
+              @if (showError(detailsForm, 'phone')) {
+              <p class="ffield__err" id="pr-phone-err">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+                <span>{{ errorFor(detailsForm, 'phone') }}</span>
+              </p>
+              }
+            </div>
+
+            <div class="ffield">
+              <label class="ffield__label" for="pr-address">
+                <span>{{ i18n.t('orders.address') }}</span>
+                <span class="ffield__opt">{{ i18n.t('form.optional') }}</span>
+              </label>
+              <div class="ffield__box">
+                <textarea id="pr-address" rows="3" autocomplete="street-address" formControlName="address"
+                          [placeholder]="i18n.t('auth.address.ph')"></textarea>
               </div>
             </div>
 
-            <div class="form-group">
-              <label for="address">Shipping Address</label>
-              <div class="input-wrapper">
-                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-                <input id="address" type="text" formControlName="address" placeholder="City, Country" />
-              </div>
-            </div>
-
-            <div *ngIf="profileError" class="error-message">{{ profileError }}</div>
-
-            <button type="submit" class="btn btn--gold" [disabled]="isSavingProfile || profileForm.invalid">
-              <span *ngIf="!isSavingProfile">Save Changes</span>
-              <span *ngIf="isSavingProfile">Saving…</span>
+            <button type="submit" class="btn btn--gold" [class.is-busy]="savingDetails()" [disabled]="savingDetails()">
+              @if (savingDetails()) {<span class="spinner spinner--sm" aria-hidden="true"></span>}
+              {{ savingDetails() ? i18n.t('profile.saving') : i18n.t('profile.save') }}
             </button>
           </form>
         </div>
 
-        <!-- Password Change Form -->
-        <div class="form-card">
-          <div class="card-header">
-            <h2>Change Password</h2>
-            <span class="card-subtitle">Update your password to keep your account secure</span>
+        <div class="card">
+          <div class="card__head">
+            <h2>{{ i18n.t('profile.password') }}</h2>
+            <p>{{ i18n.t('profile.password.sub') }}</p>
           </div>
-          <form [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()">
-            <div class="form-group">
-              <label for="currentPassword">Current Password</label>
-              <div class="input-wrapper">
-                <svg viewBox="0 0 24 24" width="18" height="18"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-                <input id="currentPassword" type="password" formControlName="currentPassword" placeholder="••••••••" />
+
+          @if (passwordError()) {
+          <p class="alert alert--err" role="alert">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+            <span>{{ passwordError() }}</span>
+          </p>
+          } @else if (savedPassword()) {
+          <p class="alert alert--ok" role="status">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>
+            <span>{{ savedPassword() }}</span>
+          </p>
+          }
+
+          <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" novalidate>
+            <div class="ffield" [class.is-invalid]="showError(passwordForm, 'currentPassword')">
+              <label class="ffield__label" for="pw-current">{{ i18n.t('profile.pwd.current') }}</label>
+              <div class="ffield__box ffield__box--icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></svg>
+                <input id="pw-current" type="password" autocomplete="current-password" formControlName="currentPassword"
+                       [attr.aria-invalid]="showError(passwordForm, 'currentPassword') || null"
+                       [attr.aria-describedby]="showError(passwordForm, 'currentPassword') ? 'pw-current-err' : null">
               </div>
-              <div class="error" *ngIf="psf['currentPassword'].invalid && psf['currentPassword'].touched">
-                Current password is required
-              </div>
+              @if (showError(passwordForm, 'currentPassword')) {
+              <p class="ffield__err" id="pw-current-err">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+                <span>{{ errorFor(passwordForm, 'currentPassword') }}</span>
+              </p>
+              }
             </div>
 
-            <div class="form-group">
-              <label for="newPassword">New Password</label>
-              <div class="input-wrapper">
-                <svg viewBox="0 0 24 24" width="18" height="18"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-                <input id="newPassword" type="password" formControlName="newPassword" placeholder="Minimum 6 characters" />
+            <div class="ffield" [class.is-invalid]="showError(passwordForm, 'newPassword')">
+              <label class="ffield__label" for="pw-new">{{ i18n.t('profile.pwd.new') }}</label>
+              <div class="ffield__box ffield__box--icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></svg>
+                <input id="pw-new" type="password" autocomplete="new-password" formControlName="newPassword"
+                       [placeholder]="i18n.t('auth.password.ph')"
+                       [attr.aria-invalid]="showError(passwordForm, 'newPassword') || null"
+                       [attr.aria-describedby]="showError(passwordForm, 'newPassword') ? 'pw-new-err' : 'pw-new-hint'">
               </div>
-              <div class="error" *ngIf="psf['newPassword'].invalid && psf['newPassword'].touched">
-                Password must be at least 6 characters
-              </div>
+              @if (showError(passwordForm, 'newPassword')) {
+              <p class="ffield__err" id="pw-new-err">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+                <span>{{ errorFor(passwordForm, 'newPassword') }}</span>
+              </p>
+              } @else {
+              <p class="ffield__hint" id="pw-new-hint">{{ i18n.t('auth.password.hint') }}</p>
+              }
             </div>
 
-            <div class="form-group">
-              <label for="confirmPassword">Confirm New Password</label>
-              <div class="input-wrapper">
-                <svg viewBox="0 0 24 24" width="18" height="18"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-                <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="••••••••" />
+            <div class="ffield" [class.is-invalid]="mismatch">
+              <label class="ffield__label" for="pw-confirm">{{ i18n.t('profile.pwd.confirm') }}</label>
+              <div class="ffield__box ffield__box--icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></svg>
+                <input id="pw-confirm" type="password" autocomplete="new-password" formControlName="confirmPassword"
+                       [attr.aria-invalid]="mismatch || null"
+                       [attr.aria-describedby]="mismatch ? 'pw-confirm-err' : null">
               </div>
-              <div class="error" *ngIf="passwordForm.hasError('mismatch') && psf['confirmPassword'].touched">
-                Passwords do not match
-              </div>
+              @if (mismatch) {
+              <p class="ffield__err" id="pw-confirm-err">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+                <span>{{ i18n.t('profile.err.match') }}</span>
+              </p>
+              }
             </div>
 
-            <div *ngIf="passwordError" class="error-message">{{ passwordError }}</div>
-            <div *ngIf="passwordSuccess" class="success-message">{{ passwordSuccess }}</div>
-
-            <button type="submit" class="btn btn--outline" [disabled]="isSavingPassword || passwordForm.invalid">
-              <span *ngIf="!isSavingPassword">Update Password</span>
-              <span *ngIf="isSavingPassword">Updating…</span>
+            <button type="submit" class="btn btn--outline" [class.is-busy]="savingPassword()" [disabled]="savingPassword()">
+              @if (savingPassword()) {<span class="spinner spinner--sm" aria-hidden="true"></span>}
+              {{ savingPassword() ? i18n.t('profile.pwd.busy') : i18n.t('profile.pwd.submit') }}
             </button>
           </form>
         </div>
       </div>
+
+      <aside class="acct-grid__side">
+        <div class="card profile__who">
+          <span class="profile__avatar" aria-hidden="true">{{ initials() }}</span>
+          <p class="profile__name">{{ user()?.full_name || i18n.t('acct.account') }}</p>
+          <p class="profile__mail">{{ user()?.email }}</p>
+          @if (user()?.is_admin) {
+          <span class="pill pill--delivered">{{ i18n.t('profile.admin') }}</span>
+          }
+
+          <dl class="kv profile__facts">
+            <dt>{{ i18n.t('profile.member') }}</dt>
+            <dd>{{ memberSince() }}</dd>
+            <dt>{{ i18n.t('profile.ordercount') }}</dt>
+            <dd>{{ orderCount() === null ? '—' : orderCount() }}</dd>
+          </dl>
+
+          <div class="profile__links">
+            <a class="link-arrow" routerLink="/orders">{{ i18n.t('acct.orders') }}</a>
+            <a class="link-arrow" routerLink="/wishlist">{{ i18n.t('acct.wishlist') }}</a>
+          </div>
+        </div>
+      </aside>
+
     </div>
   </div>
-</div>
+</section>

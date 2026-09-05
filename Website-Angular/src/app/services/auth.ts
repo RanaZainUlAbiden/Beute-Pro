@@ -88,6 +88,26 @@ export class AuthService {
     return this.http.get<User>(`${this.apiUrl}/users/me`);
   }
 
+  /**
+   * Adopt a session minted outside the app — the Google round trip
+   * comes back to /auth/success with a token and no user, so the
+   * profile is fetched here rather than in the component, and the
+   * token/user pair is written in one place with the rest.
+   */
+  completeExternalLogin(token: string): Observable<User> {
+    if (this.isBrowser) localStorage.setItem(this.tokenKey, token);
+    return this.getCurrentUser().pipe(
+      tap(user => {
+        if (!this.isBrowser) return;
+        localStorage.setItem(this.userKey, JSON.stringify(user));
+        this.userSubject.next(user);
+        this.wishlist.loadWishlist().subscribe({
+          error: (err) => console.warn('Failed to load wishlist after login', err),
+        });
+      })
+    );
+  }
+
   updateProfile(data: { full_name?: string; phone?: string; address?: string }): Observable<User> {
     return this.http.put<User>(`${this.apiUrl}/users/me`, data).pipe(
       tap(user => {

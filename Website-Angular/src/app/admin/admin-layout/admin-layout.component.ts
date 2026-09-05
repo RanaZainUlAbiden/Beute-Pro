@@ -1,43 +1,41 @@
-﻿import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
-// ✅ Correct import – your auth service file is 'auth.ts' (not 'auth.service.ts')
-import { AuthService } from '../../services/auth';
+import { Component, inject, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
+import { AuthService, type User } from '../../services/auth';
+import { ConfirmDialog } from '../ui/confirm-dialog/confirm-dialog';
+
+/* =============================================================
+   ADMIN SHELL
+
+   The frame around every admin screen: a green rail with the four
+   destinations, who is signed in, and the way out. The working
+   area next to it is deliberately plain.
+
+   English only, and `direction:ltr` on `.adm` — these screens are
+   internal, their tables are read by column position, and none of
+   this copy goes through the i18n tables.
+
+   The rail becomes a horizontal strip of links under 900px, which
+   is what makes the tool usable from a phone.
+   ============================================================= */
 @Component({
   selector: 'app-admin-layout',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
-    <div class="admin-layout">
-      <aside class="admin-sidebar">
-        <div class="sidebar-brand">Béute Pro Admin</div>
-        <nav class="sidebar-nav">
-          <a routerLink="dashboard" routerLinkActive="active">Dashboard</a>
-          <a routerLink="orders" routerLinkActive="active">Orders</a>
-          <a routerLink="revenue" routerLinkActive="active">Revenue</a>
-          <!-- ✅ Messages link -->
-          <a routerLink="contact" routerLinkActive="active">Messages</a>
-          <a (click)="logout()" style="cursor:pointer; margin-top:2rem;">Logout</a>
-        </nav>
-      </aside>
-      <main class="admin-content">
-        <router-outlet></router-outlet>
-      </main>
-    </div>
-  `,
-  styles: [`
-    .admin-layout { display: flex; min-height: 100vh; background: var(--ivory); }
-    .admin-sidebar { width: 240px; background: var(--green); color: var(--ivory); padding: 1.5rem; display: flex; flex-direction: column; }
-    .sidebar-brand { font-size: 1.2rem; font-weight: 800; color: var(--gold); margin-bottom: 2rem; }
-    .sidebar-nav { display: flex; flex-direction: column; gap: 0.5rem; }
-    .sidebar-nav a { padding: 0.6rem 1rem; border-radius: var(--r); color: rgba(247,244,236,0.8); transition: background 0.3s; }
-    .sidebar-nav a:hover, .sidebar-nav a.active { background: rgba(247,244,236,0.15); color: var(--ivory); }
-    .admin-content { flex: 1; padding: 2rem; overflow-y: auto; }
-  `],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ConfirmDialog],
+  templateUrl: './admin-layout.component.html',
+  styleUrl: './admin-layout.component.scss',
 })
 export class AdminLayoutComponent {
-  private auth = inject(AuthService);
-  private router = inject(Router);
-  logout() { this.auth.logout(); }
+  private readonly auth = inject(AuthService);
+
+  protected readonly user = signal<User | null>(null);
+  protected readonly confirmingLogout = signal(false);
+
+  constructor() {
+    this.auth.user$.subscribe((user) => this.user.set(user));
+  }
+
+  protected logout(): void {
+    this.confirmingLogout.set(false);
+    this.auth.logout();
+  }
 }
