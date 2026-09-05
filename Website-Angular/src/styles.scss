@@ -1640,17 +1640,19 @@ html[dir="rtl"] .btn--google svg{transform:none}
    internal and their tables are read by column position.
    ========================================================= */
 .adm{
+  /* Full viewport, not `100vh - var(--head-h)` — the admin panel has no
+     site header above it to clear (`chrome:false` in admin.routes.ts). */
   direction:ltr;
   display:grid;grid-template-columns:224px minmax(0,1fr);
-  min-height:calc(100vh - var(--head-h));
+  min-height:100vh;
   background:var(--ivory-2)
 }
 .adm__rail{
   background:var(--green);color:var(--ivory);
   padding:1.3rem 1rem;
   display:flex;flex-direction:column;gap:1.4rem;
-  position:sticky;top:calc(var(--head-h) - 38px);align-self:start;
-  max-height:calc(100vh - var(--head-h) + 38px);overflow-y:auto
+  position:sticky;top:0;align-self:start;
+  max-height:100vh;overflow-y:auto
 }
 .adm__brand{display:flex;flex-direction:column;gap:.15rem;padding-inline:.6rem}
 .adm__brand b{font-size:.98rem;font-weight:800;color:var(--gold);letter-spacing:-.01em}

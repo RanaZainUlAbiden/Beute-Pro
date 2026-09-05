@@ -23,7 +23,7 @@ const registerUser = async (userData) => {
     `INSERT INTO users (email, password_hash, full_name, phone, address, is_admin)
      VALUES ($1, $2, $3, $4, $5, $6)
      RETURNING id, email, full_name, phone, address, is_admin`,
-    [email, hashedPassword, full_name, phone || null, address || null, false]
+    [email, hashedPassword, full_name, phone, address, false]
   );
 
   const user = result.rows[0];

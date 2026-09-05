@@ -132,10 +132,7 @@
           </div>
 
           <div class="ffield" [class.is-invalid]="showError(registerForm, 'phone')">
-            <label class="ffield__label" for="rg-phone">
-              <span>{{ i18n.t('auth.phone') }}</span>
-              <span class="ffield__opt">{{ i18n.t('form.optional') }}</span>
-            </label>
+            <label class="ffield__label" for="rg-phone">{{ i18n.t('auth.phone') }}</label>
             <div class="ffield__box ffield__box--icon">
               <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M21 16.9v2.6a2 2 0 0 1-2.2 2 19.4 19.4 0 0 1-8.5-3A19.1 19.1 0 0 1 4.4 12 19.4 19.4 0 0 1 1.5 3.4 2 2 0 0 1 3.5 1.2h2.6a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L7.1 8.9a16 16 0 0 0 6 6l1.2-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z"/></svg>
               <input id="rg-phone" type="tel" inputmode="tel" autocomplete="tel"
@@ -149,20 +146,25 @@
               <span>{{ errorFor(registerForm, 'phone') }}</span>
             </p>
             } @else {
-            <p class="ffield__hint" id="rg-phone-hint">{{ i18n.t('auth.phone.hint') }}</p>
+            <p class="ffield__hint" id="rg-phone-hint">{{ i18n.t('auth.phone.hint.register') }}</p>
             }
           </div>
 
-          <div class="ffield">
-            <label class="ffield__label" for="rg-address">
-              <span>{{ i18n.t('auth.address') }}</span>
-              <span class="ffield__opt">{{ i18n.t('form.optional') }}</span>
-            </label>
+          <div class="ffield" [class.is-invalid]="showError(registerForm, 'address')">
+            <label class="ffield__label" for="rg-address">{{ i18n.t('auth.address') }}</label>
             <div class="ffield__box ffield__box--icon">
               <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 10c0 6.2-8 12-8 12s-8-5.8-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.8"/></svg>
               <input id="rg-address" type="text" autocomplete="street-address"
-                     formControlName="address" [placeholder]="i18n.t('auth.address.ph')">
+                     formControlName="address" [placeholder]="i18n.t('auth.address.ph')"
+                     [attr.aria-invalid]="showError(registerForm, 'address') || null"
+                     [attr.aria-describedby]="showError(registerForm, 'address') ? 'rg-address-err' : null">
             </div>
+            @if (showError(registerForm, 'address')) {
+            <p class="ffield__err" id="rg-address-err">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.4h.01"/></svg>
+              <span>{{ errorFor(registerForm, 'address') }}</span>
+            </p>
+            }
           </div>
 
           <div class="ffield" [class.is-invalid]="showError(registerForm, 'password')">

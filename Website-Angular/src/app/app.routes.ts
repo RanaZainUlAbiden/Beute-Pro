@@ -8,6 +8,8 @@ export interface PageData {
   noHero: boolean;
   progress: boolean;
   description?: string;
+  /** false hides the site header/footer — the admin panel is a tool, not a storefront page. Defaults to true. */
+  chrome?: boolean;
 }
 
 export const routes: Routes = [

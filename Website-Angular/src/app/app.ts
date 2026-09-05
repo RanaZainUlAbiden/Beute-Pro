@@ -72,6 +72,7 @@ export class App {
 
     this.layout.setNoHero(data.noHero ?? true);
     this.layout.progress.set(data.progress ?? true);
+    this.layout.setChrome(data.chrome ?? true);
 
     if (data.description) {
       this.meta.updateTag({ name: 'description', content: data.description });

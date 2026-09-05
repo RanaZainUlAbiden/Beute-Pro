@@ -1,5 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { I18nService } from '../../../core/services/i18n.service';
@@ -7,6 +14,15 @@ import { AuthService } from '../../../services/auth';
 import { environment } from '../../../../environments/environment';
 
 type Mode = 'signin' | 'register';
+
+/** Pakistani mobile numbers only: 03xxxxxxxxx or +923xxxxxxxxx (spaces/dashes ignored). */
+const PK_PHONE = /^(?:0|\+92)3\d{9}$/;
+
+function pkPhoneValidator(control: AbstractControl): ValidationErrors | null {
+  const value = (control.value ?? '').toString().trim();
+  if (!value) return null; // Validators.required already covers empty
+  return PK_PHONE.test(value.replace(/[\s-]/g, '')) ? null : { pkPhone: true };
+}
 
 /* =============================================================
    SIGN IN / CREATE ACCOUNT
@@ -71,9 +87,9 @@ export class LoginComponent {
     this.registerForm = this.fb.group({
       full_name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.pattern(/^\+?[0-9\s\-()]{7,}$/)]],
+      phone: ['', [Validators.required, pkPhoneValidator]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      address: [''],
+      address: ['', [Validators.required, Validators.minLength(5)]],
     });
 
     // /auth/success bounces failed Google round trips back here with ?error=
@@ -112,7 +128,9 @@ export class LoginComponent {
       case 'full_name':
         return this.i18n.t('auth.err.name');
       case 'phone':
-        return this.i18n.t('auth.err.phone');
+        return this.i18n.t(required ? 'auth.err.phone.empty' : 'auth.err.phone.pk');
+      case 'address':
+        return this.i18n.t(required ? 'auth.err.address.empty' : 'auth.err.address.short');
       default:
         return '';
     }

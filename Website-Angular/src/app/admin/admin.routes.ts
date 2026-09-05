@@ -6,8 +6,10 @@ import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 
 /* The admin screens sit below the header like every other routed
    page (`noHero`), and none of them shows the storefront's reading
-   progress bar — it is a tool, not an article. */
-const adminPage = { noHero: true, progress: false } satisfies PageData;
+   progress bar — it is a tool, not an article. `chrome: false` hides
+   the site header/footer entirely: the admin panel is a tool, not a
+   storefront page, and it has its own rail/nav in AdminLayoutComponent. */
+const adminPage = { noHero: true, progress: false, chrome: false } satisfies PageData;
 
 export const adminRoutes: Routes = [
   {

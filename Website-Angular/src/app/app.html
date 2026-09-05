@@ -1,10 +1,10 @@
 @if (layout.progress()) {<app-progress-bar />}
 
-<app-header />
+@if (layout.chrome()) {<app-header />}
 
 <router-outlet />
 
-<app-footer />
+@if (layout.chrome()) {<app-footer />}
 
 <app-back-to-top />
 
