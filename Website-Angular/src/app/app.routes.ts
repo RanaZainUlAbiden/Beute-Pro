@@ -22,7 +22,7 @@ export const routes: Routes = [
       noHero: false,
       progress: false,
       description:
-        'Cold-pressed oils, handcrafted soaps and botanical face mists. Halal certified, paraben free, made in small batches in Faisalabad.',
+        'Cold-pressed oils, handcrafted soaps and botanical face mists. Halal certified, paraben free, made in small batches by R&B Industries in Karachi and Lahore.',
     } satisfies PageData,
     loadComponent: () => import('./features/home/home').then((m) => m.Home),
   },
@@ -51,7 +51,7 @@ export const routes: Routes = [
       noHero: true,
       progress: true,
       description:
-        'Béute Pro is nurtured, not manufactured — cold-pressed oils, handcrafted soaps and botanical mists made in small batches in Faisalabad.',
+        'Béute Pro is nurtured, not manufactured — cold-pressed oils, handcrafted soaps and botanical mists made in small batches at R&B Industries in Karachi and Lahore.',
     } satisfies PageData,
     loadComponent: () => import('./features/about/about').then((m) => m.About),
   },
