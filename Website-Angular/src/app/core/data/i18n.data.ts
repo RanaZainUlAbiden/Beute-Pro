@@ -129,7 +129,7 @@ const en = {
   "foot.life": "Life at Béute Pro",
   "foot.faq": "FAQs",
   "foot.privacy": "Privacy Policy",
-  "foot.refund": "Refund & Exchange",
+  "foot.refund": "Returns & Refunds",
   "foot.rights": "© 2026 Béute Pro. All rights reserved.",
   "foot.follow": "Follow us",
 
@@ -345,8 +345,8 @@ const en = {
   "faq.brand.ingredients.q": "What's actually in your products?",
   "faq.brand.ingredients.a": "Small batches, plant-derived ingredients, and no undisclosed fragrance. Every product page carries the full ingredient list, what it is for, and how to use it.",
   "faq.brand.returns.q": "What is your return policy?",
-  "faq.brand.returns.a": "Unused items in their original packaging can be returned within 30 days of purchase for a refund or an exchange.",
-  "faq.brand.returns.link": "Read the full Refund & Exchange Policy",
+  "faq.brand.returns.a": "Unopened items can be returned for any reason within 7 days of delivery. Opened items are accepted only if there's a skin reaction, damage in transit, or the wrong item — the full policy explains how a return works.",
+  "faq.brand.returns.link": "Read the full Returns & Refunds Policy",
 
   "faq.cta.title": "Still have questions?",
   "faq.cta.btn": "Get in touch",
@@ -354,6 +354,35 @@ const en = {
   "policies.t1": "Privacy",
   "policies.t2": "& policies.",
   "policies.lede": "How we handle your data, and what happens if something needs to go back.",
+
+  /* ---------- RETURNS POLICY ------------------------------------
+     Everything under policies.returns.* backs the #returns section
+     of the policies page. Two facts are client-confirmed: the
+     7-day window and the 3-working-day transfer once approved.
+     Every other rule here (what counts as eligible, who pays return
+     shipping, COD refunds going out by bank transfer, sale items
+     following the same terms) is a default written pending the
+     client's sign-off, not something they confirmed themselves. */
+  "policies.returns.p1": "We want you to feel completely confident ordering from us. If something isn't right, you have 7 days from the day your order is delivered to send it back or ask for a refund.",
+  "policies.returns.eligible.title": "What we'll take back",
+  "policies.returns.eligible.unopened": "Still sealed and unused — for any reason at all, including if you've simply changed your mind.",
+  "policies.returns.eligible.opened": "Opened or used — only if the product reacted with your skin, arrived damaged, or isn't what you ordered.",
+  "policies.returns.reaction.title": "If a product didn't agree with your skin",
+  "policies.returns.reaction.p": "Everyone's skin is different, and even a gentle, natural formula can occasionally disagree with someone. If that happens to you, please stop using the product straight away and get in touch with us. We'll take it seriously, walk you through a return, and make sure you're looked after — this is exactly what this policy is here for.",
+  "policies.returns.shipping.title": "Who pays for the courier",
+  "policies.returns.shipping.p": "If you're returning something because you changed your mind, the return shipping is on you. If we sent the wrong item, the product arrived damaged, or it reacted with your skin, the return shipping is on us.",
+  "policies.returns.start.title": "How to start a return",
+  "policies.returns.start.p": "Reach out through our contact page or on WhatsApp and tell us what you'd like to return and why. We'll reply as quickly as we can and walk you through the next steps.",
+  "policies.returns.provide.title": "What to have ready",
+  "policies.returns.provide.order": "Your order number, so we can find your purchase quickly.",
+  "policies.returns.provide.photos": "A couple of photos, if the product arrived damaged or you received the wrong item.",
+  "policies.returns.provide.bank": "Your bank account details, if you paid cash on delivery — since there's no card payment to reverse, COD refunds are sent by bank transfer.",
+  "policies.returns.next.title": "What happens next",
+  "policies.returns.next.p": "We review every return as soon as it reaches us (or, for a COD refund, as soon as we have your request) and email you to confirm whether it's approved. Once it's approved, your refund is transferred within 3 working days.",
+  "policies.returns.sale.title": "Sale and clearance items",
+  "policies.returns.sale.p": "Items bought on sale or during a clearance follow exactly the same terms as everything else — a discount doesn't change your right to return something.",
+  "policies.returns.questions.title": "Still have a question?",
+  "policies.returns.questions.p": "Ask us anything before you order, not just after. Email us at",
 
   /* ---------------------------------------------------------
      ACCOUNT — sign in, register, track, checkout, orders,
@@ -866,7 +895,7 @@ const ar: Record<keyof typeof en, string> = {
   "foot.life": "الحياة في بيوت برو",
   "foot.faq": "الأسئلة الشائعة",
   "foot.privacy": "سياسة الخصوصية",
-  "foot.refund": "الاسترجاع والاستبدال",
+  "foot.refund": "الاسترجاع والاسترداد",
   "foot.rights": "© ٢٠٢٦ بيوت برو. جميع الحقوق محفوظة.",
   "foot.follow": "تابعينا",
 
@@ -1062,8 +1091,8 @@ const ar: Record<keyof typeof en, string> = {
   "faq.brand.ingredients.q": "ما الذي يدخل فعلًا في منتجاتكم؟",
   "faq.brand.ingredients.a": "دفعات صغيرة، ومكوّنات نباتية المصدر، وبلا عطر غير مُفصح عنه. كل صفحة منتج تعرض قائمة المكوّنات كاملة، ولماذا تُستخدم، وكيف تُستعمل.",
   "faq.brand.returns.q": "ما سياسة الاسترجاع لديكم؟",
-  "faq.brand.returns.a": "يمكن إرجاع المنتجات غير المستخدمة بعبوتها الأصلية خلال ٣٠ يومًا من الشراء لاسترداد المبلغ أو للاستبدال.",
-  "faq.brand.returns.link": "اقرئي سياسة الاسترجاع والاستبدال كاملة",
+  "faq.brand.returns.a": "يمكن إرجاع المنتجات غير المفتوحة لأي سبب خلال 7 أيام من الاستلام. أما المنتجات المفتوحة فتُقبل فقط في حال حدوث تحسّس بالبشرة، أو تلف أثناء الشحن، أو استلام منتج خاطئ — والسياسة الكاملة توضح طريقة الإرجاع.",
+  "faq.brand.returns.link": "اقرئي سياسة الاسترجاع والاسترداد كاملة",
 
   "faq.cta.title": "ألا تزال لديك أسئلة؟",
   "faq.cta.btn": "تواصلي معنا",
@@ -1071,6 +1100,27 @@ const ar: Record<keyof typeof en, string> = {
   "policies.t1": "الخصوصية",
   "policies.t2": "والسياسات.",
   "policies.lede": "كيف نتعامل مع بياناتك، وماذا يحدث إن احتجتِ لإرجاع شيء.",
+
+  "policies.returns.p1": "نريدك أن تطلبي منّا وأنتِ مطمئنة تمامًا. فإن لم يكن هناك شيء على ما يرام، فلديكِ 7 أيام من تاريخ استلام طلبك لإعادته أو طلب استرداد المبلغ.",
+  "policies.returns.eligible.title": "ما الذي يمكن إرجاعه",
+  "policies.returns.eligible.unopened": "المنتج المغلق وغير المستخدم — لأي سبب كان، حتى لو غيّرتِ رأيك فحسب.",
+  "policies.returns.eligible.opened": "المنتج المفتوح أو المستخدم — فقط إذا تسبّب في تحسّس لبشرتك، أو وصل تالفًا، أو لم يكن المنتج الذي طلبتِه.",
+  "policies.returns.reaction.title": "إذا لم يلائم أحد المنتجات بشرتك",
+  "policies.returns.reaction.p": "بشرة كل شخص مختلفة، وحتى التركيبة الطبيعية اللطيفة قد لا تلائم أحيانًا بعض الأشخاص. إن حدث هذا معكِ، توقفي عن استخدام المنتج فورًا وتواصلي معنا. سنأخذ الأمر على محمل الجد، ونرشدكِ خطوة بخطوة لإتمام الإرجاع، ونحرص على راحتك — فهذا بالضبط ما وُضعت من أجله هذه السياسة.",
+  "policies.returns.shipping.title": "من يتحمّل تكلفة الشحن",
+  "policies.returns.shipping.p": "إذا كنتِ تُرجعين المنتج لأنكِ غيّرتِ رأيك، فتكلفة شحن الإرجاع عليكِ. أما إذا أرسلنا لكِ منتجًا خاطئًا، أو وصل تالفًا، أو تسبّب في تحسّس لبشرتك، فتكلفة الشحن علينا.",
+  "policies.returns.start.title": "كيف تبدئين طلب الإرجاع",
+  "policies.returns.start.p": "تواصلي معنا عبر صفحة التواصل أو عبر واتساب، وأخبرينا بما تريدين إرجاعه ولماذا. سنرد عليكِ بأسرع ما يمكن ونرشدكِ للخطوات التالية.",
+  "policies.returns.provide.title": "ما الذي يُفضَّل تجهيزه",
+  "policies.returns.provide.order": "رقم طلبك، حتى نتمكّن من العثور على مشترياتك بسرعة.",
+  "policies.returns.provide.photos": "بضع صور، إن وصل المنتج تالفًا أو استلمتِ منتجًا غير الذي طلبتِه.",
+  "policies.returns.provide.bank": "بيانات حسابك البنكي، إذا كنتِ قد دفعتِ عند الاستلام — فبما أنه لا توجد عملية دفع ببطاقة لعكسها، تُرسَل مبالغ استرداد الدفع عند الاستلام عبر تحويل بنكي.",
+  "policies.returns.next.title": "ما الذي يحدث بعد ذلك",
+  "policies.returns.next.p": "نراجع كل طلب إرجاع بمجرد وصوله إلينا (أو بمجرد استلام طلبك، في حالة استرداد الدفع عند الاستلام)، ونراسلك بالبريد الإلكتروني لتأكيد الموافقة عليه. وبمجرد الموافقة، يُحوَّل مبلغ الاسترداد خلال 3 أيام عمل.",
+  "policies.returns.sale.title": "منتجات التخفيضات والتصفية",
+  "policies.returns.sale.p": "تخضع المنتجات المشتراة ضمن عروض التخفيضات أو التصفية لنفس شروط الإرجاع تمامًا — فالخصم لا يُسقط حقك في الإرجاع.",
+  "policies.returns.questions.title": "هل لا يزال لديك سؤال؟",
+  "policies.returns.questions.p": "لا تترددي في سؤالنا عن أي شيء قبل الطلب، لا بعده فقط. راسلينا على",
 
   /* الحساب — الدخول، التسجيل، التتبع، الدفع، الطلبات، الملف، المفضلة */
   "acct.account": "الحساب",

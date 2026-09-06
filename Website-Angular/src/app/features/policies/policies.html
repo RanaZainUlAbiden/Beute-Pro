@@ -60,45 +60,56 @@
 
 <div class="wrap"><hr class="rule"></div>
 
-<!-- ============ REFUND & EXCHANGE POLICY ============
-     Adapted from the live beutepro.com/refund_returns_policy/. The
-     30-day window, condition/packaging/receipt requirements, sale-item
-     exclusion and defective-only exchange rule are all sourced from that
-     page — real client commitments, not invented. Generic non-skincare
-     boilerplate (books, CDs, downloadable software) is dropped as
-     inapplicable to this catalog. The refund-processing time was vague
-     in the source ("within a certain amount of days") and is marked
-     [CLIENT TO CONFIRM] rather than guessed. -->
+<!-- ============ RETURNS & REFUNDS POLICY ============
+     Two facts are client-confirmed: the 7-day return window and the
+     3-working-day transfer once a refund is approved. Every other rule
+     below (what counts as eligible, who pays return shipping, COD
+     refunds going out by bank transfer, sale items following the same
+     terms) is a default written pending the client's sign-off — see
+     the summary handed back with this change before launch. All copy
+     lives in i18n.data.ts under policies.returns.*, in both languages,
+     so it renders in the page direction rather than being pinned ltr. -->
 <section class="section" id="returns">
   <div class="wrap">
-    <!-- the heading is translated, so it stays in the page direction;
-         only the English body copy below is pinned to ltr -->
     <h2 class="h-lg prose__title">{{ i18n.t('foot.refund') }}</h2>
-    <div class="prose" dir="ltr">
+    <div class="prose">
 
-      <p>Our refund and returns policy lasts 30 days from the date of purchase. If more than 30 days have passed, we can no longer offer a full refund or exchange.</p>
+      <p>{{ i18n.t('policies.returns.p1') }}</p>
 
-      <h3>Eligibility</h3>
+      <h3>{{ i18n.t('policies.returns.eligible.title') }}</h3>
       <ul>
-        <li>The item must be unused and in the same condition you received it, in its original packaging.</li>
-        <li>A receipt or proof of purchase is required.</li>
-        <li>For hygiene reasons, an opened or used soap, oil or mist can only be returned if it arrived defective or damaged.</li>
+        <li>{{ i18n.t('policies.returns.eligible.unopened') }}</li>
+        <li>{{ i18n.t('policies.returns.eligible.opened') }}</li>
       </ul>
 
-      <h3>Sale items</h3>
-      <p>Only regular-priced items can be refunded. Sale items are final sale.</p>
+      <h3>{{ i18n.t('policies.returns.reaction.title') }}</h3>
+      <p>{{ i18n.t('policies.returns.reaction.p') }}</p>
 
-      <h3>Refunds</h3>
-      <p>Once your return is received and inspected, we'll email you to confirm whether it's approved. Approved refunds are credited to your original payment method [CLIENT TO CONFIRM — number of business days]. Return shipping costs are the customer's responsibility unless the item arrived defective or damaged, in which case we cover it.</p>
+      <h3>{{ i18n.t('policies.returns.shipping.title') }}</h3>
+      <p>{{ i18n.t('policies.returns.shipping.p') }}</p>
 
-      <h3>Exchanges</h3>
-      <p>We only replace items that arrive defective or damaged. Contact us at <a href="mailto:sales@beutepro.com">sales&#64;beutepro.com</a> before sending anything back.</p>
+      <h3>{{ i18n.t('policies.returns.start.title') }}</h3>
+      <p>{{ i18n.t('policies.returns.start.p') }}</p>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.1rem">
+        <a class="btn btn--outline btn--sm" routerLink="/contact">{{ i18n.t('nav.contact') }}</a>
+        <a class="btn btn--outline btn--sm" href="https://wa.me/923213166800" target="_blank" rel="noopener noreferrer">{{ i18n.t('a11y.whatsapp') }}</a>
+      </div>
 
-      <h3>Gifts</h3>
-      <p>If the item was marked as a gift when purchased and shipped directly to you, you'll receive store credit for the value of the return. If it wasn't marked as a gift, the refund goes to the original purchaser.</p>
+      <h3>{{ i18n.t('policies.returns.provide.title') }}</h3>
+      <ul>
+        <li>{{ i18n.t('policies.returns.provide.order') }}</li>
+        <li>{{ i18n.t('policies.returns.provide.photos') }}</li>
+        <li>{{ i18n.t('policies.returns.provide.bank') }}</li>
+      </ul>
 
-      <h3>Questions</h3>
-      <p>Email <a href="mailto:sales@beutepro.com">sales&#64;beutepro.com</a> any time.</p>
+      <h3>{{ i18n.t('policies.returns.next.title') }}</h3>
+      <p>{{ i18n.t('policies.returns.next.p') }}</p>
+
+      <h3>{{ i18n.t('policies.returns.sale.title') }}</h3>
+      <p>{{ i18n.t('policies.returns.sale.p') }}</p>
+
+      <h3>{{ i18n.t('policies.returns.questions.title') }}</h3>
+      <p>{{ i18n.t('policies.returns.questions.p') }} <a href="mailto:sales@beutepro.com"><bdi dir="ltr">{{ i18n.t('topbar.mail') }}</bdi></a>.</p>
     </div>
   </div>
 </section>
