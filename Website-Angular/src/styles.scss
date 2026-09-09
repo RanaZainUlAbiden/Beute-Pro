@@ -1893,6 +1893,9 @@ html[dir="rtl"] .adm__nav a.is-on{box-shadow:inset -3px 0 0 var(--gold)}
 }
 /* it only takes focus to announce itself; the ring belongs on the button */
 .wpop__panel:focus{outline:none}
+/* the WebP/PNG <picture> is a wrapper only — it must not add a box, or its
+   inline strut would show as a sliver of panel shadow under the artwork */
+.wpop__panel picture{display:contents}
 .wpop__img{
   display:block;width:auto;height:auto;
   max-width:min(440px,calc(100vw - var(--wpop-pad) * 2));

@@ -8,6 +8,13 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<!-- The welcome popup is nothing but this artwork, and it opens a few
+     seconds in — long after this fetch would have finished. Warmed here so
+     the panel paints with it rather than around it. `type` means a browser
+     without WebP skips this line and takes the PNG through the panel's
+     <picture> instead; low priority keeps it behind the hero, which the
+     visitor is looking at now. -->
+<link rel="preload" as="image" href="/popup.webp" type="image/webp" fetchpriority="low">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Loaded non-blocking: a synchronous stylesheet fetch here would hold up

@@ -8,9 +8,19 @@
     </button>
 
     <!-- The offer is the artwork, so the alt text carries it: it is both the
-         image's description and, through aria-labelledby, the dialog's name. -->
-    <img class="wpop__img" id="wpop-img" src="/popup.png" [alt]="i18n.t('welcome.alt')"
-         width="1024" height="1536" decoding="async">
+         image's description and, through aria-labelledby, the dialog's name.
+
+         WebP first, the PNG behind it, exactly as the banners and heroes do.
+         Whichever the browser picks, the component has already fetched and
+         decoded it before this markup existed — see welcome-popup.ts — so it
+         paints with the opening frame rather than arriving after it. The
+         width and height are the file's true pixels, which reserve the box
+         at the right shape from the first frame. -->
+    <picture>
+      <source srcset="/popup.webp" type="image/webp">
+      <img class="wpop__img" id="wpop-img" src="/popup.png" [alt]="i18n.t('welcome.alt')"
+           width="1448" height="1086" decoding="async">
+    </picture>
 
   </div>
 </div>
