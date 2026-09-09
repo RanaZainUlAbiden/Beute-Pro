@@ -60,56 +60,65 @@
 
 <div class="wrap"><hr class="rule"></div>
 
-<!-- ============ RETURNS & REFUNDS POLICY ============
-     Two facts are client-confirmed: the 7-day return window and the
-     3-working-day transfer once a refund is approved. Every other rule
-     below (what counts as eligible, who pays return shipping, COD
-     refunds going out by bank transfer, sale items following the same
-     terms) is a default written pending the client's sign-off — see
-     the summary handed back with this change before launch. All copy
-     lives in i18n.data.ts under policies.returns.*, in both languages,
-     so it renders in the page direction rather than being pinned ltr. -->
+<!-- ============ SHIPPING & RETURNS POLICY ============
+     Content adapted from Conatural's policy, rewritten for Beute Pro.
+     All copy lives here for now. -->
 <section class="section" id="returns">
   <div class="wrap">
     <h2 class="h-lg prose__title">{{ i18n.t('foot.refund') }}</h2>
     <div class="prose">
 
-      <p>{{ i18n.t('policies.returns.p1') }}</p>
+      <h3>Shipping Information</h3>
+      <p>We strive to ensure that your orders reach you as soon as possible. After placing an order, you will instantly receive a confirmation e-mail with details of your order. It will then be our priority to swiftly dispatch your order. Usually, all items are sourced from our warehouse and dispatched within 48 hours (provided it is a business day). However, we will let you know via a phone call or SMS if an item is out of stock, and the soonest it can be dispatched.</p>
+      <p>In Pakistan, we offer a standard shipping charge on all orders of Rs 250, no matter how big or small your package is.</p>
+      <p>In Lahore, we ship through our in-house service and can offer delivery within 2 business days. You need to contact us if you need a delivery urgently.</p>
+      <p>For nationwide delivery, we use several courier services.</p>
+      <p>The projected delivery time for all non-Lahore based orders is 2-4 business days.</p>
+      <p>For international deliveries you will need to contact us on <a href="mailto:sales@beutepro.com">sales@beutepro.com</a> and we can respond with shipping costs based on your destination.</p>
+      <p>Unexpected delays may occur with the shipment, and if you don't receive your order within the allotted time, kindly email <a href="mailto:sales@beutepro.com">sales@beutepro.com</a> or WhatsApp us. Make sure you have your order number (provided via email when you place your order) when you contact us.</p>
 
-      <h3>{{ i18n.t('policies.returns.eligible.title') }}</h3>
+      <h3>Exchange Policy</h3>
+      <p>Beute Pro has a 7-day goodwill exchange policy, provided the item is returned to us in time:</p>
       <ul>
-        <li>{{ i18n.t('policies.returns.eligible.unopened') }}</li>
-        <li>{{ i18n.t('policies.returns.eligible.opened') }}</li>
+        <li>It is in its original packaging</li>
+        <li>The seal of each product is intact</li>
+        <li>The packaging of the product has not been tampered with</li>
+      </ul>
+      <p>*Please note that items bought during the sale cannot be exchanged or returned unless the product received does not match the product that you have ordered.</p>
+
+      <h3>How You Can Exchange An Item?</h3>
+      <ul>
+        <li>Email us at <a href="mailto:sales@beutepro.com">sales@beutepro.com</a> and request an exchange.</li>
+        <li>Log in the reason for exchanging the item. Make sure to add your order number and the name of the items being exchanged, in the email.</li>
+        <li>Send the item back to us in its original packaging and seal intact to: Beute Pro, Attention: Returns Department, Plot # 17, Block B-7, E.P.Z., Karachi, Pakistan.</li>
+        <li>We will send your chosen replacement item in exchange to your address.</li>
+        <li>You will need to pay any applicable shipping charges for the re-shipment.</li>
       </ul>
 
-      <h3>{{ i18n.t('policies.returns.reaction.title') }}</h3>
-      <p>{{ i18n.t('policies.returns.reaction.p') }}</p>
-
-      <h3>{{ i18n.t('policies.returns.shipping.title') }}</h3>
-      <p>{{ i18n.t('policies.returns.shipping.p') }}</p>
-
-      <h3>{{ i18n.t('policies.returns.start.title') }}</h3>
-      <p>{{ i18n.t('policies.returns.start.p') }}</p>
-      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.1rem">
-        <a class="btn btn--outline btn--sm" routerLink="/contact">{{ i18n.t('nav.contact') }}</a>
-        <a class="btn btn--outline btn--sm" href="https://wa.me/923213166800" target="_blank" rel="noopener noreferrer">{{ i18n.t('a11y.whatsapp') }}</a>
-      </div>
-
-      <h3>{{ i18n.t('policies.returns.provide.title') }}</h3>
+      <h3>Returns Policy</h3>
+      <p>Beute Pro will fully refund or replace any goods purchased if they are found to be faulty or damaged.</p>
+      <p>If you change your mind about the products you have ordered and decide you no longer wish to use them, your product(s) purchased can be returned to us for a refund under the following conditions:</p>
       <ul>
-        <li>{{ i18n.t('policies.returns.provide.order') }}</li>
-        <li>{{ i18n.t('policies.returns.provide.photos') }}</li>
-        <li>{{ i18n.t('policies.returns.provide.bank') }}</li>
+        <li>Products must be unopened and in the original condition</li>
+        <li>Products must be sent back within 7 days from original receipt of goods</li>
+        <li>Your proof of purchase / order information must also be included in the return.</li>
       </ul>
 
-      <h3>{{ i18n.t('policies.returns.next.title') }}</h3>
-      <p>{{ i18n.t('policies.returns.next.p') }}</p>
+      <h3>How You Can Return An Item</h3>
+      <ul>
+        <li>Take a picture of the item/items that are damaged or faulty and need to be returned</li>
+        <li>Email us at <a href="mailto:sales@beutepro.com">sales@beutepro.com</a> to request a return, attach pictures of the product as well.</li>
+        <li>Log in the reason for exchanging the item. Make sure to add your order number and the name of the items being exchanged, in the email.</li>
+        <li>Send the item back to us in its original packaging and seal intact to: Beute Pro, Attention: Returns Department, Plot # 17, Block B-7, E.P.Z., Karachi, Pakistan.</li>
+        <li>We will send you a coupon of the same amount as your returning item.</li>
+        <li>You will need to pay any applicable shipping charges for the re-shipment.</li>
+      </ul>
 
-      <h3>{{ i18n.t('policies.returns.sale.title') }}</h3>
-      <p>{{ i18n.t('policies.returns.sale.p') }}</p>
+      <h3>Cancellation</h3>
+      <p>If you want to cancel an order, the sooner you inform us the better! We dispatch most orders within 24 hours so be sure to let us know about cancellations at the earliest.</p>
+      <p>Cancellations depend on whether your order has been shipped or not. Usually, items are shipped within one business day so it is important that you notify us immediately. If you would like to cancel an order, please send an order cancellation request to Beute Pro Customer Services at <a href="mailto:sales@beutepro.com">sales@beutepro.com</a> or WhatsApp us.</p>
+      <p>*Please note that if your order has been shipped, we will not be able to cancel it.</p>
 
-      <h3>{{ i18n.t('policies.returns.questions.title') }}</h3>
-      <p>{{ i18n.t('policies.returns.questions.p') }} <a href="mailto:sales@beutepro.com"><bdi dir="ltr">{{ i18n.t('topbar.mail') }}</bdi></a>.</p>
     </div>
   </div>
 </section>

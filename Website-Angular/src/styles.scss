@@ -1272,10 +1272,10 @@ html[dir="rtl"] .pagehero::after{
   line-height:1.7;
   color:var(--green-soft)
 }
-.prose{max-width:68ch}
+.prose{max-width:none}
 /* the policy headings sit outside .prose so they follow the page
    direction, but they keep its measure and spacing */
-.prose__title{max-width:68ch;margin-bottom:1.4rem}
+.prose__title{max-width:none;margin-bottom:1.4rem}
 .prose h2{margin-bottom:1.4rem}
 .prose h3{font-size:1.02rem;font-weight:700;margin:1.8rem 0 .5rem}
 .prose h3:first-of-type{margin-top:0}
