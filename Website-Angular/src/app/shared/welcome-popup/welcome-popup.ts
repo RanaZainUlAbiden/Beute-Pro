@@ -14,23 +14,21 @@ import {
 
 import { I18nService } from '../../core/services/i18n.service';
 import { LayoutService } from '../../core/services/layout.service';
-import { StorageService } from '../../core/services/storage.service';
 
 /* =============================================================
    WELCOME POPUP
 
-   The grand-opening note, shown once per visitor a few seconds
-   after they land — on whatever page they landed on.
+   The grand-opening note, shown a few seconds after the visitor
+   lands — on whatever page they landed on.
 
-   It lives in the shell rather than on a page, so navigating
-   does not re-arm it, and it renders nothing at all until the
-   browser opens it: the prerendered HTML carries no overlay, so
-   a visitor whose JS never runs sees no popup and is never left
-   under a stuck one.
+   Nothing is persisted: every page load arms it again, so a
+   reload or a fresh tab shows it once more.
 
-   `bp_welcome_seen` is written the moment it opens, not on
-   close — a visitor who leaves the page while it is up has
-   still been shown it, and should not meet it again.
+   It lives in the shell rather than on a page, so a client-side
+   navigation does not re-arm it mid-visit, and it renders
+   nothing at all until the browser opens it: the prerendered
+   HTML carries no overlay, so a visitor whose JS never runs sees
+   no popup and is never left under a stuck one.
 
    THE ARTWORK IS THE POPUP. There is no copy in the panel, so
    an overlay without the image is an empty overlay. The image
@@ -45,14 +43,11 @@ import { StorageService } from '../../core/services/storage.service';
      still in flight  → open at the cap anyway; the box is
                         already reserved at the right shape and
                         the bytes are moments away
-     404 or decode failure → skip the popup entirely, and leave
-                        `bp_welcome_seen` unwritten so the next
-                        visit may still get it. An overlay with
-                        a hole in it is worse than no overlay.
+     404 or decode failure → skip the popup entirely. An overlay
+                        with a hole in it is worse than no
+                        overlay.
    ============================================================= */
 
-/** Marked the moment the popup opens. Any value means "shown". */
-const SEEN_KEY = 'bp_welcome_seen';
 /** Long enough to read the page first, short enough to still be a welcome. */
 const DELAY_MS = 6000;
 /** Something else owns the screen — look again shortly. */
@@ -62,6 +57,9 @@ const ART_WEBP = '/popup.webp';
 const ART_PNG = '/popup.png';
 /** The most the popup will wait on the artwork before opening without it. */
 const ART_WAIT_MS = 2000;
+
+/** The <html> inline styles `holdScroll` may overwrite. */
+type LockedProp = 'overflow' | 'scrollbarGutter' | 'paddingInlineEnd';
 
 /** Anything that can hold focus inside the panel, in DOM order. */
 const FOCUSABLE = 'a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])';
@@ -75,7 +73,6 @@ const FOCUSABLE = 'a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"]
 export class WelcomePopup {
   private readonly doc = inject(DOCUMENT);
   private readonly injector = inject(Injector);
-  private readonly store = inject(StorageService);
   private readonly layout = inject(LayoutService);
   protected readonly i18n = inject(I18nService);
 
@@ -93,12 +90,13 @@ export class WelcomePopup {
   private artwork: Promise<boolean> | undefined;
   /** The component went away while `maybeOpen` was waiting on the artwork. */
   private gone = false;
+  /** The inline styles the lock overwrote on <html>, to put back on close. */
+  private locked: Partial<Record<LockedProp, string>> | null = null;
 
   constructor() {
     // afterNextRender never runs on the server, which is what keeps the
-    // timer, localStorage and document out of the SSR pass.
+    // timer and document out of the SSR pass.
     afterNextRender(() => {
-      if (this.store.get(SEEN_KEY)) return;
       // Off the moment we know the popup is coming, not at the moment it
       // opens. index.html preloads the same file, so on a browser that takes
       // the WebP this is usually a cache hit and settles well inside DELAY_MS.
@@ -109,7 +107,10 @@ export class WelcomePopup {
     inject(DestroyRef).onDestroy(() => {
       this.gone = true;
       clearTimeout(this.timer);
-      if (this.isOpen()) this.layout.unlock();
+      if (this.isOpen()) {
+        this.layout.unlock();
+        this.releaseScroll();
+      }
     });
   }
 
@@ -185,13 +186,72 @@ export class WelcomePopup {
     });
   }
 
+  /**
+   * Stops the page scrolling under the overlay.
+   *
+   * `body.is-locked{overflow:hidden}` cannot do this on its own: the viewport
+   * takes its overflow from <html>, and html carries `overflow-x:hidden`
+   * (styles.scss), so the body rule never propagates and the page goes on
+   * scrolling behind the overlay. The element the viewport actually reads is
+   * locked here instead; `layout.lock()` still runs for everything else that
+   * watches `is-locked`, the WhatsApp button among them.
+   *
+   * The scroll position is untouched: `overflow:hidden` freezes the scroller
+   * where it stands rather than sending it home.
+   */
+  private holdScroll(): void {
+    const root = this.doc.documentElement;
+    const view = this.doc.defaultView;
+    if (!view || this.locked) return;
+
+    // Measured before the lock, while the scrollbar is still there to
+    // measure: once overflow is hidden this difference is always zero.
+    const gutter = view.innerWidth - root.clientWidth;
+
+    const was: Partial<Record<LockedProp, string>> = { overflow: root.style.overflow };
+    root.style.overflow = 'hidden';
+
+    // Hiding the scrollbar hands its width back to the layout, which would
+    // widen the page — the fixed header included — for as long as the popup
+    // is up, and snap it back on close. `scrollbar-gutter` holds the space
+    // open instead, on whichever side the scrollbar is: the browser puts it
+    // on the left in Arabic, and reserves it there too.
+    if (gutter > 0) {
+      if (view.CSS?.supports('scrollbar-gutter', 'stable')) {
+        was.scrollbarGutter = root.style.scrollbarGutter;
+        root.style.scrollbarGutter = 'stable';
+      } else {
+        // Without it, padding at least keeps the page's own content still;
+        // fixed elements are beyond reach here and shift by the scrollbar.
+        was.paddingInlineEnd = root.style.paddingInlineEnd;
+        root.style.paddingInlineEnd = `${gutter}px`;
+      }
+    }
+
+    this.locked = was;
+  }
+
+  /** Puts <html> back exactly as it was — including having had nothing set. */
+  private releaseScroll(): void {
+    const was = this.locked;
+    if (!was) return;
+    this.locked = null;
+
+    const root = this.doc.documentElement;
+    for (const [prop, value] of Object.entries(was)) {
+      root.style[prop as LockedProp] = value;
+    }
+    // An empty style="" attribute is not what we found; leave none behind.
+    if (root.getAttribute('style') === '') root.removeAttribute('style');
+  }
+
   private open(): void {
-    this.store.set(SEEN_KEY, '1');
     const active = this.doc.activeElement;
     this.returnTo = active instanceof HTMLElement ? active : null;
 
     this.isOpen.set(true);
     this.layout.lock();
+    this.holdScroll();
 
     // The panel is behind an @if, so it exists only after this render.
     afterNextRender(() => this.panel()?.nativeElement.focus(), {
@@ -203,6 +263,7 @@ export class WelcomePopup {
     if (!this.isOpen()) return;
     this.isOpen.set(false);
     this.layout.unlock();
+    this.releaseScroll();
 
     // Focus goes back where it was — unless that was the body, or an
     // element the page has since replaced.
