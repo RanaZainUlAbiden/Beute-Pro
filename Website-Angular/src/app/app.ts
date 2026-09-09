@@ -14,6 +14,7 @@ import { Footer } from './shared/footer/footer';
 import { Header } from './shared/header/header';
 import { ProgressBar } from './shared/progress-bar/progress-bar';
 import { Toast } from './shared/toast/toast';
+import { WelcomePopup } from './shared/welcome-popup/welcome-popup';
 import { WhatsappButton } from './shared/whatsapp-button/whatsapp-button';
 
 /* =============================================================
@@ -37,6 +38,7 @@ import { WhatsappButton } from './shared/whatsapp-button/whatsapp-button';
     WhatsappButton,
     CartDrawer,
     Toast,
+    WelcomePopup,
   ],
 })
 export class App {

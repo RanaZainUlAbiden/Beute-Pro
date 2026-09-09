@@ -11,6 +11,7 @@ app-footer,
 app-cart-drawer,
 app-toast,
 app-whatsapp-button,
+app-welcome-popup,
 app-back-to-top,
 app-progress-bar,
 app-product-card,
@@ -1852,4 +1853,72 @@ html[dir="rtl"] .adm__nav a.is-on{box-shadow:inset -3px 0 0 var(--gold)}
   .adm-skel::after{animation:none}
   .orow:hover,.orow:focus-within{box-shadow:none}
   .adm__rail,.adm__brand{transition:none}
+}
+
+/* =========================================================
+   WELCOME POPUP
+   ---------------------------------------------------------
+   The grand-opening offer is one piece of artwork, so the panel
+   is nothing but the image and the close button over it.
+
+   The image is never cropped and never scrolls: `width`/`height`
+   stay `auto` so the aspect ratio is the browser's to keep, and
+   the two maximums — one against the viewport's width, one
+   against its height — shrink whichever side runs out of room
+   first. `dvh` measures the visible viewport, so a phone's
+   retracting address bar cannot push the bottom off screen; the
+   `vh` line above it is the fallback where `dvh` is unknown.
+
+   The close button sits in the trailing corner — top-right in
+   English, top-left in Arabic, which `inset-inline-end` handles
+   on its own. It is dark with a pale ring so it stays findable
+   over a light and a dark part of the artwork alike.
+
+   It is only ever in the DOM while open, so there is nothing
+   here to hide when it is not.
+   ========================================================= */
+.wpop{
+  --wpop-pad:var(--gut);
+  position:fixed;inset:0;z-index:130;
+  display:flex;align-items:center;justify-content:center;
+  padding:var(--wpop-pad);
+  background:color-mix(in srgb,var(--green) 55%,transparent);
+  backdrop-filter:blur(3px);
+  animation:wpop-fade .4s var(--ease-out) both
+}
+.wpop__panel{
+  position:relative;max-width:100%;
+  border-radius:var(--r-lg);box-shadow:var(--shadow-lg);
+  animation:wpop-in .55s var(--ease-out) both
+}
+/* it only takes focus to announce itself; the ring belongs on the button */
+.wpop__panel:focus{outline:none}
+.wpop__img{
+  display:block;width:auto;height:auto;
+  max-width:min(440px,calc(100vw - var(--wpop-pad) * 2));
+  max-height:calc(100vh - var(--wpop-pad) * 2);
+  max-height:calc(100dvh - var(--wpop-pad) * 2);
+  border-radius:var(--r-lg)
+}
+.wpop__x{
+  position:absolute;top:.6rem;inset-inline-end:.6rem;z-index:1;
+  width:34px;height:34px;display:grid;place-items:center;border-radius:50%;
+  color:var(--ivory);background:color-mix(in srgb,var(--green) 82%,transparent);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--ivory) 60%,transparent),var(--shadow);
+  transition:background-color .3s var(--ease)
+}
+.wpop__x:hover{background:var(--green)}
+.wpop__x svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+
+@keyframes wpop-fade{from{opacity:0}to{opacity:1}}
+@keyframes wpop-in{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+
+/* tighter gutter on a phone, so the artwork keeps the screen */
+@media(max-width:680px){
+  .wpop{--wpop-pad:1rem}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .wpop,.wpop__panel{animation:none}
+  .wpop__x{transition:none}
 }

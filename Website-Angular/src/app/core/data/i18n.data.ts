@@ -345,7 +345,7 @@ const en = {
   "faq.brand.ingredients.q": "What's actually in your products?",
   "faq.brand.ingredients.a": "Small batches, plant-derived ingredients, and no undisclosed fragrance. Every product page carries the full ingredient list, what it is for, and how to use it.",
   "faq.brand.returns.q": "What is your return policy?",
-  "faq.brand.returns.a": "Unopened items can be returned for any reason within 7 days of delivery. Opened items are accepted only if there's a skin reaction, damage in transit, or the wrong item — the full policy explains how a return works.",
+  "faq.brand.returns.a": "Returns are accepted within 7 days only if the product arrives damaged. We cannot accept returns for any other reason.",
   "faq.brand.returns.link": "Read the full Returns & Refunds Policy",
 
   "faq.cta.title": "Still have questions?",
@@ -363,10 +363,10 @@ const en = {
      shipping, COD refunds going out by bank transfer, sale items
      following the same terms) is a default written pending the
      client's sign-off, not something they confirmed themselves. */
-  "policies.returns.p1": "We want you to feel completely confident ordering from us. If something isn't right, you have 7 days from the day your order is delivered to send it back or ask for a refund.",
-  "policies.returns.eligible.title": "What we'll take back",
-  "policies.returns.eligible.unopened": "Still sealed and unused — for any reason at all, including if you've simply changed your mind.",
-  "policies.returns.eligible.opened": "Opened or used — only if the product reacted with your skin, arrived damaged, or isn't what you ordered.",
+  "policies.returns.p1": "Returns are accepted within 7 days only if the product arrives damaged. We cannot accept returns for any other reason.",
+  "policies.returns.eligible.title": "What qualifies for return",
+  "policies.returns.eligible.unopened": "Returns are accepted within 7 days only if the product arrives damaged.",
+  "policies.returns.eligible.opened": "We cannot accept returns for any other reason.",
   "policies.returns.reaction.title": "If a product didn't agree with your skin",
   "policies.returns.reaction.p": "Everyone's skin is different, and even a gentle, natural formula can occasionally disagree with someone. If that happens to you, please stop using the product straight away and get in touch with us. We'll take it seriously, walk you through a return, and make sure you're looked after — this is exactly what this policy is here for.",
   "policies.returns.shipping.title": "Who pays for the courier",
@@ -774,7 +774,13 @@ const en = {
   "admin.customers.deleteBodyWithOrders": "This permanently removes their account. Their {count} order(s) stay on record but will no longer be linked to an account. There is no undo.",
   "admin.customers.deleteConfirm": "Delete customer",
   "admin.customers.deletedNote": "Customer deleted",
-  "admin.customers.deleteErr": "The customer wasn't deleted — try again"
+  "admin.customers.deleteErr": "The customer wasn't deleted — try again",
+
+  /* The grand-opening popup is a single piece of artwork, so the only
+     strings left are the close button's aria-label and the image's alt
+     text — which has to state the offer, because nothing else does. */
+  "welcome.alt": "Grand opening offer: 15% off your first Béute Pro order, on anything in the shop.",
+  "welcome.close": "Close"
 };
 
 /* Typed against `en`, so a key added on one side and forgotten on the
@@ -1091,7 +1097,7 @@ const ar: Record<keyof typeof en, string> = {
   "faq.brand.ingredients.q": "ما الذي يدخل فعلًا في منتجاتكم؟",
   "faq.brand.ingredients.a": "دفعات صغيرة، ومكوّنات نباتية المصدر، وبلا عطر غير مُفصح عنه. كل صفحة منتج تعرض قائمة المكوّنات كاملة، ولماذا تُستخدم، وكيف تُستعمل.",
   "faq.brand.returns.q": "ما سياسة الاسترجاع لديكم؟",
-  "faq.brand.returns.a": "يمكن إرجاع المنتجات غير المفتوحة لأي سبب خلال 7 أيام من الاستلام. أما المنتجات المفتوحة فتُقبل فقط في حال حدوث تحسّس بالبشرة، أو تلف أثناء الشحن، أو استلام منتج خاطئ — والسياسة الكاملة توضح طريقة الإرجاع.",
+  "faq.brand.returns.a": "يُقبل الإرجاع خلال 7 أيام فقط إذا وصل المنتج تالفًا. لا يمكننا قبول الإرجاع لأي سبب آخر.",
   "faq.brand.returns.link": "اقرئي سياسة الاسترجاع والاسترداد كاملة",
 
   "faq.cta.title": "ألا تزال لديك أسئلة؟",
@@ -1101,10 +1107,10 @@ const ar: Record<keyof typeof en, string> = {
   "policies.t2": "والسياسات.",
   "policies.lede": "كيف نتعامل مع بياناتك، وماذا يحدث إن احتجتِ لإرجاع شيء.",
 
-  "policies.returns.p1": "نريدك أن تطلبي منّا وأنتِ مطمئنة تمامًا. فإن لم يكن هناك شيء على ما يرام، فلديكِ 7 أيام من تاريخ استلام طلبك لإعادته أو طلب استرداد المبلغ.",
-  "policies.returns.eligible.title": "ما الذي يمكن إرجاعه",
-  "policies.returns.eligible.unopened": "المنتج المغلق وغير المستخدم — لأي سبب كان، حتى لو غيّرتِ رأيك فحسب.",
-  "policies.returns.eligible.opened": "المنتج المفتوح أو المستخدم — فقط إذا تسبّب في تحسّس لبشرتك، أو وصل تالفًا، أو لم يكن المنتج الذي طلبتِه.",
+  "policies.returns.p1": "يُقبل الإرجاع خلال 7 أيام فقط إذا وصل المنتج تالفًا. لا يمكننا قبول الإرجاع لأي سبب آخر.",
+  "policies.returns.eligible.title": "ما الذي يؤهلك للإرجاع",
+  "policies.returns.eligible.unopened": "يُقبل الإرجاع خلال 7 أيام فقط إذا وصل المنتج تالفًا.",
+  "policies.returns.eligible.opened": "لا يمكننا قبول الإرجاع لأي سبب آخر.",
   "policies.returns.reaction.title": "إذا لم يلائم أحد المنتجات بشرتك",
   "policies.returns.reaction.p": "بشرة كل شخص مختلفة، وحتى التركيبة الطبيعية اللطيفة قد لا تلائم أحيانًا بعض الأشخاص. إن حدث هذا معكِ، توقفي عن استخدام المنتج فورًا وتواصلي معنا. سنأخذ الأمر على محمل الجد، ونرشدكِ خطوة بخطوة لإتمام الإرجاع، ونحرص على راحتك — فهذا بالضبط ما وُضعت من أجله هذه السياسة.",
   "policies.returns.shipping.title": "من يتحمّل تكلفة الشحن",
@@ -1499,7 +1505,11 @@ const ar: Record<keyof typeof en, string> = {
   "admin.customers.deleteBodyWithOrders": "سيُحذف هذا الحساب نهائيًا. ستبقى طلباته الـ{count} في السجل، لكنها لن تُربط بحساب بعد الآن. لا يمكن التراجع عن ذلك.",
   "admin.customers.deleteConfirm": "حذف العميل",
   "admin.customers.deletedNote": "تم حذف العميل",
-  "admin.customers.deleteErr": "تعذّر حذف العميل — أعد المحاولة"
+  "admin.customers.deleteErr": "تعذّر حذف العميل — أعد المحاولة",
+
+  /* النافذة الترحيبية بمناسبة الافتتاح — النص البديل للصورة هو ما يعلن العرض. */
+  "welcome.alt": "عرض الافتتاح: خصم 15٪ على طلبكِ الأول من بيوت برو، على أي منتج في المتجر.",
+  "welcome.close": "إغلاق"
 };
 
 export type TranslationKey = keyof typeof en;

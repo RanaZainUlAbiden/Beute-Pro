@@ -1,0 +1,17 @@
+@if (isOpen()) {
+<div class="wpop" (click)="close()">
+  <div class="wpop__panel" role="dialog" aria-modal="true" aria-labelledby="wpop-img"
+       tabindex="-1" #panel (click)="$event.stopPropagation()" (keydown)="onKeydown($event)">
+
+    <button type="button" class="wpop__x" [attr.aria-label]="i18n.t('welcome.close')" (click)="close()">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+
+    <!-- The offer is the artwork, so the alt text carries it: it is both the
+         image's description and, through aria-labelledby, the dialog's name. -->
+    <img class="wpop__img" id="wpop-img" src="/popup.png" [alt]="i18n.t('welcome.alt')"
+         width="1024" height="1536" decoding="async">
+
+  </div>
+</div>
+}
