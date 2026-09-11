@@ -1,0 +1,8 @@
+<div class="marquee" [class.marquee--reverse]="reverse()">
+  <div class="marquee__track" aria-hidden="true">
+    <span class="marquee__seg">{{ segment() }}</span>
+    <span class="marquee__seg">{{ segment() }}</span>
+  </div>
+  <span class="marquee__seg marquee__static" aria-hidden="true">{{ text() }}</span>
+  <span class="sr-only">{{ text() }}</span>
+</div>

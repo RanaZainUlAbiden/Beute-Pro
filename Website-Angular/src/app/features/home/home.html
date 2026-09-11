@@ -15,6 +15,14 @@
   </div>
 </app-page-hero>
 
+<!-- ============ MARQUEE ============
+     One certification strip. Content comes from i18n.data.ts so a
+     language change re-renders it live, same as everything else on
+     the page. -->
+<div class="marquee-strips">
+  <app-marquee [text]="marqueeStrip()" />
+</div>
+
 <!-- ============ CATEGORIES ============ -->
 <section class="section">
   <div class="wrap">

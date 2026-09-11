@@ -19,15 +19,20 @@ import { RouterLink } from '@angular/router';
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
 import { RevealDirective } from '../../core/directives/reveal.directive';
 import { CATEGORIES, PRODUCTS } from '../../core/data/products';
+import type { TranslationKey } from '../../core/data/i18n.data';
 import { catSrc, imgSrc, imgDims, spinSrc } from '../../core/image';
 import type { Product } from '../../core/models/product';
 import { I18nService } from '../../core/services/i18n.service';
 import { MotionService } from '../../core/services/motion.service';
 import { ScrollService } from '../../core/services/scroll.service';
 import { ToastService } from '../../core/services/toast.service';
+import { Marquee } from '../../shared/marquee/marquee';
 import { PageHero } from '../../shared/page-hero/page-hero';
 import { VideoFigure } from '../../shared/video-figure/video-figure';
 import { ProductCarousel } from './product-carousel/product-carousel';
+
+/** The single strip, in the order the client asked for it. */
+const MARQUEE: readonly TranslationKey[] = ['marq.2', 'marq.3', 'marq.4', 'marq.5', 'marq.7'];
 
 /** The product that floats over the routine photo. */
 const ROUTINE_CHIP_ID = 'aloe-vera-mist';
@@ -41,6 +46,7 @@ const ROUTINE_CHIP_ID = 'aloe-vera-mist';
     RouterLink,
     ImgFallbackDirective,
     RevealDirective,
+    Marquee,
     PageHero,
     ProductCarousel,
     VideoFigure,
@@ -61,6 +67,11 @@ export class Home implements OnDestroy {
   protected readonly categories = CATEGORIES;
   protected readonly chip: Product =
     PRODUCTS.find((p) => p.id === ROUTINE_CHIP_ID) ?? PRODUCTS[0];
+
+  /* ---------- marquee strip ---------- */
+  protected readonly marqueeStrip = computed(() =>
+    MARQUEE.map((key) => this.i18n.t(key)).join(' · '),
+  );
 
   /* ---------- spotlight ---------- */
   private readonly spotEl = viewChild<ElementRef<HTMLElement>>('spotlight');

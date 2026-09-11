@@ -19,6 +19,7 @@ app-page-hero,
 app-page-banner,
 app-product-carousel,
 app-video-figure,
+app-marquee,
 app-home,
 app-shop,
 app-product,
@@ -473,6 +474,47 @@ html[dir="rtl"] .slide__scrim{
 @keyframes up{to{opacity:1;transform:none}}
 
 /* =========================================================
+   MARQUEE STRIP (homepage, under the hero)
+
+   One strip: a track holding two segments, each several repeats of
+   the same line (see REPEATS in marquee.ts) so it stays wider than
+   any supported viewport. The two segments are pixel-identical, so
+   animating the track by exactly -50% of its own width loops with no
+   visible seam or jump — which is also why the segments sit flush,
+   with no flex gap between them: any gap here would throw off that
+   50% math and reintroduce the jump. Flips under RTL so it still
+   reads the way the language expects, and stops dead under reduced
+   motion, leaving one static line.
+   ========================================================= */
+.marquee-strips{background:var(--ivory-2);border-block:1px solid var(--ivory-3)}
+.marquee{overflow:hidden;padding-block:.6rem}
+.marquee__track{
+  display:flex;width:max-content;
+  animation:marquee-ltr 34s linear infinite
+}
+.marquee--reverse .marquee__track{animation-name:marquee-rtl}
+html[dir="rtl"] .marquee__track{animation-name:marquee-rtl}
+html[dir="rtl"] .marquee--reverse .marquee__track{animation-name:marquee-ltr}
+.marquee__seg{
+  flex:0 0 auto;white-space:nowrap;
+  font-size:clamp(.7rem,1.2vw,.8rem);font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--green-soft)
+}
+/* The one-line, non-repeated fallback shown only under reduced motion —
+   see the media query below. Hidden the rest of the time. */
+.marquee__static{display:none}
+@keyframes marquee-ltr{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+@keyframes marquee-rtl{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0
+}
+@media(prefers-reduced-motion:reduce){
+  .marquee__track{display:none}
+  .marquee__static{display:block;white-space:normal}
+}
+
+/* =========================================================
    CATEGORY TILES
    ========================================================= */
 .cats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(.7rem,1.4vw,1.1rem)}
@@ -883,6 +925,37 @@ html[dir="rtl"] .cart.is-open{transform:translateX(0)}
   .hero__cta .btn{flex:1 1 100%}
   .news__form input{flex-basis:100%}
   .news__form .btn{width:100%}
+}
+/* Below ~480px the copy column in .hero__copy / .pagehero__in spans
+   nearly the full frame width, so the directional fade built for a
+   wide screen (dark near the text, clear over the bottle) leaves the
+   upper half of the headline sitting on whatever the clip is doing
+   there. A flat wash on top of the existing gradient buys contrast
+   back without flattening the product any further than the gradient
+   already does at its lightest stop. */
+@media(max-width:480px){
+  html:not([dir="rtl"]) .slide__scrim{
+    background:
+      linear-gradient(rgba(10,28,19,.34),rgba(10,28,19,.34)),
+      linear-gradient(to right,rgba(10,28,19,.92) 0%,rgba(10,28,19,.62) 60%,rgba(10,28,19,.3) 100%),
+      linear-gradient(to bottom,rgba(10,28,19,.55),transparent 24%);
+  }
+  html[dir="rtl"] .slide__scrim{
+    background:
+      linear-gradient(rgba(10,28,19,.34),rgba(10,28,19,.34)),
+      linear-gradient(to left,rgba(10,28,19,.95) 0%,rgba(10,28,19,.86) 40%,rgba(10,28,19,.62) 68%,rgba(10,28,19,.3) 92%),
+      linear-gradient(to bottom,rgba(10,28,19,.55),transparent 24%);
+  }
+  .pagehero::after{
+    background:
+      linear-gradient(rgba(11,31,22,.3),rgba(11,31,22,.3)),
+      linear-gradient(to right,rgba(11,31,22,.94) 0%,rgba(11,31,22,.78) 62%,rgba(11,31,22,.4) 100%);
+  }
+  html[dir="rtl"] .pagehero::after{
+    background:
+      linear-gradient(rgba(11,31,22,.3),rgba(11,31,22,.3)),
+      linear-gradient(to left,rgba(11,31,22,.94) 0%,rgba(11,31,22,.78) 62%,rgba(11,31,22,.4) 100%);
+  }
 }
 @media(max-width:360px){
   .nav__in{gap:.25rem}
