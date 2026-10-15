@@ -4,8 +4,11 @@
     <p>{{ i18n.t('admin.dashboard.sub') }}</p>
   </div>
   <div class="adm-head__acts">
-    <button type="button" class="btn btn--outline btn--sm" [attr.aria-label]="i18n.t('admin.common.language')" (click)="i18n.toggle()">{{ i18n.toggleLabel() }}</button>
-    <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">{{ i18n.t('admin.common.refresh') }}</button>
+    <button type="button" class="btn btn--outline btn--sm"
+            [attr.aria-label]="i18n.t('admin.common.language')"
+            (click)="i18n.toggle()">{{ i18n.toggleLabel() }}</button>
+    <button type="button" class="btn btn--outline btn--sm"
+            [disabled]="busy()" (click)="load()">{{ i18n.t('admin.common.refresh') }}</button>
   </div>
 </div>
 
@@ -35,6 +38,7 @@
 </div>
 } @else if (data(); as d) {
 
+<!-- ─────── Stats row ─────── -->
 <div class="adm-stats">
   <div class="adm-stat adm-stat--accent">
     <div class="adm-stat__k">{{ i18n.t('admin.dashboard.revenueToday') }}</div>
@@ -48,6 +52,23 @@
   </div>
 </div>
 
+<!-- ─────── Charts row ─────── -->
+<div class="dash__charts">
+  <app-sales-chart [data]="dailyRevenue()" />
+  <app-status-chart [data]="ordersByStatus()" />
+</div>
+
+<!-- ─────── Top products ─────── -->
+<section class="adm-panel">
+  <div class="adm-panel__head">
+    <h2>{{ i18n.t('admin.dashboard.topProducts') }}</h2>
+  </div>
+  <div class="adm-panel__body">
+    <app-top-products-chart [data]="topProducts()" />
+  </div>
+</section>
+
+<!-- ─────── Pending by status ─────── -->
 <section class="adm-panel">
   <div class="adm-panel__head">
     <h2>{{ i18n.t('admin.dashboard.pendingSection') }}</h2>
@@ -72,6 +93,7 @@
   </div>
 </section>
 
+<!-- ─────── Recent orders ─────── -->
 <section class="adm-panel dash__recent">
   <div class="adm-panel__head">
     <h2>{{ i18n.t('admin.dashboard.recentOrders') }}</h2>

@@ -29,7 +29,7 @@
          [attr.aria-label]="i18n.t('carousel.row')"
          (keydown)="onKeydown($event)">
       <ul class="pcarousel__track">
-        @for (p of items; track p.id) {
+        @for (p of items(); track p.id) {
         <li class="pcarousel__item">
           <app-product-card [product]="p" />
         </li>

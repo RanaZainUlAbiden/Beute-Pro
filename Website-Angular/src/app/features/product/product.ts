@@ -1,4 +1,4 @@
-import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -16,16 +16,19 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { WishlistService } from '../../services/wishlist';
+import { of, switchMap, map, catchError } from 'rxjs';
+
 import { AccordionPanelDirective } from '../../core/directives/accordion-panel.directive';
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
 import { StaggerDirective } from '../../core/directives/stagger.directive';
-import { CATEGORIES, PRODUCTS } from '../../core/data/products';
 import { imgSrc, spinSrc } from '../../core/image';
-import type { Product } from '../../core/models/product';
 import { CartService } from '../../core/services/cart.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { MotionService } from '../../core/services/motion.service';
+import { ProductService } from '../../services/product.service';
+import { CategoryService } from '../../services/category.service';
+import { WishlistService } from '../../services/wishlist';
+import { ApiProduct, ApiCategory } from '../../core/models/api.model';
 import { ProductCard } from '../../shared/product-card/product-card';
 import { SplitHeading } from '../../shared/split-heading/split-heading';
 
@@ -47,15 +50,15 @@ const photoCache = new Map<string, Promise<number[]>>();
     AccordionPanelDirective,
     ProductCard,
     SplitHeading,
-    NgOptimizedImage,
   ],
 })
 export class ProductPage implements OnDestroy {
-  private wishlist = inject(WishlistService);
-protected inWishlist = signal(false);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly zone = inject(NgZone);
   private readonly route = inject(ActivatedRoute);
+  private readonly productService = inject(ProductService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly wishlist = inject(WishlistService);
   protected readonly i18n = inject(I18nService);
   protected readonly cart = inject(CartService);
   private readonly motion = inject(MotionService);
@@ -66,24 +69,27 @@ protected inWishlist = signal(false);
     initialValue: this.route.snapshot.paramMap,
   });
 
-  protected readonly product = computed<Product>(
-    () => PRODUCTS.find((p) => p.id === this.params().get('id')) ?? PRODUCTS[0],
-  );
+  // ✅ Live product from API
+  protected readonly product = signal<ApiProduct | null>(null);
+  protected readonly isLoading = signal(true);
+  protected readonly notFound = signal(false);
 
-  protected readonly copy = computed(() => this.i18n.copy(this.product()));
+  // Categories cache for the crumb / label
+  protected readonly categories = signal<ApiCategory[]>([]);
+  protected readonly related = signal<ApiProduct[]>([]);
 
-  protected readonly categoryName = computed(() =>
-    this.i18n.catName(CATEGORIES.find((c) => c.id === this.product().category)),
-  );
+  protected readonly inWishlist = signal(false);
 
-  protected readonly related = computed(() => {
+  protected readonly copy = computed(() => {
     const p = this.product();
-    return PRODUCTS.filter((x) => x.id !== p.id)
-      .slice()
-      .sort(
-        (a, b) => Number(b.category === p.category) - Number(a.category === p.category),
-      )
-      .slice(0, 4);
+    return p ? this.i18n.copy(p as any) : null;
+  });
+
+  protected readonly categoryName = computed(() => {
+    const p = this.product();
+    if (!p) return '';
+    const cat = this.categories().find((c) => c.id === p.category);
+    return cat ? this.i18n.catName(cat) : p.category;
   });
 
   /* ---------- viewer ---------- */
@@ -105,7 +111,6 @@ protected inWishlist = signal(false);
 
   /* ---------- buy box ---------- */
   protected readonly qty = signal(1);
-  /** Ingredients / Benefits / How to use. The first one starts open. */
   protected readonly panels = signal<readonly boolean[]>([true, false, false]);
 
   private spinIo: IntersectionObserver | undefined;
@@ -117,31 +122,50 @@ protected inWishlist = signal(false);
   private resumeTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor() {
-    // the tab title is the brand name on every page, set from the route —
-    // the product name is not appended to it
- effect(() => {
-    const id = this.product().id;
-    this.inWishlist.set(this.wishlist.isInWishlist(id));
-  });
-    // a new product resets the viewer and re-probes its photos
+    // Load categories once for label lookup
+    this.categoryService.list().subscribe({
+      next: (res) => this.categories.set(res.categories),
+      error: () => { /* non-blocking */ },
+    });
+
+    // Fetch product whenever the route ID changes
     effect(() => {
-      const id = this.product().id;
+      const id = this.params().get('id');
+      if (!id) {
+        this.notFound.set(true);
+        this.isLoading.set(false);
+        return;
+      }
+      this.loadProduct(id);
+    });
+
+    // Wishlist state for the current product
+    effect(() => {
+      const id = this.product()?.id;
+      if (id) this.inWishlist.set(this.wishlist.isInWishlist(id));
+    });
+
+    // Reset viewer when a new product loads
+    effect(() => {
+      const p = this.product();
+      if (!p) return;
       this.activeImg.set(1);
       this.tab.set('photos');
       this.photos.set([1]);
       this.spinReady.set(false);
       if (!this.isBrowser) return;
-      void this.probePhotos(id).then((list) => {
-        if (id === this.product().id) this.photos.set(list);
+      void this.probePhotos(p.id).then((list) => {
+        if (p.id === this.product()?.id) this.photos.set(list);
       });
+      this.loadRelated(p);
     });
 
-    // the 360° probe needs the <video> element, so it waits for a render
+    // 360 probe needs the <video> element, so it waits for a render
     afterRenderEffect(() => {
-      const id = this.product().id;
-      if (id !== this.probedSpinFor) {
-        this.probedSpinFor = id;
-        this.initSpin(id);
+      const p = this.product();
+      if (p && p.id !== this.probedSpinFor) {
+        this.probedSpinFor = p.id;
+        this.initSpin(p.id);
       }
     });
 
@@ -155,20 +179,50 @@ protected inWishlist = signal(false);
     });
   }
 
-  protected toggleWishlist(): void {
-  const id = this.product().id;
-  if (this.inWishlist()) {
-    this.wishlist.remove(id).subscribe({
-      next: () => this.inWishlist.set(false),
-      error: (err) => console.error('Failed to remove from wishlist', err),
-    });
-  } else {
-    this.wishlist.add(id).subscribe({
-      next: () => this.inWishlist.set(true),
-      error: (err) => console.error('Failed to add to wishlist', err),
+  private loadProduct(id: string): void {
+    this.isLoading.set(true);
+    this.notFound.set(false);
+    this.productService.getById(id).subscribe({
+      next: (res) => {
+        this.product.set(res.product);
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load product', err);
+        this.notFound.set(true);
+        this.isLoading.set(false);
+      },
     });
   }
-}
+
+  private loadRelated(current: ApiProduct): void {
+    this.productService.list({ category: current.category, limit: 8 }).subscribe({
+      next: (res) => {
+        const related = res.products
+          .filter((p) => p.id !== current.id)
+          .slice(0, 4);
+        this.related.set(related);
+      },
+      error: () => this.related.set([]),
+    });
+  }
+
+  protected toggleWishlist(): void {
+    const p = this.product();
+    if (!p) return;
+    const id = p.id;
+    if (this.inWishlist()) {
+      this.wishlist.remove(id).subscribe({
+        next: () => this.inWishlist.set(false),
+        error: (err) => console.error('Failed to remove from wishlist', err),
+      });
+    } else {
+      this.wishlist.add(id).subscribe({
+        next: () => this.inWishlist.set(true),
+        error: (err) => console.error('Failed to add to wishlist', err),
+      });
+    }
+  }
 
   private readonly onWindowMove = (e: MouseEvent) => this.spinMove(e);
   private readonly onWindowUp = () => this.spinEnd();
@@ -182,16 +236,10 @@ protected inWishlist = signal(false);
     removeEventListener('touchend', this.onWindowUp);
   }
 
-  /* =============================================================
-     PHOTOS
-     Up to five, <id>-1 … <id>-5. A missing file anywhere in the run
-     stops the count there, so a single -1 photo renders as a
-     deliberate single frame rather than a rail of broken thumbs.
-     ============================================================= */
+  /* ---------- PHOTOS ---------- */
   private probePhotos(id: string): Promise<number[]> {
     const hit = photoCache.get(id);
     if (hit) return hit;
-
     const test = (n: number) =>
       new Promise<boolean>((res) => {
         const im = new Image();
@@ -199,7 +247,6 @@ protected inWishlist = signal(false);
         im.onerror = () => res(false);
         im.src = imgSrc(id, n);
       });
-
     const run = Promise.all([1, 2, 3, 4, 5].map(test)).then((flags) => {
       const out: number[] = [];
       for (const ok of flags) {
@@ -217,14 +264,7 @@ protected inWishlist = signal(false);
     this.zoomOut();
   }
 
-  /* =============================================================
-     1. HOVER MAGNIFIER
-     Above 1024px a magnified pane opens beside the frame.
-     Below that, CSS scales the image inside the frame instead.
-     ============================================================= */
-
-  /* object-fit:contain letterboxes the photo inside its box, so work out
-     where the picture actually sits before mapping the cursor onto it. */
+  /* ---------- HOVER MAGNIFIER ---------- */
   private contentRect(): { left: number; top: number; width: number; height: number } {
     const img = this.zoomImg().nativeElement;
     const r = img.getBoundingClientRect();
@@ -244,7 +284,6 @@ protected inWishlist = signal(false);
 
   protected zoomMove(e: MouseEvent): void {
     const ir = this.contentRect();
-
     if (
       e.clientX < ir.left ||
       e.clientX > ir.left + ir.width ||
@@ -255,13 +294,11 @@ protected inWishlist = signal(false);
       return;
     }
     this.zooming.set(true);
-
-    if (innerWidth <= 1024) return; // small screens use the CSS scale
+    if (innerWidth <= 1024) return;
 
     const lens = this.zoomLens().nativeElement;
     const pane = this.zoomPane().nativeElement;
     const box = this.zoomBox().nativeElement;
-
     const lw = lens.offsetWidth;
     const lh = lens.offsetHeight;
     const factor = pane.offsetWidth / lw;
@@ -286,12 +323,7 @@ protected inWishlist = signal(false);
     this.zooming.set(false);
   }
 
-  /* =============================================================
-     TOUCH ZOOM
-     There is no hover on a phone, so the desktop lens does nothing
-     there. Instead: tap the photo and it magnifies around the exact
-     point you touched, drag to move around, tap again to exit.
-     ============================================================= */
+  /* ---------- TOUCH ZOOM ---------- */
   private touch = false;
   private tsx = 0;
   private tsy = 0;
@@ -303,8 +335,6 @@ protected inWishlist = signal(false);
     if (this.touch) this.hintKey.set('pdp.taphint');
   }
 
-  /* put the transform origin exactly under the finger, as a percentage
-     of the visible picture rather than of its box */
   private originAt(cx: number, cy: number): void {
     const r = this.contentRect();
     const x = Math.max(0, Math.min(100, ((cx - r.left) / r.width) * 100));
@@ -324,13 +354,13 @@ protected inWishlist = signal(false);
     const p = e.touches[0];
     this.moved = Math.max(this.moved, Math.hypot(p.clientX - this.tsx, p.clientY - this.tsy));
     if (!this.pinned()) return;
-    e.preventDefault(); // pan the photo instead of scrolling the page
+    e.preventDefault();
     this.originAt(p.clientX, p.clientY);
   }
 
   protected zoomTouchEnd(e: TouchEvent): void {
     const quick = Date.now() - this.t0 < 350;
-    if (this.moved > 12 || !quick) return; // that was a drag or a long press
+    if (this.moved > 12 || !quick) return;
     const p = e.changedTouches[0];
     if (this.pinned()) this.zoomOut();
     else this.zoomIn(p.clientX, p.clientY);
@@ -351,32 +381,24 @@ protected inWishlist = signal(false);
     if (this.touch) this.hintKey.set('pdp.taphint');
   }
 
-  /* =============================================================
-     2. THE 360° VIEWER
-     A short looping video per product at assets/video/spin/<id>.mp4,
-     present only where products.ts flags `spin: true` — the same data
-     field the homepage spotlight reads, replacing what used to be a
-     per-product network probe (preload="metadata" as an existence
-     check) on every page load.
-     ============================================================= */
+  /* ---------- 360 VIEWER ---------- */
   private initSpin(id: string): void {
     const video = this.spinVideo()?.nativeElement;
     const box = this.spinBox()?.nativeElement;
     if (!video || !box) return;
 
-    const ok = PRODUCTS.find((p) => p.id === id)?.spin ?? false;
+    const ok = this.product()?.spin ?? false;
     this.spinReady.set(ok);
     if (!ok) return;
 
     video.poster = imgSrc(id, 1);
-    video.muted = true; // the `muted` attribute alone doesn't always take before playback
-    if (this.motion.reduced) video.removeAttribute('autoplay'); // poster frame only, ever
+    video.muted = true;
+    if (this.motion.reduced) video.removeAttribute('autoplay');
     video.src = spinSrc(id);
     video.load();
 
     if (this.motion.reduced) return;
 
-    // pause off screen, resume once the tab is open and in view
     this.spinIo?.disconnect();
     this.spinIo = new IntersectionObserver(
       (entries) => {
@@ -390,11 +412,7 @@ protected inWishlist = signal(false);
 
   private spinPlay(): void {
     if (this.spinDragging()) return;
-    this.spinVideo()
-      ?.nativeElement.play()
-      .catch(() => {
-        /* autoplay refused; the poster stands in */
-      });
+    this.spinVideo()?.nativeElement.play().catch(() => { /* poster stands in */ });
   }
 
   protected setTab(tab: Tab): void {
@@ -410,7 +428,6 @@ protected inWishlist = signal(false);
     else video?.pause();
   }
 
-  /* ---------- drag / scrub ---------- */
   protected spinStart(e: MouseEvent | TouchEvent): void {
     const video = this.spinVideo()?.nativeElement;
     if (!video) return;
@@ -429,21 +446,20 @@ protected inWishlist = signal(false);
     const p = 'touches' in e ? e.touches[0] : e;
     const dx = p.clientX - this.sx;
     const dy = p.clientY - this.sy;
-
     if (this.dragAxis === null) {
       if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
       this.dragAxis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
-      if (this.dragAxis === 'y') return this.spinEnd(); // let the page scroll instead
+      if (this.dragAxis === 'y') return this.spinEnd();
     }
     if (this.dragAxis !== 'x' || !video?.duration) return;
-    e.preventDefault(); // scrubbing now, not scrolling
+    e.preventDefault();
     this.spinScrub(p.clientX);
   }
 
   protected spinEnd(): void {
     if (!this.spinDragging()) return;
     this.spinDragging.set(false);
-    this.onTabChange(); // resumes the loop, if the tab is open and visible
+    this.onTabChange();
   }
 
   private spinScrub(clientX: number): void {
@@ -475,15 +491,15 @@ protected inWishlist = signal(false);
     this.resumeTimer = setTimeout(() => this.onTabChange(), 650);
   }
 
-  /* =============================================================
-     BUY BOX
-     ============================================================= */
+  /* ---------- BUY BOX ---------- */
   protected stepQty(delta: number): void {
     this.qty.update((q) => Math.max(1, Math.min(99, q + delta)));
   }
 
   protected addToCart(): void {
-    this.cart.add(this.product().id, this.qty());
+    const p = this.product();
+    if (!p) return;
+    this.cart.add(p.id, this.qty());
   }
 
   protected togglePanel(i: number): void {

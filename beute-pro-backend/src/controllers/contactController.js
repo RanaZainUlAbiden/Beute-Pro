@@ -1,8 +1,13 @@
 const contactService = require('../services/contactService');
+const notificationService = require('../services/notificationService');
 
 /**
  * Submit contact form (public)
  * POST /api/contact
+ *
+ * Fires two emails (fire-and-forget):
+ *   • Auto-acknowledgement to the sender
+ *   • Admin notification to EMAIL_ADMIN
  */
 const submitContact = async (req, res) => {
   try {
@@ -14,7 +19,12 @@ const submitContact = async (req, res) => {
     if (!/^\S+@\S+\.\S+$/.test(email)) {
       return res.status(400).json({ error: 'Invalid email address' });
     }
+
     const result = await contactService.createMessage(name, email, message);
+
+    // Fire-and-forget: never block the response, never fail on email error
+    void notificationService.sendContactAcknowledgement({ name, email, message });
+
     res.status(201).json({ success: true, message: 'Message sent successfully', data: result });
   } catch (err) {
     console.error('Submit contact error:', err.message);

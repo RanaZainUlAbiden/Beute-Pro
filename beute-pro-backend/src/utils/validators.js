@@ -37,7 +37,6 @@ const updateProfileSchema = Joi.object({
   address: Joi.string().optional(),
 });
 
-// ✅ NEW: Password change validation schema
 const changePasswordSchema = Joi.object({
   currentPassword: Joi.string().required(),
   newPassword: Joi.string().min(6).required(),
@@ -46,7 +45,6 @@ const changePasswordSchema = Joi.object({
   }),
 });
 
-// Admin: editing a customer record — same signup rules (Pakistani phone, address length).
 const adminCustomerUpdateSchema = Joi.object({
   full_name: Joi.string().min(2).required().messages({
     'string.empty': 'Name is required.',
@@ -72,10 +70,56 @@ const adminCustomerUpdateSchema = Joi.object({
   }),
 });
 
+// ============================================
+// PHASE 5C — Bulk order actions
+// ============================================
+const bulkOrderStatusSchema = Joi.object({
+  orderIds: Joi.array()
+    .items(Joi.number().integer().positive())
+    .min(1)
+    .max(100)
+    .required()
+    .messages({
+      'array.min': 'At least one order must be selected',
+      'array.max': 'You can update at most 100 orders at once',
+    }),
+  status: Joi.string()
+    .valid('pending', 'processing', 'shipped', 'delivered', 'cancelled')
+    .required(),
+  adminNotes: Joi.string().allow('').optional(),
+});
+
+const bulkOrderTrackingSchema = Joi.object({
+  orderIds: Joi.array()
+    .items(Joi.number().integer().positive())
+    .min(1)
+    .max(100)
+    .required()
+    .messages({
+      'array.min': 'At least one order must be selected',
+      'array.max': 'You can update at most 100 orders at once',
+    }),
+  trackingNumber: Joi.string().min(1).max(100).required(),
+  courierName: Joi.string().min(1).max(50).required(),
+});
+
+// ============================================
+// PHASE 5C — User role management
+// ============================================
+const userRoleSchema = Joi.object({
+  is_admin: Joi.boolean().required().messages({
+    'any.required': 'is_admin is required',
+    'boolean.base': 'is_admin must be a boolean',
+  }),
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
   updateProfileSchema,
-  changePasswordSchema, // ✅ Export the new schema
+  changePasswordSchema,
   adminCustomerUpdateSchema,
+  bulkOrderStatusSchema,
+  bulkOrderTrackingSchema,
+  userRoleSchema,
 };

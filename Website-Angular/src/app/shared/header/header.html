@@ -54,7 +54,8 @@
               <div class="mega__col">
                 <h4>{{ i18n.t('nav.megamenu.category') }}</h4>
                 <ul class="mega__list" role="none">
-                  @for (c of categories; track c.id) {
+                  <!-- ✅ Live categories from API -->
+                  @for (c of categories(); track c.id) {
                   <li role="none"><a role="menuitem" [routerLink]="['/shop', c.id]">{{ i18n.catName(c) }}</a></li>
                   }
                 </ul>
@@ -70,11 +71,16 @@
               <div class="mega__col mega__col--feat">
                 <h4>{{ i18n.t('nav.megamenu.featured') }}</h4>
                 <a class="mega__all" role="menuitem" routerLink="/shop">{{ i18n.t('nav.shopall') }}</a>
-                <a class="mega__feat" role="menuitem" [routerLink]="['/product', featured.id]">
-                  <span class="mega__feat-frame"><img [ngSrc]="imgSrc(featured.id, 1)" [width]="imgDims(featured.id).width" [height]="imgDims(featured.id).height" [alt]="i18n.copy(featured).name" data-fallback></span>
-                  <span class="mega__feat-name">{{ i18n.copy(featured).name }}</span>
-                  <span class="mega__feat-price">{{ i18n.money(featured.price) }}</span>
+                <!-- ✅ Featured product from API -->
+                @if (featured(); as f) {
+                <a class="mega__feat" role="menuitem" [routerLink]="['/product', f.id]">
+                  <span class="mega__feat-frame">
+                    <img [ngSrc]="imgSrc(f.id, 1)" [width]="imgDims(f.id).width" [height]="imgDims(f.id).height" [alt]="i18n.copy(f).name" data-fallback>
+                  </span>
+                  <span class="mega__feat-name">{{ i18n.copy(f).name }}</span>
+                  <span class="mega__feat-price">{{ i18n.money(f.price) }}</span>
                 </a>
+                }
               </div>
             </div>
           </div>
@@ -104,8 +110,6 @@
     </div>
   </div>
 
-  <!-- SEARCH COMPONENT — deferred: it pulls in @angular/forms, which has
-       no other reason to be in the initial bundle every visitor downloads. -->
   @defer (on idle) {
     <app-search></app-search>
   }
@@ -120,7 +124,6 @@
     </button>
   </div>
 
-  <!-- Mobile search trigger -->
   <button class="mnav__search" (click)="openSearch(); closeMenu()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
     <span>{{ i18n.t('a11y.search') }}</span>
@@ -137,7 +140,8 @@
         <div class="mnav__acc-in">
           <h5>{{ i18n.t('nav.megamenu.category') }}</h5>
           <ul class="mega__list">
-            @for (c of categories; track c.id) {
+            <!-- ✅ Live categories -->
+            @for (c of categories(); track c.id) {
             <li><a [routerLink]="['/shop', c.id]" (click)="closeMenu()">{{ i18n.catName(c) }}</a></li>
             }
           </ul>
@@ -148,11 +152,16 @@
             }
           </ul>
           <a class="mnav__acc-all" routerLink="/shop" (click)="closeMenu()">{{ i18n.t('nav.shopall') }}</a>
-          <a class="mega__feat" [routerLink]="['/product', featured.id]" (click)="closeMenu()">
-            <span class="mega__feat-frame"><img [src]="imgSrc(featured.id, 1)" [alt]="i18n.copy(featured).name" data-fallback></span>
-            <span class="mega__feat-name">{{ i18n.copy(featured).name }}</span>
-            <span class="mega__feat-price">{{ i18n.money(featured.price) }}</span>
+          <!-- ✅ Featured from API -->
+          @if (featured(); as f) {
+          <a class="mega__feat" [routerLink]="['/product', f.id]" (click)="closeMenu()">
+            <span class="mega__feat-frame">
+              <img [src]="imgSrc(f.id, 1)" [alt]="i18n.copy(f).name" data-fallback>
+            </span>
+            <span class="mega__feat-name">{{ i18n.copy(f).name }}</span>
+            <span class="mega__feat-price">{{ i18n.money(f.price) }}</span>
           </a>
+          }
         </div>
       </div>
     </div>
@@ -162,11 +171,9 @@
     <a routerLink="/about" (click)="closeMenu()">{{ i18n.t('nav.story') }}</a>
     <a routerLink="/contact" (click)="closeMenu()">{{ i18n.t('nav.contact') }}</a>
 
-    <!-- Mobile auth + wishlist + admin links -->
     @if (isLoggedIn()) {
       <a routerLink="/orders" (click)="closeMenu()">My Orders</a>
       <a routerLink="/wishlist" (click)="closeMenu()">Wishlist</a>
-      <!-- ✅ Admin Panel link for mobile menu -->
       @if (isAdmin()) {
         <a [routerLink]="adminPath" (click)="closeMenu()">⚙️ Admin Panel</a>
       }

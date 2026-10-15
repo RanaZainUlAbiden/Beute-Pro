@@ -5,18 +5,19 @@ import { AdminApi, adminDate, adminMoney, type DashboardData } from '../admin-ap
 import { statusPill, statusKey } from '../../features/orders/order-view';
 import { I18nService } from '../../core/services/i18n.service';
 
-/* =============================================================
-   DASHBOARD
+// ✅ Chart components (Phase 5F.10)
+import { SalesChartComponent } from './charts/sales-chart.component';
+import { TopProductsChartComponent } from './charts/top-products-chart.component';
+import { StatusChartComponent } from './charts/status-chart.component';
 
-   What an owner needs at a glance: today's revenue against the
-   all-time total, order volume and how much of it is still
-   waiting to ship, and the most recent orders. Everything is a
-   link into the screen that can act on it — the dashboard itself
-   does nothing but show.
-   ============================================================= */
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink],
+  imports: [
+    RouterLink,
+    SalesChartComponent,
+    TopProductsChartComponent,
+    StatusChartComponent,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -38,6 +39,11 @@ export class DashboardComponent implements OnInit {
       .filter((r) => r.status === 'pending' || r.status === 'processing')
       .reduce((n, r) => n + Number(r.count), 0),
   );
+
+  // ✅ Chart data getters — pass the same arrays straight through
+  protected readonly dailyRevenue = computed(() => this.data()?.dailyRevenue ?? []);
+  protected readonly topProducts = computed(() => this.data()?.topProducts ?? []);
+  protected readonly ordersByStatus = computed(() => this.data()?.ordersByStatus ?? []);
 
   ngOnInit(): void {
     this.load();

@@ -8,6 +8,7 @@ import { I18nService } from '../../core/services/i18n.service';
 import { ToastService } from '../../core/services/toast.service';
 import { AuthService, type User } from '../../services/auth';
 import { OrderService } from '../../services/order';
+import { CouponService } from '../../services/coupon.service';
 
 interface PayMethod {
   id: string;
@@ -15,17 +16,6 @@ interface PayMethod {
   note: TranslationKey;
 }
 
-/* =============================================================
-   CHECKOUT
-
-   Delivery details on one side, the cart on the other. An empty
-   cart is a state on this page rather than a redirect to /shop —
-   being bounced to another page mid-task reads as a fault.
-
-   The visitor's own details pre-fill the form when they are
-   signed in, and the form stays editable: this order may be
-   going somewhere else.
-   ============================================================= */
 @Component({
   selector: 'app-checkout',
   imports: [ReactiveFormsModule, RouterLink],
@@ -36,6 +26,7 @@ export class CheckoutComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly cart = inject(CartService);
   private readonly orders = inject(OrderService);
+  private readonly coupons = inject(CouponService);
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
@@ -46,9 +37,22 @@ export class CheckoutComponent implements OnInit {
   protected readonly formError = signal('');
   protected user: User | null = null;
 
+  // ✅ Coupon state
+  protected readonly couponInput = signal('');
+  protected readonly appliedCode = signal<string | null>(null);
+  protected readonly appliedDiscount = signal(0);
+  protected readonly couponBusy = signal(false);
+  protected readonly couponError = signal('');
+
   protected readonly rows = this.cart.rows;
   protected readonly count = this.cart.count;
   protected readonly total = this.cart.total;
+
+  /** Total after any applied coupon discount. */
+  protected readonly discountedTotal = computed(() =>
+    Math.max(0, this.total() - this.appliedDiscount())
+  );
+
   protected readonly empty = computed(() => this.cart.count() === 0);
 
   protected readonly methods: readonly PayMethod[] = [
@@ -71,7 +75,6 @@ export class CheckoutComponent implements OnInit {
     this.auth.user$.subscribe((user) => {
       this.user = user;
       if (!user) return;
-      // only fill what the visitor has not already typed
       const patch: Record<string, string> = {};
       if (!this.form.value.name) patch['name'] = user.full_name || '';
       if (!this.form.value.email) patch['email'] = user.email || '';
@@ -81,6 +84,53 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  // ------------------------------------------------------------
+  // Coupon
+  // ------------------------------------------------------------
+  protected applyCoupon(): void {
+    const code = this.couponInput().trim().toUpperCase();
+    if (!code || this.couponBusy()) return;
+
+    this.couponBusy.set(true);
+    this.couponError.set('');
+
+    this.coupons.validate(code, this.total()).subscribe({
+      next: (res) => {
+        this.couponBusy.set(false);
+        if (!res.valid) {
+          this.couponError.set(res.reason || 'Invalid coupon');
+          this.appliedCode.set(null);
+          this.appliedDiscount.set(0);
+          return;
+        }
+        this.appliedCode.set(code);
+        this.appliedDiscount.set(res.discount);
+        this.couponInput.set('');
+        this.toast.show(
+          this.i18n.isRTL()
+            ? `تم تطبيق الخصم: ${this.i18n.money(res.discount)}`
+            : `Coupon applied — you saved ${this.i18n.money(res.discount)}`
+        );
+      },
+      error: (err) => {
+        this.couponBusy.set(false);
+        this.couponError.set(err.error?.error || 'Could not verify coupon');
+        this.appliedCode.set(null);
+        this.appliedDiscount.set(0);
+      },
+    });
+  }
+
+  protected removeCoupon(): void {
+    this.appliedCode.set(null);
+    this.appliedDiscount.set(0);
+    this.couponError.set('');
+    this.couponInput.set('');
+  }
+
+  // ------------------------------------------------------------
+  // Form helpers
+  // ------------------------------------------------------------
   protected showError(name: string): boolean {
     const c = this.form.get(name);
     return !!c && c.invalid && c.touched;
@@ -91,16 +141,11 @@ export class CheckoutComponent implements OnInit {
     if (!c || c.valid) return '';
     const required = !!c.errors?.['required'];
     switch (name) {
-      case 'name':
-        return this.i18n.t('auth.err.name');
-      case 'email':
-        return this.i18n.t(required ? 'auth.err.email.empty' : 'auth.err.email.format');
-      case 'phone':
-        return this.i18n.t('auth.err.phone');
-      case 'address':
-        return this.i18n.t('checkout.err.address');
-      default:
-        return '';
+      case 'name':   return this.i18n.t('auth.err.name');
+      case 'email':  return this.i18n.t(required ? 'auth.err.email.empty' : 'auth.err.email.format');
+      case 'phone':  return this.i18n.t('auth.err.phone');
+      case 'address':return this.i18n.t('checkout.err.address');
+      default:       return '';
     }
   }
 
@@ -112,6 +157,9 @@ export class CheckoutComponent implements OnInit {
     return this.i18n.money(amount);
   }
 
+  // ------------------------------------------------------------
+  // Submit
+  // ------------------------------------------------------------
   protected submit(): void {
     if (this.busy() || this.empty()) return;
 
@@ -133,15 +181,13 @@ export class CheckoutComponent implements OnInit {
         address,
         paymentMethod,
         items: this.cart.rows().map((row) => ({ productId: row.id, quantity: row.qty })),
+        couponCode: this.appliedCode() ?? undefined,
       })
       .subscribe({
         next: (res) => {
           this.busy.set(false);
           this.cart.clear();
           this.toast.show(this.i18n.t('checkout.ok'));
-          /* Signed in, the receipt lives at /orders/:number. A guest has
-             no account to read it from, so they go to the public tracker
-             with the number already filled in. */
           const number = res.order?.order_number;
           if (number && !this.user) {
             this.router.navigate(['/track'], { queryParams: { number } });
@@ -149,9 +195,9 @@ export class CheckoutComponent implements OnInit {
             this.router.navigate(number ? ['/orders', number] : ['/orders']);
           }
         },
-        error: () => {
+        error: (err) => {
           this.busy.set(false);
-          this.formError.set(this.i18n.t('checkout.err.submit'));
+          this.formError.set(err.error?.error || this.i18n.t('checkout.err.submit'));
         },
       });
   }

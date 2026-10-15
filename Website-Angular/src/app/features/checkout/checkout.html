@@ -127,6 +127,51 @@
       <aside class="acct-grid__side">
         <div class="card checkout__sum">
           <h2 class="card__title">{{ i18n.t('checkout.summary') }}</h2>
+
+          <!-- ✅ Coupon block -->
+          <div class="coupon">
+            @if (appliedCode(); as code) {
+            <div class="coupon__applied">
+              <div class="coupon__chip">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                  <path d="M20 12l-8-8H4v8l8 8 8-8z" fill="none" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span>{{ code }}</span>
+              </div>
+              <button type="button" class="coupon__remove" (click)="removeCoupon()" aria-label="Remove coupon">
+                <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+                </svg>
+              </button>
+            </div>
+            } @else {
+            <div class="coupon__row">
+              <input
+                type="text"
+                class="coupon__input"
+                [placeholder]="i18n.isRTL() ? 'أدخلي كود الخصم' : 'Have a coupon code?'"
+                [value]="couponInput()"
+                (input)="couponInput.set($any($event.target).value.toUpperCase())"
+                (keydown.enter)="applyCoupon(); $event.preventDefault()"
+                [attr.aria-invalid]="couponError() ? 'true' : null">
+              <button
+                type="button"
+                class="coupon__apply"
+                [disabled]="couponBusy() || !couponInput()"
+                (click)="applyCoupon()">
+                @if (couponBusy()) {
+                  <span class="spinner spinner--sm" aria-hidden="true"></span>
+                } @else {
+                  {{ i18n.isRTL() ? 'تطبيق' : 'Apply' }}
+                }
+              </button>
+            </div>
+            }
+            @if (couponError()) {
+            <p class="coupon__err" role="alert">{{ couponError() }}</p>
+            }
+          </div>
+
           <div class="lines">
             @for (row of rows(); track row.id) {
             <div class="line">
@@ -135,9 +180,18 @@
               <span class="line__price">{{ lineTotal(row.product.price, row.qty) }}</span>
             </div>
             }
+
+            <!-- ✅ Discount row -->
+            @if (appliedDiscount() > 0) {
+            <div class="line line--discount">
+              <span class="line__name">{{ i18n.isRTL() ? 'الخصم' : 'Discount' }} ({{ appliedCode() }})</span>
+              <span class="line__price">−{{ money(appliedDiscount()) }}</span>
+            </div>
+            }
+
             <div class="line line--total">
               <span class="line__name">{{ i18n.t('orders.total') }}</span>
-              <span class="line__price">{{ money(total()) }}</span>
+              <span class="line__price">{{ money(discountedTotal()) }}</span>
             </div>
           </div>
           <a class="link-arrow checkout__back" routerLink="/shop">{{ i18n.t('checkout.keepshopping') }}</a>

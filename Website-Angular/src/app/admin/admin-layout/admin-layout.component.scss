@@ -11,3 +11,22 @@
     color: var(--ivory);
   }
 }
+
+// Group labels inside the rail nav. Hidden when collapsed.
+.adm__group {
+  display: block;
+  padding: .85rem .75rem .35rem;
+  font-size: .62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: color-mix(in srgb, var(--gold) 85%, transparent);
+  opacity: .85;
+  white-space: nowrap;
+}
+
+// Ensure the nav scrolls if the rail gets long (12 items + groups).
+.adm__nav {
+  overflow-y: auto;
+  scrollbar-width: thin;
+}

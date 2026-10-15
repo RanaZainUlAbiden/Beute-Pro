@@ -6,15 +6,22 @@ const session = require('express-session');
 const passport = require('./config/passport');
 const pool = require('./config/db');
 
-// Import routes
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const currencyRoutes = require('./routes/currencyRoutes');
-const wishlistRoutes = require('./routes/wishlistRoutes');
-const contactRoutes = require('./routes/contactRoutes');
+// Services
+const emailService = require('./services/emailService');
 
+// Import routes
+const authRoutes      = require('./routes/authRoutes');
+const userRoutes      = require('./routes/userRoutes');
+const orderRoutes     = require('./routes/orderRoutes');
+const adminRoutes     = require('./routes/adminRoutes');
+const currencyRoutes  = require('./routes/currencyRoutes');
+const wishlistRoutes  = require('./routes/wishlistRoutes');
+const contactRoutes   = require('./routes/contactRoutes');
+const productRoutes   = require('./routes/productRoutes');
+const categoryRoutes  = require('./routes/categoryRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
+const couponRoutes    = require('./routes/couponRoutes');
+const settingsRoutes  = require('./routes/settingsRoutes');
 
 // Import cron job
 const { startExchangeRateJob } = require('./jobs/updateRates');
@@ -42,7 +49,6 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
@@ -65,7 +71,7 @@ app.use(session({
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    maxAge: 24 * 60 * 60 * 1000,
   },
 }));
 
@@ -107,9 +113,20 @@ app.use('/api/admin', adminRoutes);
 // Currency routes (public)
 app.use('/api/rates', currencyRoutes);
 
+// Wishlist
 app.use('/api/wishlist', wishlistRoutes);
 
+// Contact
 app.use('/api/contact', contactRoutes);
+
+// Public catalog
+app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
+
+// Phase 5B — public endpoints
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/coupons', couponRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // ============================================
 // GLOBAL ERROR HANDLER
@@ -125,7 +142,14 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`🚀 Béute Pro backend running on http://localhost:${PORT}`);
   console.log(`📦 Environment: ${process.env.NODE_ENV}`);
-  
+
+  // Email status
+  if (emailService.isEnabled()) {
+    console.log('📧 Email notifications: ENABLED');
+  } else {
+    console.log('📧 Email notifications: DISABLED (set EMAIL_ENABLED=true to enable)');
+  }
+
   // Start exchange rate cron job
   startExchangeRateJob();
 });

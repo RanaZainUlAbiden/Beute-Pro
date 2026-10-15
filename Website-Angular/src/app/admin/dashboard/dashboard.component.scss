@@ -47,3 +47,15 @@
     margin-top: .8rem;
   }
 }
+/* Charts row: line chart on the left, doughnut on the right.
+   Stacks on narrow screens. */
+.dash__charts {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}

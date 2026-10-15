@@ -1,8 +1,10 @@
-const orderService = require('../services/orderService'); // ✅ Fixed path
+const orderService = require('../services/orderService');
 
 /**
  * Place a new order (guest or authenticated)
  * POST /api/orders
+ *
+ * Supports optional couponCode in the body.
  */
 const placeOrder = async (req, res) => {
   try {
@@ -13,9 +15,9 @@ const placeOrder = async (req, res) => {
       address,
       items,
       paymentMethod,
+      couponCode,
     } = req.body;
 
-    // Basic validation
     if (!email || !phone || !name || !address || !items || !items.length) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -23,7 +25,6 @@ const placeOrder = async (req, res) => {
       return res.status(400).json({ error: 'Invalid payment method' });
     }
 
-    // If user is logged in, we associate the order with their ID
     const userId = req.user ? req.user.id : null;
 
     const order = await orderService.createOrder({
@@ -34,12 +35,13 @@ const placeOrder = async (req, res) => {
       shippingAddress: address,
       items,
       paymentMethod,
+      couponCode: couponCode || null,
     });
 
     res.status(201).json({ success: true, order });
   } catch (err) {
     console.error('Place order error:', err.message);
-    res.status(400).json({ error: err.message });
+    res.status(err.status || 400).json({ error: err.message });
   }
 };
 
@@ -128,7 +130,11 @@ const adminUpdateStatus = async (req, res) => {
     if (!['pending', 'processing', 'shipped', 'delivered', 'cancelled'].includes(status)) {
       return res.status(400).json({ error: 'Invalid status' });
     }
-    const order = await orderService.updateOrderStatus(parseInt(req.params.id, 10), status, adminNotes);
+    const order = await orderService.updateOrderStatus(
+      parseInt(req.params.id, 10),
+      status,
+      adminNotes
+    );
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
     }
@@ -149,7 +155,11 @@ const adminAddTracking = async (req, res) => {
     if (!trackingNumber || !courierName) {
       return res.status(400).json({ error: 'Tracking number and courier name required' });
     }
-    const order = await orderService.updateTracking(parseInt(req.params.id, 10), trackingNumber, courierName);
+    const order = await orderService.updateTracking(
+      parseInt(req.params.id, 10),
+      trackingNumber,
+      courierName
+    );
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
     }
@@ -174,6 +184,52 @@ const getRevenue = async (req, res) => {
   }
 };
 
+/**
+ * Admin: Bulk update order status
+ * PUT /api/admin/orders/bulk/status
+ */
+const adminBulkUpdateStatus = async (req, res) => {
+  try {
+    const { orderIds, status, adminNotes } = req.body;
+    const result = await orderService.bulkUpdateStatus(
+      orderIds,
+      status,
+      adminNotes || null
+    );
+
+    if (result.updated === 0) {
+      return res.status(404).json({ error: 'No matching orders found' });
+    }
+    res.json({ success: true, ...result });
+  } catch (err) {
+    console.error('Bulk status error:', err.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+/**
+ * Admin: Bulk update tracking info
+ * PUT /api/admin/orders/bulk/tracking
+ */
+const adminBulkUpdateTracking = async (req, res) => {
+  try {
+    const { orderIds, trackingNumber, courierName } = req.body;
+    const result = await orderService.bulkUpdateTracking(
+      orderIds,
+      trackingNumber,
+      courierName
+    );
+
+    if (result.updated === 0) {
+      return res.status(404).json({ error: 'No matching orders found' });
+    }
+    res.json({ success: true, ...result });
+  } catch (err) {
+    console.error('Bulk tracking error:', err.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 module.exports = {
   placeOrder,
   getMyOrders,
@@ -183,4 +239,6 @@ module.exports = {
   adminUpdateStatus,
   adminAddTracking,
   getRevenue,
+  adminBulkUpdateStatus,
+  adminBulkUpdateTracking,
 };

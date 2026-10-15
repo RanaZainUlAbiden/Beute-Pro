@@ -1,33 +1,52 @@
 const express = require('express');
 const { protect, adminOnly } = require('../middleware/auth');
 
-// Order controllers
+// ============================================
+// CONTROLLERS
+// ============================================
+
+// Orders
 const {
   adminListOrders,
   adminGetOrder,
   adminUpdateStatus,
   adminAddTracking,
   getRevenue,
+  adminBulkUpdateStatus,
+  adminBulkUpdateTracking,
 } = require('../controllers/orderController');
 
 // Dashboard & currency
 const { getDashboardStats } = require('../controllers/dashboardController');
-const { refreshRates } = require('../controllers/currencyController');
+const { refreshRates,setRate } = require('../controllers/currencyController');
 
-// ✅ Contact controllers
+// Contact
 const {
   getMessages,
   updateMessageStatus,
   deleteMessage,
 } = require('../controllers/contactController');
 
-// Customer management
+// Customers
 const {
   adminListCustomers,
   adminGetCustomer,
   adminUpdateCustomer,
   adminDeleteCustomer,
 } = require('../controllers/customerController');
+
+// Products & categories (Phase 5A)
+const productController = require('../controllers/productController');
+const categoryController = require('../controllers/categoryController');
+
+// Inventory, coupons, settings (Phase 5B)
+const inventoryController = require('../controllers/inventoryController');
+const couponController = require('../controllers/couponController');
+const settingsController = require('../controllers/settingsController');
+
+// Users & exports (Phase 5C)
+const userAdminController = require('../controllers/userAdminController');
+const exportController = require('../controllers/exportController');
 
 const router = express.Router();
 
@@ -38,63 +57,90 @@ router.use(adminOnly);
 // ============================================
 // ORDER MANAGEMENT
 // ============================================
-
-// List all orders (with pagination & filters)
 router.get('/orders', adminListOrders);
-
-// Get single order by ID
 router.get('/orders/:id', adminGetOrder);
-
-// Update order status
 router.put('/orders/:id/status', adminUpdateStatus);
-
-// Add tracking number
 router.put('/orders/:id/tracking', adminAddTracking);
+
+// Bulk order actions
+router.put('/orders/bulk/status', adminBulkUpdateStatus);
+router.put('/orders/bulk/tracking', adminBulkUpdateTracking);
 
 // ============================================
 // REVENUE & ANALYTICS
 // ============================================
-
-// Revenue summary
 router.get('/revenue', getRevenue);
-
-// Dashboard stats (comprehensive analytics)
 router.get('/dashboard', getDashboardStats);
 
 // ============================================
 // CURRENCY MANAGEMENT
 // ============================================
-
-// Manually refresh exchange rates
 router.post('/rates/refresh', refreshRates);
+router.put('/rates/:currency', setRate);
 
 // ============================================
 // CONTACT MANAGEMENT
 // ============================================
-
-// Get all contact messages (with filters & pagination)
 router.get('/contact', getMessages);
-
-// Update message status
 router.put('/contact/:id/status', updateMessageStatus);
-
-// Delete a message
 router.delete('/contact/:id', deleteMessage);
 
 // ============================================
 // CUSTOMER MANAGEMENT
 // ============================================
-
-// List all customers (search, sort, pagination)
 router.get('/customers', adminListCustomers);
-
-// Get a single customer
 router.get('/customers/:id', adminGetCustomer);
-
-// Update a customer's details
 router.put('/customers/:id', adminUpdateCustomer);
-
-// Delete a customer
 router.delete('/customers/:id', adminDeleteCustomer);
+
+// ============================================
+// PRODUCT MANAGEMENT (Phase 5A)
+// ============================================
+router.get('/products', productController.adminList);
+router.post('/products', productController.create);
+router.put('/products/:id', productController.update);
+router.delete('/products/:id', productController.remove);
+
+// ============================================
+// CATEGORY MANAGEMENT (Phase 5A)
+// ============================================
+router.post('/categories', categoryController.create);
+router.put('/categories/:id', categoryController.update);
+router.delete('/categories/:id', categoryController.remove);
+
+// ============================================
+// INVENTORY MANAGEMENT (Phase 5B)
+// ============================================
+router.get('/inventory', inventoryController.adminList);
+router.get('/inventory/low-stock', inventoryController.adminLowStock);
+router.put('/inventory/:productId', inventoryController.adminSet);
+
+// ============================================
+// COUPON MANAGEMENT (Phase 5B)
+// ============================================
+router.get('/coupons', couponController.adminList);
+router.post('/coupons', couponController.adminCreate);
+router.put('/coupons/:code', couponController.adminUpdate);
+router.delete('/coupons/:code', couponController.adminRemove);
+
+// ============================================
+// STORE SETTINGS (Phase 5B)
+// ============================================
+router.get('/settings', settingsController.adminGetAll);
+router.put('/settings', settingsController.adminSetMany);
+
+// ============================================
+// USER ROLE MANAGEMENT (Phase 5C)
+// ============================================
+router.get('/users', userAdminController.listUsers);
+router.get('/users/:id', userAdminController.getUser);
+router.put('/users/:id/role', userAdminController.setUserRole);
+
+// ============================================
+// CSV EXPORTS (Phase 5C)
+// ============================================
+router.get('/export/orders.csv', exportController.ordersCsv);
+router.get('/export/products.csv', exportController.productsCsv);
+router.get('/export/customers.csv', exportController.customersCsv);
 
 module.exports = router;

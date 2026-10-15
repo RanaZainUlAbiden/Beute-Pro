@@ -14,26 +14,151 @@
     </button>
 
     <nav class="adm__nav" aria-label="Admin sections">
-      <a routerLink="dashboard" routerLinkActive="is-on" [attr.title]="collapsed() ? i18n.t('admin.nav.dashboard') : null">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+
+      <!-- ─────────── OVERVIEW ─────────── -->
+      @if (!collapsed()) {
+      <span class="adm__group">{{ i18n.t('admin.nav.groupOverview') }}</span>
+      }
+
+      <a routerLink="dashboard" routerLinkActive="is-on"
+         [attr.title]="collapsed() ? i18n.t('admin.nav.dashboard') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/>
+          <rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/>
+          <rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/>
+          <rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>
+        </svg>
         <span>{{ i18n.t('admin.nav.dashboard') }}</span>
       </a>
-      <a routerLink="orders" routerLinkActive="is-on" [attr.title]="collapsed() ? i18n.t('admin.nav.orders') : null">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 7.5h12l-1.1 12.2a1.4 1.4 0 0 1-1.4 1.3H8.5a1.4 1.4 0 0 1-1.4-1.3z"/><path d="M9.2 7.5a2.8 2.8 0 0 1 5.6 0"/></svg>
+
+      <a routerLink="orders" routerLinkActive="is-on"
+         [attr.title]="collapsed() ? i18n.t('admin.nav.orders') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path d="M6 7.5h12l-1.1 12.2a1.4 1.4 0 0 1-1.4 1.3H8.5a1.4 1.4 0 0 1-1.4-1.3z"/>
+          <path d="M9.2 7.5a2.8 2.8 0 0 1 5.6 0"/>
+        </svg>
         <span>{{ i18n.t('admin.nav.orders') }}</span>
       </a>
-      <a routerLink="customers" routerLinkActive="is-on" [attr.title]="collapsed() ? i18n.t('admin.nav.customers') : null">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M15.5 8.2a3 3 0 1 1 2 5.2"/><path d="M21 19c0-2.6-1.7-4.6-4-5.3"/></svg>
-        <span>{{ i18n.t('admin.nav.customers') }}</span>
-      </a>
-      <a routerLink="revenue" routerLinkActive="is-on" [attr.title]="collapsed() ? i18n.t('admin.nav.revenue') : null">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 19.5h16"/><path d="M6.5 16.5v-5"/><path d="M11.5 16.5v-9"/><path d="M16.5 16.5v-3"/></svg>
+
+      <a routerLink="revenue" routerLinkActive="is-on"
+         [attr.title]="collapsed() ? i18n.t('admin.nav.revenue') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path d="M4 19.5h16"/>
+          <path d="M6.5 16.5v-5"/>
+          <path d="M11.5 16.5v-9"/>
+          <path d="M16.5 16.5v-3"/>
+        </svg>
         <span>{{ i18n.t('admin.nav.revenue') }}</span>
       </a>
-      <a routerLink="contact" routerLinkActive="is-on" [attr.title]="collapsed() ? i18n.t('admin.nav.messages') : null">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>
+
+      <!-- ─────────── CATALOG ─────────── -->
+      @if (!collapsed()) {
+      <span class="adm__group">{{ i18n.t('admin.nav.groupCatalog') }}</span>
+      }
+
+      <a routerLink="products" routerLinkActive="is-on"
+         [attr.title]="collapsed() ? i18n.t('admin.nav.products') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path d="m3.5 7.5 8.5-4 8.5 4-8.5 4z"/>
+          <path d="M3.5 7.5v9l8.5 4v-9z"/>
+          <path d="M20.5 7.5v9l-8.5 4v-9z"/>
+        </svg>
+        <span>{{ i18n.t('admin.nav.products') }}</span>
+      </a>
+
+      <a routerLink="categories" routerLinkActive="is-on"
+         [attr.title]="collapsed() ? i18n.t('admin.nav.categories') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <rect x="3.5" y="3.5" width="8" height="8" rx="1.5"/>
+          <rect x="12.5" y="3.5" width="8" height="8" rx="1.5"/>
+          <rect x="3.5" y="12.5" width="8" height="8" rx="1.5"/>
+          <rect x="12.5" y="12.5" width="8" height="8" rx="1.5"/>
+        </svg>
+        <span>{{ i18n.t('admin.nav.categories') }}</span>
+      </a>
+
+      <a routerLink="inventory" routerLinkActive="is-on"
+         [attr.title]="collapsed() ? i18n.t('admin.nav.inventory') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path d="M3.5 8 12 3.5 20.5 8v8L12 20.5 3.5 16z"/>
+          <path d="M3.5 8 12 12.5 20.5 8"/>
+          <path d="M12 12.5v8"/>
+        </svg>
+        <span>{{ i18n.t('admin.nav.inventory') }}</span>
+      </a>
+
+      <!-- ─────────── CUSTOMERS ─────────── -->
+      @if (!collapsed()) {
+      <span class="adm__group">{{ i18n.t('admin.nav.groupCustomers') }}</span>
+      }
+
+      <a routerLink="customers" routerLinkActive="is-on"
+         [attr.title]="collapsed() ? i18n.t('admin.nav.customers') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <circle cx="9" cy="8" r="3.2"/>
+          <path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/>
+          <path d="M15.5 8.2a3 3 0 1 1 2 5.2"/>
+          <path d="M21 19c0-2.6-1.7-4.6-4-5.3"/>
+        </svg>
+        <span>{{ i18n.t('admin.nav.customers') }}</span>
+      </a>
+
+      <a routerLink="users" routerLinkActive="is-on"
+         [attr.title]="collapsed() ? i18n.t('admin.nav.users') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.2"/>
+          <path d="M5.5 19.5c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/>
+          <path d="M9 13V8M15 13V8"/>
+        </svg>
+        <span>{{ i18n.t('admin.nav.users') }}</span>
+      </a>
+
+      <!-- ─────────── MARKETING ─────────── -->
+      @if (!collapsed()) {
+      <span class="adm__group">{{ i18n.t('admin.nav.groupMarketing') }}</span>
+      }
+
+      <a routerLink="coupons" routerLinkActive="is-on"
+         [attr.title]="collapsed() ? i18n.t('admin.nav.coupons') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/>
+          <path d="M13 6v12" stroke-dasharray="2 2"/>
+        </svg>
+        <span>{{ i18n.t('admin.nav.coupons') }}</span>
+      </a>
+
+      <!-- ─────────── SYSTEM ─────────── -->
+      @if (!collapsed()) {
+      <span class="adm__group">{{ i18n.t('admin.nav.groupSystem') }}</span>
+      }
+
+      <a routerLink="contact" routerLinkActive="is-on"
+         [attr.title]="collapsed() ? i18n.t('admin.nav.messages') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="2"/>
+          <path d="m3.5 7 8.5 6 8.5-6"/>
+        </svg>
         <span>{{ i18n.t('admin.nav.messages') }}</span>
       </a>
+
+      <a routerLink="exchange-rates" routerLinkActive="is-on"
+         [attr.title]="collapsed() ? i18n.t('admin.nav.rates') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path d="M4 8h13M14 5l3 3-3 3"/>
+          <path d="M20 16H7M10 19l-3-3 3-3"/>
+        </svg>
+        <span>{{ i18n.t('admin.nav.rates') }}</span>
+      </a>
+
+      <a routerLink="settings" routerLinkActive="is-on"
+         [attr.title]="collapsed() ? i18n.t('admin.nav.settings') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+        </svg>
+        <span>{{ i18n.t('admin.nav.settings') }}</span>
+      </a>
+
     </nav>
 
     <div class="adm__foot">
@@ -43,12 +168,21 @@
         {{ user()?.email || '—' }}
       </p>
       }
-      <a class="adm__out adm__out--quiet" routerLink="/" [attr.title]="collapsed() ? i18n.t('admin.layout.viewStorefront') : null">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 11 12 4l8 7"/><path d="M6.5 10v9.5h11V10"/></svg>
+      <a class="adm__out adm__out--quiet" routerLink="/"
+         [attr.title]="collapsed() ? i18n.t('admin.layout.viewStorefront') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path d="M4 11 12 4l8 7"/>
+          <path d="M6.5 10v9.5h11V10"/>
+        </svg>
         <span>{{ i18n.t('admin.layout.viewStorefront') }}</span>
       </a>
-      <button type="button" class="adm__out" (click)="confirmingLogout.set(true)" [attr.title]="collapsed() ? i18n.t('admin.layout.logout') : null">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9.5 20.5H6a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2h3.5"/><path d="m15.5 16 4.5-4-4.5-4"/><path d="M20 12H9.5"/></svg>
+      <button type="button" class="adm__out" (click)="confirmingLogout.set(true)"
+              [attr.title]="collapsed() ? i18n.t('admin.layout.logout') : null">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path d="M9.5 20.5H6a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2h3.5"/>
+          <path d="m15.5 16 4.5-4-4.5-4"/>
+          <path d="M20 12H9.5"/>
+        </svg>
         <span>{{ i18n.t('admin.layout.logout') }}</span>
       </button>
     </div>

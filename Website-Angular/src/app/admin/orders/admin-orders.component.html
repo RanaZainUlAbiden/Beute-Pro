@@ -4,15 +4,37 @@
     <p>{{ i18n.t('admin.orders.sub') }}</p>
   </div>
   <div class="adm-head__acts">
-    <button type="button" class="btn btn--outline btn--sm" [attr.aria-label]="i18n.t('admin.common.language')" (click)="i18n.toggle()">{{ i18n.toggleLabel() }}</button>
-    <button type="button" class="btn btn--outline btn--sm" [disabled]="busy()" (click)="load()">{{ i18n.t('admin.common.refresh') }}</button>
+    <button type="button" class="btn btn--outline btn--sm"
+            [attr.aria-label]="i18n.t('admin.common.language')"
+            (click)="i18n.toggle()">{{ i18n.toggleLabel() }}</button>
+    <app-csv-export-button
+      label="Export orders"
+      [isLoading]="exportBusy()"
+      (clicked)="onBulkExport()" />
+    <button type="button" class="btn btn--outline btn--sm"
+            [disabled]="busy()" (click)="load()">{{ i18n.t('admin.common.refresh') }}</button>
   </div>
 </div>
+
+<!-- ✅ Bulk actions bar -->
+<app-bulk-actions-bar
+  [selectedCount]="selectedCount()"
+  [isLoading]="bulkBusy()"
+  [showStatusAction]="true"
+  [showTrackingAction]="true"
+  [showDeleteAction]="true"
+  [showExportAction]="false"
+  (statusChange)="onBulkStatus($event)"
+  (openTracking)="onBulkTracking()"
+  (delete)="onBulkDelete()"
+  (clear)="clearSelection()">
+</app-bulk-actions-bar>
 
 <div class="adm-bar">
   <label class="ord__search">
     <span class="ord__vh">{{ i18n.t('admin.orders.vhSearch') }}</span>
-    <input class="adm-field adm-field--search" type="search" [placeholder]="i18n.t('admin.orders.searchPlaceholder')"
+    <input class="adm-field adm-field--search" type="search"
+           [placeholder]="i18n.t('admin.orders.searchPlaceholder')"
            [value]="search()" (input)="search.set($any($event.target).value)">
   </label>
 
@@ -70,6 +92,14 @@
     <table class="adm-table">
       <thead>
         <tr>
+          <!-- ✅ Select all -->
+          <th class="ord__chk">
+            <input
+              type="checkbox"
+              [checked]="allOnPageSelected()"
+              (change)="toggleAll()"
+              [attr.aria-label]="'Select all on this page'">
+          </th>
           <th [class.is-sorted]="sortKey() === 'order_number'" [attr.aria-sort]="sortState('order_number')">
             <button type="button" (click)="sortBy('order_number')">{{ i18n.t('admin.orders.colOrder') }}
               <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" [class.is-asc]="sortState('order_number') === 'ascending'"><path d="m6 9 6 6 6-6"/></svg>
@@ -101,7 +131,15 @@
       </thead>
       <tbody>
         @for (o of rows(); track o.id) {
-        <tr>
+        <tr [class.is-selected]="isSelected(o.id)">
+          <!-- ✅ Row checkbox -->
+          <td class="ord__chk">
+            <input
+              type="checkbox"
+              [checked]="isSelected(o.id)"
+              (change)="toggleOne(o.id)"
+              [attr.aria-label]="'Select ' + o.order_number">
+          </td>
           <td class="mono"><a class="adm-link" [routerLink]="[o.id]">{{ o.order_number }}</a></td>
           <td class="muted">{{ date(o.created_at) }}</td>
           <td>
@@ -127,3 +165,14 @@
   }
   }
 </div>
+
+<!-- ✅ Bulk delete confirmation -->
+<app-confirm-dialog
+  [isOpen]="deleteDialogOpen()"
+  title="Delete selected orders?"
+  [message]="selectedCount() + ' order(s) will be permanently removed. This cannot be undone.'"
+  confirmText="Delete"
+  variant="danger"
+  (confirm)="confirmBulkDelete()"
+  (cancel)="cancelBulkDelete()">
+</app-confirm-dialog>

@@ -1,6 +1,4 @@
-<!-- ============ PAGE HERO ============
-     The same full-viewport hero the homepage uses — shared markup and
-     styles in app-page-hero, only the photo and the words differ. -->
+<!-- ============ PAGE HERO ============ -->
 <app-page-hero
   image="/assets/img/shop.jpg"
   focus="center 32%"
@@ -19,18 +17,51 @@
   <div class="wrap">
     <div class="filters" id="filters">
       <button class="chip" [class.is-active]="isChipActive('all')" (click)="pick('all')">{{ i18n.t('shop.all') }}</button>
-      @for (c of categories; track c.id) {
+      @for (c of categories(); track c.id) {
       <button class="chip" [class.is-active]="isChipActive(c.id)" (click)="pick(c.id)">{{ i18n.catName(c) }}</button>
       }
     </div>
+
+    <!-- ✅ Loading skeleton -->
+    @if (isLoading()) {
+    <div class="grid-products" aria-busy="true">
+      @for (n of [1,2,3,4,5,6,7,8]; track n) {
+      <div class="pcard-skel">
+        <div class="pcard-skel__stage"></div>
+        <div class="pcard-skel__line" style="width:60%"></div>
+        <div class="pcard-skel__line" style="width:40%"></div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- ✅ Error state -->
+    @else if (hasError()) {
+    <div class="shop-error">
+      <p>{{ i18n.t('form.problem') }}</p>
+      <button type="button" class="btn btn--gold" (click)="loadAll()">
+        {{ i18n.t('form.retry') }}
+      </button>
+    </div>
+    }
+
+    <!-- ✅ Empty state -->
+    @else if (list().length === 0) {
+    <div class="shop-empty">
+      <p>No products in this category yet.</p>
+    </div>
+    }
+
+    <!-- ✅ Grid -->
+    @else {
     <div class="grid-products stagger" id="grid" [staggerKey]="gridKey()">
       @for (p of list(); track p.id) {
       <app-product-card [product]="p" />
       }
     </div>
+    }
   </div>
 </section>
-
 
 <!-- ============ PROCESS (dark) ============ -->
 <section class="section section--dark bloom bloom--tr">

@@ -1,7 +1,4 @@
-<!-- ============ HERO ============
-     The shared full-viewport hero, also used by shop and contact. The
-     clip, the headline and the two buttons are all this page supplies;
-     the frame, the scrim and its RTL mirror live in app-page-hero. -->
+<!-- ============ HERO ============ -->
 <app-page-hero
   sectionId="hero"
   video="/assets/video/hero.mp4"
@@ -15,10 +12,7 @@
   </div>
 </app-page-hero>
 
-<!-- ============ MARQUEE ============
-     One certification strip. Content comes from i18n.data.ts so a
-     language change re-renders it live, same as everything else on
-     the page. -->
+<!-- ============ MARQUEE ============ -->
 <div class="marquee-strips">
   <app-marquee [text]="marqueeStrip()" />
 </div>
@@ -31,9 +25,9 @@
       <a class="link-arrow" routerLink="/shop">{{ i18n.t('cat.all') }}</a>
     </div>
     <div class="cats" id="cats">
-      @for (c of categories; track c.id) {
+      @for (c of categories(); track c.id) {
       <a class="cat" [routerLink]="['/shop', c.id]">
-        <span class="cat__frame"><img [ngSrc]="catSrc(c.id)" width="1264" height="842" [alt]="i18n.catName(c)" data-fallback></span>
+        <span class="cat__frame"><img [ngSrc]="c.imageUrl || catSrc(c.id)" width="1264" height="842" [alt]="i18n.catName(c)" data-fallback></span>
         <h3 class="cat__name">{{ i18n.catName(c) }}</h3>
         <span class="cat__go">{{ i18n.t('cat.shop') }}</span>
       </a>
@@ -42,18 +36,10 @@
   </div>
 </section>
 
-<!-- ============ BEST SELLERS — horizontal row ============
-     A scroll-snapped row of the badged products. It is the only place
-     the homepage shows product cards; the full range lives on /shop. -->
+<!-- ============ BEST SELLERS ============ -->
 <app-product-carousel />
 
-<!-- ============ SPOTLIGHT — 360° video ============
-     Rendered only once a product with a working video at
-     assets/video/spin/<id>.mp4 has been found — the first one in
-     products.ts order that loads — and skipped entirely if none do.
-     Scroll scrubs the timeline as the section crosses the viewport;
-     drag overrides it locally and resumes tracking on release. Copy is
-     read live from products.ts, never hardcoded. -->
+<!-- ============ SPOTLIGHT ============ -->
 @if (spotProduct(); as spot) {
 <section class="section section--dark bloom bloom--tr spotlight" id="spotlight" #spotlight>
   <div class="wrap spotlight__in">
@@ -81,10 +67,7 @@
 </section>
 }
 
-<!-- ============ OUR FLOOR — the bold moment ============
-     The only full-bleed block on the page, the only mid-page dark band,
-     the tallest images. `id="feature"` lives here because the Our Story
-     links elsewhere on the site point at it. -->
+<!-- ============ OUR FLOOR ============ -->
 <section class="section floor" id="feature">
   <div class="wrap floor__in">
     <div class="floor__lead">
@@ -101,16 +84,6 @@
     </div>
   </div>
 
-  <!-- Direct child of the section, not of .wrap, so it spans the full
-       viewport width with no negative-margin trick.
-
-       Real footage from the floor, replacing the three generated stills.
-       Each clip is click-to-play and preloads nothing but its own header
-       until then, so three videos here cost the homepage a few tens of
-       KB rather than 56 MB. The band's own tabindex is gone: each figure
-       now holds a focusable play button, and a focusable wrapper around
-       three focusable controls only adds a stop on the way in. The named
-       role="group" stays, so the three are still announced as one set. -->
   <div class="floor__band reveal" role="group" [attr.aria-label]="i18n.t('floor.gallery')">
     <app-video-figure
       src="/assets/video/factory/factory-inside-view-web.mp4"
@@ -156,9 +129,7 @@
   </div>
 </section>
 
-<!-- ============ YOUR ROUTINE ============
-     Light ground now, so the floor section keeps the only dark band.
-     The 01/02/03 markers stay — this content really is a sequence. -->
+<!-- ============ YOUR ROUTINE ============ -->
 <section class="section feature">
   <div class="wrap feature__in">
     <div>
@@ -185,22 +156,12 @@
 
     <div class="feature__media">
       <img ngSrc="/assets/img/model/feature.webp" width="1122" height="1402" alt="Béute Pro skincare routine" data-fallback>
-      <!-- The static page renders the price alone here, and its spotlight
-           section never appears at all. Both are the same bug, in one
-           line of index.html's paintHome():
-             chip.querySelector('span > span')
-           resolves to the OUTER span (its parent #feature-chip is itself
-           a span), so writing the price into it wipes the <b> holding the
-           name. paintHome() runs twice — applyLang() fires lang:change
-           before PAGE_INIT — so the second pass finds no <b>, throws, and
-           takes Spotlight.init() down with it. Fixing it is one selector:
-             chip.querySelector('b + span')
-           This port renders what the markup was written to render. See
-           the build summary. -->
+      @if (chip(); as ch) {
       <span class="feature__chip" id="feature-chip">
-        <img [ngSrc]="imgSrc(chip.id, 1)" [width]="imgDims(chip.id).width" [height]="imgDims(chip.id).height" [alt]="i18n.copy(chip).name" data-fallback>
-        <span><b>{{ i18n.copy(chip).name }}</b><span>{{ i18n.money(chip.price) }}</span></span>
+        <img [ngSrc]="imgSrc(ch.id, 1)" [width]="imgDims(ch.id).width" [height]="imgDims(ch.id).height" [alt]="i18n.copy(ch).name" data-fallback>
+        <span><b>{{ i18n.copy(ch).name }}</b><span>{{ i18n.money(ch.price) }}</span></span>
       </span>
+      }
     </div>
   </div>
 </section>

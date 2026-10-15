@@ -9,21 +9,6 @@ import { ConfirmDialog } from '../ui/confirm-dialog/confirm-dialog';
 /** Persists whether the rail is collapsed to an icon-only strip. */
 const RAIL_KEY = 'bp_admin_rail';
 
-/* =============================================================
-   ADMIN SHELL
-
-   The frame around every admin screen: a green rail with the five
-   destinations, who is signed in, and the way out. The working
-   area next to it is deliberately plain.
-
-   Bilingual, via the same I18nService the storefront uses — a
-   toggle beside each screen's Refresh button flips it. `.adm`'s
-   forced `direction:ltr` is gone from styles.scss, so the rail and
-   tables mirror under `html[dir="rtl"]` like the rest of the site.
-
-   The rail becomes a horizontal strip of links under 900px, which
-   is what makes the tool usable from a phone.
-   ============================================================= */
 @Component({
   selector: 'app-admin-layout',
   imports: [RouterOutlet, RouterLink, RouterLinkActive, ConfirmDialog],

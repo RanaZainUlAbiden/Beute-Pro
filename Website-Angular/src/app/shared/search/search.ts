@@ -12,14 +12,16 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SearchService } from '../../core/services/search.service';
 import { I18nService } from '../../core/services/i18n.service';
-import { PRODUCTS, CATEGORIES } from '../../core/data/products';
+import { ProductService } from '../../services/product.service';
+import { CategoryService } from '../../services/category.service';
+import { ApiProduct, ApiCategory } from '../../core/models/api.model';
 
 @Component({
   selector: 'app-search',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './search.html',  // ensure file name matches
-  styleUrls: ['./search.scss'], // ensure file name matches
+  templateUrl: './search.html',
+  styleUrls: ['./search.scss'],
   host: {
     '(document:keydown.escape)': 'close()',
     '[class.is-open]': 'searchService.isOpen()',
@@ -28,9 +30,13 @@ import { PRODUCTS, CATEGORIES } from '../../core/data/products';
 export class SearchComponent {
   searchService = inject(SearchService);
   i18n = inject(I18nService);
+  private readonly productService = inject(ProductService);
+  private readonly categoryService = inject(CategoryService);
 
-  // Expose CATEGORIES if needed (but we'll use method)
-  protected readonly CATEGORIES = CATEGORIES;
+  // ✅ Live data
+  protected readonly allProducts = signal<ApiProduct[]>([]);
+  protected readonly allCategories = signal<ApiCategory[]>([]);
+  private loaded = false;
 
   query = signal('');
   inputElement = viewChild<ElementRef<HTMLInputElement>>('searchInput');
@@ -39,21 +45,21 @@ export class SearchComponent {
     const q = this.query().toLowerCase().trim();
     if (!q) return [];
 
-    return PRODUCTS.filter((p) => {
-      const name = p.en.name.toLowerCase();
-      const nameAr = p.ar.name.toLowerCase();
-      const categoryEn =
-        CATEGORIES.find((c) => c.id === p.category)?.en.toLowerCase() || '';
-      const categoryAr =
-        CATEGORIES.find((c) => c.id === p.category)?.ar.toLowerCase() || '';
-      const tagline = p.en.tagline.toLowerCase();
-      const taglineAr = p.ar.tagline.toLowerCase();
+    const cats = this.allCategories();
+
+    return this.allProducts().filter((p) => {
+      const name = (p.en?.name ?? '').toLowerCase();
+      const nameAr = (p.ar?.name ?? '').toLowerCase();
+      const catEn = cats.find((c) => c.id === p.category)?.en.toLowerCase() ?? '';
+      const catAr = cats.find((c) => c.id === p.category)?.ar.toLowerCase() ?? '';
+      const tagline = (p.en?.tagline ?? '').toLowerCase();
+      const taglineAr = (p.ar?.tagline ?? '').toLowerCase();
 
       return (
         name.includes(q) ||
         nameAr.includes(q) ||
-        categoryEn.includes(q) ||
-        categoryAr.includes(q) ||
+        catEn.includes(q) ||
+        catAr.includes(q) ||
         tagline.includes(q) ||
         taglineAr.includes(q) ||
         p.id.includes(q)
@@ -63,13 +69,14 @@ export class SearchComponent {
 
   // ✅ Helper method for template
   getCategoryName(categoryId: string): string {
-    const category = CATEGORIES.find(c => c.id === categoryId);
-    return category ? this.i18n.catName(category) : categoryId;
+    const cat = this.allCategories().find((c) => c.id === categoryId);
+    return cat ? this.i18n.catName(cat) : categoryId;
   }
 
   constructor() {
     effect(() => {
       if (this.searchService.isOpen()) {
+        this.ensureLoaded();
         setTimeout(() => {
           const el = this.inputElement()?.nativeElement;
           if (el) el.focus();
@@ -77,6 +84,22 @@ export class SearchComponent {
       } else {
         this.query.set('');
       }
+    });
+  }
+
+  /** Load products + categories once, then cache. */
+  private ensureLoaded(): void {
+    if (this.loaded) return;
+    this.loaded = true;
+
+    this.productService.list({ limit: 500 }).subscribe({
+      next: (res) => this.allProducts.set(res.products),
+      error: (err) => console.error('Search: failed to load products', err),
+    });
+
+    this.categoryService.list().subscribe({
+      next: (res) => this.allCategories.set(res.categories),
+      error: (err) => console.error('Search: failed to load categories', err),
     });
   }
 

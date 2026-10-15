@@ -24,3 +24,134 @@
 .checkout__back {
   margin-top: 1.2rem;
 }
+
+/* ─── Coupon block ─── */
+.coupon {
+  margin: 0 0 1rem;
+}
+
+.coupon__row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.coupon__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.65rem 0.9rem;
+  border: 1.5px solid var(--ivory-3);
+  border-radius: var(--r);
+  background: var(--white);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--green);
+  transition: border-color 0.3s, box-shadow 0.3s;
+
+  &::placeholder {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 500;
+    color: var(--green-soft);
+    opacity: 0.7;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 164, 76, 0.15);
+  }
+
+  &[aria-invalid="true"] {
+    border-color: #a8443c;
+  }
+}
+
+.coupon__apply {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 88px;
+  padding: 0.65rem 1rem;
+  border-radius: var(--r);
+  border: 0;
+  background: var(--green);
+  color: var(--ivory);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s, opacity 0.3s;
+
+  &:hover:not(:disabled) {
+    background: var(--green-3);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.coupon__applied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.55rem 0.75rem 0.55rem 0.55rem;
+  border-radius: var(--r);
+  background: rgba(46, 204, 113, 0.12);
+  border: 1.5px solid rgba(46, 204, 113, 0.35);
+}
+
+.coupon__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  background: var(--green);
+  color: var(--ivory);
+  font-family: 'SF Mono', Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+
+  svg { stroke: currentColor; }
+}
+
+.coupon__remove {
+  background: transparent;
+  border: 0;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #a8443c;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover { background: rgba(168, 68, 60, 0.12); }
+}
+
+.coupon__err {
+  margin: 0.5rem 0 0;
+  font-size: 0.76rem;
+  color: #a8443c;
+  font-weight: 600;
+}
+
+/* Discount row in the summary lines */
+.line--discount {
+  color: #1e8449;
+
+  .line__name { color: #1e8449; font-weight: 600; }
+  .line__price { color: #1e8449; font-weight: 800; }
+}

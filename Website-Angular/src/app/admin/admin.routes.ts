@@ -17,6 +17,7 @@ export const adminRoutes: Routes = [
     component: AdminLayoutComponent,
     canActivate: [adminGuard],
     children: [
+      // ─────────── Overview ───────────
       {
         path: 'dashboard',
         title: 'Dashboard · Béute Pro Admin',
@@ -37,6 +38,51 @@ export const adminRoutes: Routes = [
           import('./order-detail/admin-order-detail.component').then((m) => m.AdminOrderDetailComponent),
       },
       {
+        path: 'revenue',
+        title: 'Revenue · Béute Pro Admin',
+        data: adminPage,
+        loadComponent: () => import('./revenue/revenue.component').then((m) => m.RevenueComponent),
+      },
+
+      // ─────────── Catalog ───────────
+      {
+        path: 'products',
+        title: 'Products · Béute Pro Admin',
+        data: adminPage,
+        loadComponent: () =>
+          import('./products/admin-products.component').then((m) => m.AdminProductsComponent),
+      },
+      {
+        path: 'products/new',
+        title: 'New product · Béute Pro Admin',
+        data: adminPage,
+        loadComponent: () =>
+          import('./products/product-form.component').then((m) => m.ProductFormComponent),
+      },
+      {
+        path: 'products/:id/edit',
+        title: 'Edit product · Béute Pro Admin',
+        data: adminPage,
+        loadComponent: () =>
+          import('./products/product-form.component').then((m) => m.ProductFormComponent),
+      },
+      {
+        path: 'categories',
+        title: 'Categories · Béute Pro Admin',
+        data: adminPage,
+        loadComponent: () =>
+          import('./categories/admin-categories.component').then((m) => m.AdminCategoriesComponent),
+      },
+      {
+        path: 'inventory',
+        title: 'Inventory · Béute Pro Admin',
+        data: adminPage,
+        loadComponent: () =>
+          import('./inventory/admin-inventory.component').then((m) => m.AdminInventoryComponent),
+      },
+
+      // ─────────── Customers ───────────
+      {
         path: 'customers',
         title: 'Customers · Béute Pro Admin',
         data: adminPage,
@@ -44,17 +90,48 @@ export const adminRoutes: Routes = [
           import('./customers/admin-customers.component').then((m) => m.AdminCustomersComponent),
       },
       {
-        path: 'revenue',
-        title: 'Revenue · Béute Pro Admin',
+        path: 'users',
+        title: 'Users · Béute Pro Admin',
         data: adminPage,
-        loadComponent: () => import('./revenue/revenue.component').then((m) => m.RevenueComponent),
+        loadComponent: () =>
+          import('./users/admin-users.component').then((m) => m.AdminUsersComponent),
       },
+
+      // ─────────── Marketing ───────────
+      {
+        path: 'coupons',
+        title: 'Coupons · Béute Pro Admin',
+        data: adminPage,
+        loadComponent: () =>
+          import('./coupons/admin-coupons.component').then((m) => m.AdminCouponsComponent),
+      },
+
+      // ─────────── System ───────────
       {
         path: 'contact',
         title: 'Messages · Béute Pro Admin',
         data: adminPage,
-        loadComponent: () => import('./contact-messages/contact-messages').then((m) => m.ContactMessagesComponent),
+        loadComponent: () =>
+          import('./contact-messages/contact-messages').then((m) => m.ContactMessagesComponent),
       },
+      {
+        path: 'exchange-rates',
+        title: 'Exchange rates · Béute Pro Admin',
+        data: adminPage,
+        loadComponent: () =>
+          import('./exchange-rates/admin-exchange-rates.component').then(
+            (m) => m.AdminExchangeRatesComponent,
+          ),
+      },
+      {
+        path: 'settings',
+        title: 'Settings · Béute Pro Admin',
+        data: adminPage,
+        loadComponent: () =>
+          import('./settings/admin-settings.component').then((m) => m.AdminSettingsComponent),
+      },
+
+      // ─────────── Default ───────────
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

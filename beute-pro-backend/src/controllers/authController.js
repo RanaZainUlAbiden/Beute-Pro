@@ -1,5 +1,11 @@
-const { registerSchema, loginSchema, updateProfileSchema, changePasswordSchema } = require('../utils/validators'); // ✅ Added changePasswordSchema
+const {
+  registerSchema,
+  loginSchema,
+  updateProfileSchema,
+  changePasswordSchema,
+} = require('../utils/validators');
 const authService = require('../services/authService');
+const notificationService = require('../services/notificationService');
 
 /**
  * Register a new user
@@ -97,8 +103,10 @@ const updateMe = async (req, res) => {
 };
 
 /**
- * ✅ NEW: Change user password
+ * Change user password
  * PUT /api/users/me/password
+ *
+ * Fires a security email (fire-and-forget) after a successful change.
  */
 const changePassword = async (req, res) => {
   try {
@@ -115,6 +123,10 @@ const changePassword = async (req, res) => {
     const userId = req.user.id;
 
     const result = await authService.changeUserPassword(userId, currentPassword, newPassword);
+
+    // Fire-and-forget security email
+    const user = await authService.getUserById(userId);
+    if (user) void notificationService.sendPasswordChanged(user);
 
     res.json(result);
   } catch (err) {
@@ -150,6 +162,6 @@ module.exports = {
   login,
   getMe,
   updateMe,
-  changePassword, // ✅ Export the new controller function
+  changePassword,
   googleCallback,
 };

@@ -1,28 +1,41 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Aiven requires sslmode=no-verify in the connection string
-const connectionString = process.env.DATABASE_URL.replace(
-  'sslmode=require',
-  'sslmode=no-verify'
-);
+const connectionString = process.env.DATABASE_URL;
 
-const pool = new Pool({
+// Detect whether we're connecting to a remote (cloud) host or localhost.
+// Local Postgres doesn't support SSL; Aiven / Railway / Render / Neon do.
+const isLocalhost = /(?:localhost|127\.0\.0\.1)/.test(connectionString);
+
+const poolConfig = {
   connectionString,
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 10000,
-  ssl: {
-    rejectUnauthorized: false, // Required for Aiven
-  },
-});
+};
+
+if (!isLocalhost) {
+  // Cloud Postgres (Aiven, Heroku, Railway, etc.) — SSL required.
+  // sslmode=no-verify is Aiven-friendly: encrypt but skip CA verification.
+  poolConfig.connectionString = connectionString.replace(
+    'sslmode=require',
+    'sslmode=no-verify'
+  );
+  poolConfig.ssl = { rejectUnauthorized: false };
+} else {
+  // Local Postgres — no SSL.
+  poolConfig.ssl = false;
+}
+
+const pool = new Pool(poolConfig);
 
 // Test the connection on startup
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
     console.error('❌ Database connection failed:', err.stack);
   } else {
-    console.log('✅ Database connected at:', res.rows[0].now);
+    const host = isLocalhost ? 'local' : 'cloud';
+    console.log(`✅ Database connected (${host}) at:`, res.rows[0].now);
   }
 });
 
