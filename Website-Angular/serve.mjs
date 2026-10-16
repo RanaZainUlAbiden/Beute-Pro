@@ -13,8 +13,8 @@ if (!['http:', 'https:'].includes(backend.protocol)) throw new Error('Invalid ba
 app.disable('x-powered-by');
 app.get('/healthz', (_req, res) => res.json({ status: 'OK' }));
 
-// Keep browser requests on one origin; reach the API over Railway private networking.
-app.use('/api', (req, res) => {
+// Keep API and local-fallback media on one origin. Production R2 URLs use the CDN.
+app.use(['/api', '/uploads'], (req, res) => {
   const target = new URL(req.originalUrl, backend);
   const transport = target.protocol === 'https:' ? https : http;
   const headers = { ...req.headers, host: target.host };

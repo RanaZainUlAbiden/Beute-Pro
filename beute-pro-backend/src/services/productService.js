@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const productMediaService = require('./productMediaService');
 
 /** Transform a DB row into the same shape as products.ts. */
 const mapRow = (row) => ({
@@ -19,6 +20,24 @@ const mapRow = (row) => ({
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
+
+// A single media query per page avoids one additional round trip per product.
+// The legacy mapper and its property order remain unchanged without opt-in.
+const includeProductMedia = async (products, includeMedia) => {
+  if (!includeMedia || !products.length) return products;
+  const { rows } = await pool.query(
+    `SELECT product_id, kind, url FROM product_media
+     WHERE product_id = ANY($1::text[]) ORDER BY product_id, kind, sort_order, id`,
+    [products.map((product) => product.id)]
+  );
+  const byProduct = new Map(products.map((product) => [product.id, { images: [], video: null }]));
+  for (const row of rows) {
+    const media = byProduct.get(row.product_id);
+    if (row.kind === 'image') media.images.push(row.url);
+    else if (row.kind === 'spin_video' && media.video === null) media.video = row.url;
+  }
+  return products.map((product) => ({ ...product, media: byProduct.get(product.id) }));
+};
 
 /**
  * List products with filters:
@@ -74,7 +93,7 @@ const getAll = async (filters = {}) => {
 
   const total = countRes.rows[0].total;
   return {
-    products: dataRes.rows.map(mapRow),
+    products: await includeProductMedia(dataRes.rows.map(mapRow), filters.includeMedia === true),
     total,
     page,
     limit,
@@ -82,12 +101,13 @@ const getAll = async (filters = {}) => {
   };
 };
 
-const getById = async (id) => {
+const getById = async (id, { includeMedia = false } = {}) => {
   const result = await pool.query(`SELECT * FROM products WHERE id = $1`, [id]);
-  return result.rows[0] ? mapRow(result.rows[0]) : null;
+  if (!result.rows[0]) return null;
+  return (await includeProductMedia([mapRow(result.rows[0])], includeMedia === true))[0];
 };
 
-const create = async (data) => {
+const create = async (data, { includeMedia = false } = {}) => {
   const {
     id, category, price, oldPrice, badge, size, images, spin,
     en, ar, isActive = true, displayOrder = 0,
@@ -110,10 +130,10 @@ const create = async (data) => {
       mediaBaseUrl ?? null, videoBaseUrl ?? null,
     ]
   );
-  return mapRow(result.rows[0]);
+  return (await includeProductMedia([mapRow(result.rows[0])], includeMedia === true))[0];
 };
 
-const update = async (id, data) => {
+const update = async (id, data, { includeMedia = false } = {}) => {
   const {
     category, price, oldPrice, badge, size, images, spin,
     en, ar, isActive, displayOrder,
@@ -147,20 +167,34 @@ const update = async (id, data) => {
       mediaBaseUrl ?? null, videoBaseUrl ?? null,
     ]
   );
-  return result.rows[0] ? mapRow(result.rows[0]) : null;
+  if (!result.rows[0]) return null;
+  return (await includeProductMedia([mapRow(result.rows[0])], includeMedia === true))[0];
 };
 
 /** Soft delete (default) or hard delete. */
 const remove = async (id, hard = false) => {
-  if (hard) {
-    const result = await pool.query(`DELETE FROM products WHERE id = $1 RETURNING id`, [id]);
-    return result.rowCount > 0;
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const product = await client.query('SELECT id FROM products WHERE id = $1 FOR UPDATE', [id]);
+    if (!product.rowCount) {
+      await client.query('COMMIT');
+      return false;
+    }
+    // Share the transaction and product lock with cleanup, including soft deletes.
+    await productMediaService.removeAllForProduct(id, { client });
+    await client.query(hard
+      ? 'DELETE FROM products WHERE id = $1'
+      : 'UPDATE products SET is_active = FALSE, updated_at = NOW() WHERE id = $1', [id]);
+    await client.query('COMMIT');
+    return true;
+  } catch (error) {
+    try { await client.query('ROLLBACK'); }
+    catch (rollbackError) { console.error('Product deletion rollback failed:', rollbackError.message); }
+    throw error;
+  } finally {
+    client.release();
   }
-  const result = await pool.query(
-    `UPDATE products SET is_active = FALSE, updated_at = NOW() WHERE id = $1 RETURNING id`,
-    [id]
-  );
-  return result.rowCount > 0;
 };
 
 /** Look up prices only (used by orderService). */

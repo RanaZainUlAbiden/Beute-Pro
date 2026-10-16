@@ -18,7 +18,7 @@ import { RouterLink } from '@angular/router';
 
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
 import { RevealDirective } from '../../core/directives/reveal.directive';
-import { catSrc, imgSrc, imgDims, spinSrc } from '../../core/image';
+import { catSrc, mediaUrl, imgDims, spinSrc, mediaVideoUrl } from '../../core/image';
 import type { TranslationKey } from '../../core/data/i18n.data';
 import { ApiProduct, ApiCategory } from '../../core/models/api.model';
 import { I18nService } from '../../core/services/i18n.service';
@@ -62,7 +62,7 @@ export class Home implements OnDestroy {
   private readonly toast = inject(ToastService);
 
   protected readonly catSrc = catSrc;
-  protected readonly imgSrc = imgSrc;
+  protected readonly mediaUrl = mediaUrl;
   protected readonly imgDims = imgDims;
 
   // ✅ Loaded from API
@@ -134,7 +134,7 @@ export class Home implements OnDestroy {
       next: (res) => {
         this.products.set(res.products);
         // pick the first product with a 360° video for the spotlight
-        const spot = res.products.find((p) => p.spin) ?? null;
+        const spot = res.products.find((p) => mediaVideoUrl(p) || p.spin) ?? null;
         if (spot) this.spotProduct.set(spot);
       },
       error: (err) => console.error('Failed to load products', err),
@@ -161,10 +161,10 @@ export class Home implements OnDestroy {
     if (!video || !el) return;
     this.spotAttached = true;
 
-    video.poster = imgSrc(product.id, 1);
+    video.poster = mediaUrl(product, 0);
     video.muted = true;
     if (this.motion.reduced) video.removeAttribute('autoplay');
-    video.src = spinSrc(product.id);
+    video.src = mediaVideoUrl(product) ?? spinSrc(product.id);
 
     if (this.motion.reduced) return;
     this.spotIo = new IntersectionObserver(

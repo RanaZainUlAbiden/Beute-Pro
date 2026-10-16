@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('node:path');
 const cors = require('cors');
 const helmet = require('helmet');
 const session = require('express-session');
@@ -37,6 +38,11 @@ const PORT = process.env.PORT || 5000;
 
 // Security
 app.use(helmet());
+
+// Local development only; R2 objects are served by the configured public CDN.
+if (!process.env.R2_ACCESS_KEY_ID) {
+  app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+}
 
 // CORS - Allow multiple origins
 const allowedOrigins = [

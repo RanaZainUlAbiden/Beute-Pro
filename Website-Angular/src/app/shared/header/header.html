@@ -75,7 +75,7 @@
                 @if (featured(); as f) {
                 <a class="mega__feat" role="menuitem" [routerLink]="['/product', f.id]">
                   <span class="mega__feat-frame">
-                    <img [ngSrc]="imgSrc(f.id, 1)" [width]="imgDims(f.id).width" [height]="imgDims(f.id).height" [alt]="i18n.copy(f).name" data-fallback>
+                    <img [ngSrc]="mediaUrl(f)" [width]="imgDims(f.id).width" [height]="imgDims(f.id).height" [alt]="i18n.copy(f).name" data-fallback>
                   </span>
                   <span class="mega__feat-name">{{ i18n.copy(f).name }}</span>
                   <span class="mega__feat-price">{{ i18n.money(f.price) }}</span>
@@ -156,7 +156,7 @@
           @if (featured(); as f) {
           <a class="mega__feat" [routerLink]="['/product', f.id]" (click)="closeMenu()">
             <span class="mega__feat-frame">
-              <img [src]="imgSrc(f.id, 1)" [alt]="i18n.copy(f).name" data-fallback>
+              <img [src]="mediaUrl(f)" [alt]="i18n.copy(f).name" data-fallback>
             </span>
             <span class="mega__feat-name">{{ i18n.copy(f).name }}</span>
             <span class="mega__feat-price">{{ i18n.money(f.price) }}</span>

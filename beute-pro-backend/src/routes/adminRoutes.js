@@ -38,6 +38,8 @@ const {
 // Products & categories (Phase 5A)
 const productController = require('../controllers/productController');
 const categoryController = require('../controllers/categoryController');
+const mediaController = require('../controllers/productMediaController');
+const upload = require('../middleware/upload');
 
 // Inventory, coupons, settings (Phase 5B)
 const inventoryController = require('../controllers/inventoryController');
@@ -96,6 +98,11 @@ router.delete('/customers/:id', adminDeleteCustomer);
 // ============================================
 // PRODUCT MANAGEMENT (Phase 5A)
 // ============================================
+// Keep media routes before every /products/:id route to prevent shadowing.
+router.get('/products/:id/media', mediaController.listMedia, mediaController.handleError);
+router.post('/products/:id/media/images', upload.array('files', 10), mediaController.uploadImages, mediaController.handleError);
+router.post('/products/:id/media/video', upload.single('file'), mediaController.uploadVideo, mediaController.handleError);
+router.delete('/products/:id/media/:mediaId', mediaController.deleteMedia, mediaController.handleError);
 router.get('/products', productController.adminList);
 router.post('/products', productController.create);
 router.put('/products/:id', productController.update);

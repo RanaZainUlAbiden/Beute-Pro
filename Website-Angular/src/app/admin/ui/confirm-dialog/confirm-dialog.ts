@@ -4,6 +4,7 @@ import {
   ElementRef,
   HostListener,
   afterNextRender,
+  afterRenderEffect,
   inject,
   input,
   output,
@@ -47,12 +48,21 @@ export class ConfirmDialog {
   readonly dismissed = output<void>();
 
   private readonly cancelBtn = viewChild<ElementRef<HTMLButtonElement>>('cancelBtn');
+  private readonly dialogBox = viewChild<ElementRef<HTMLElement>>('dialogBox');
 
   constructor() {
     this.layout.lock();
     inject(DestroyRef).onDestroy(() => this.layout.unlock());
     // focus lands on the safe choice, never on the destructive one
     afterNextRender(() => this.cancelBtn()?.nativeElement.focus());
+    // Keep a real focus target while both action buttons are disabled. Consumers
+    // with a CDK focus trap must not lose keyboard focus to the page during work.
+    afterRenderEffect(() => {
+      const box = this.dialogBox()?.nativeElement;
+      if (!box) return;
+      if (this.busy() && box.ownerDocument.activeElement !== box) box.focus({ preventScroll: true });
+      else if (!this.busy() && box.ownerDocument.activeElement === box) this.cancelBtn()?.nativeElement.focus({ preventScroll: true });
+    });
   }
 
   @HostListener('document:keydown.escape')

@@ -9,6 +9,7 @@ const list = async (req, res) => {
       badge,
       search,
       activeOnly: true,
+      includeMedia: req.query.includeMedia === 'true',
       page: page ? parseInt(page, 10) : 1,
       limit: limit ? parseInt(limit, 10) : 100,
     });
@@ -22,7 +23,7 @@ const list = async (req, res) => {
 /** Public: single product */
 const getOne = async (req, res) => {
   try {
-    const product = await productService.getById(req.params.id);
+    const product = await productService.getById(req.params.id, { includeMedia: req.query.includeMedia === 'true' });
     if (!product || !product.isActive) {
       return res.status(404).json({ error: 'Product not found' });
     }
@@ -42,6 +43,7 @@ const adminList = async (req, res) => {
       badge,
       search,
       activeOnly: false,
+      includeMedia: req.query.includeMedia === 'true',
       page: page ? parseInt(page, 10) : 1,
       limit: limit ? parseInt(limit, 10) : 100,
     });
@@ -55,7 +57,7 @@ const adminList = async (req, res) => {
 /** Admin: create */
 const create = async (req, res) => {
   try {
-    const product = await productService.create(req.body);
+    const product = await productService.create(req.body, { includeMedia: req.query.includeMedia === 'true' });
     res.status(201).json({ success: true, product });
   } catch (err) {
     console.error('Create product error:', err.message);
@@ -68,7 +70,7 @@ const create = async (req, res) => {
 /** Admin: update */
 const update = async (req, res) => {
   try {
-    const product = await productService.update(req.params.id, req.body);
+    const product = await productService.update(req.params.id, req.body, { includeMedia: req.query.includeMedia === 'true' });
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.json({ success: true, product });
   } catch (err) {

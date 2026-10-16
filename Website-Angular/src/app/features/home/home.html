@@ -158,7 +158,7 @@
       <img ngSrc="/assets/img/model/feature.webp" width="1122" height="1402" alt="Béute Pro skincare routine" data-fallback>
       @if (chip(); as ch) {
       <span class="feature__chip" id="feature-chip">
-        <img [ngSrc]="imgSrc(ch.id, 1)" [width]="imgDims(ch.id).width" [height]="imgDims(ch.id).height" [alt]="i18n.copy(ch).name" data-fallback>
+        <img [ngSrc]="mediaUrl(ch)" [width]="imgDims(ch.id).width" [height]="imgDims(ch.id).height" [alt]="i18n.copy(ch).name" data-fallback>
         <span><b>{{ i18n.copy(ch).name }}</b><span>{{ i18n.money(ch.price) }}</span></span>
       </span>
       }

@@ -24,6 +24,7 @@ export interface ApiProduct {
   oldPrice: number | null;
   badge: 'bestseller' | 'new' | 'sale' | null;
   images: number;
+  media?: { images: string[]; video: string | null };
   spin: boolean;
   size: string;
   en: ApiProductCopy;

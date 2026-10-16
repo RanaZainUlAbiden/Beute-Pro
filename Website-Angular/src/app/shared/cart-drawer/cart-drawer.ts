@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
-import { imgSrc, imgDims } from '../../core/image';
+import { mediaUrl, imgDims } from '../../core/image';
 import { CartService } from '../../core/services/cart.service';
 import { I18nService } from '../../core/services/i18n.service';
 
@@ -18,6 +18,6 @@ import { I18nService } from '../../core/services/i18n.service';
 export class CartDrawer {
   protected readonly cart = inject(CartService);
   protected readonly i18n = inject(I18nService);
-  protected readonly imgSrc = imgSrc;
+  protected readonly mediaUrl = mediaUrl;
   protected readonly imgDims = imgDims;
 }

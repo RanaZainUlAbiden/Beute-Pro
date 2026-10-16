@@ -21,7 +21,7 @@ import { of, switchMap, map, catchError } from 'rxjs';
 import { AccordionPanelDirective } from '../../core/directives/accordion-panel.directive';
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
 import { StaggerDirective } from '../../core/directives/stagger.directive';
-import { imgSrc, spinSrc } from '../../core/image';
+import { imgSrc, spinSrc, mediaUrl, mediaVideoUrl } from '../../core/image';
 import { CartService } from '../../core/services/cart.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { MotionService } from '../../core/services/motion.service';
@@ -63,7 +63,7 @@ export class ProductPage implements OnDestroy {
   protected readonly cart = inject(CartService);
   private readonly motion = inject(MotionService);
 
-  protected readonly imgSrc = imgSrc;
+  protected readonly mediaUrl = mediaUrl;
 
   private readonly params = toSignal(this.route.paramMap, {
     initialValue: this.route.snapshot.paramMap,
@@ -154,9 +154,13 @@ export class ProductPage implements OnDestroy {
       this.photos.set([1]);
       this.spinReady.set(false);
       if (!this.isBrowser) return;
-      void this.probePhotos(p.id).then((list) => {
-        if (p.id === this.product()?.id) this.photos.set(list);
-      });
+      if (p.media?.images.length) {
+        this.photos.set(p.media.images.map((_, index) => index + 1));
+      } else {
+        void this.probePhotos(p.id).then((list) => {
+          if (p === this.product()) this.photos.set(list);
+        });
+      }
       this.loadRelated(p);
     });
 
@@ -165,7 +169,7 @@ export class ProductPage implements OnDestroy {
       const p = this.product();
       if (p && p.id !== this.probedSpinFor) {
         this.probedSpinFor = p.id;
-        this.initSpin(p.id);
+        this.initSpin(p);
       }
     });
 
@@ -382,19 +386,19 @@ export class ProductPage implements OnDestroy {
   }
 
   /* ---------- 360 VIEWER ---------- */
-  private initSpin(id: string): void {
+  private initSpin(product: ApiProduct): void {
     const video = this.spinVideo()?.nativeElement;
     const box = this.spinBox()?.nativeElement;
     if (!video || !box) return;
 
-    const ok = this.product()?.spin ?? false;
+    const ok = Boolean(mediaVideoUrl(product)) || product.spin;
     this.spinReady.set(ok);
     if (!ok) return;
 
-    video.poster = imgSrc(id, 1);
+    video.poster = mediaUrl(product, 0);
     video.muted = true;
     if (this.motion.reduced) video.removeAttribute('autoplay');
-    video.src = spinSrc(id);
+    video.src = mediaVideoUrl(product) ?? spinSrc(product.id);
     video.load();
 
     if (this.motion.reduced) return;

@@ -4,7 +4,7 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
 import { CATEGORIES } from '../../core/data/products';
-import { imgSrc, imgDims } from '../../core/image';
+import { mediaUrl, imgDims } from '../../core/image';
 import type { Product } from '../../core/models/product';
 import { CartService } from '../../core/services/cart.service';
 import { I18nService } from '../../core/services/i18n.service';
@@ -22,7 +22,7 @@ export class ProductCard {
   protected readonly i18n = inject(I18nService);
   private readonly cart = inject(CartService);
   private readonly wishlist = inject(WishlistService);
-  protected readonly imgSrc = imgSrc;
+  protected readonly mediaUrl = mediaUrl;
 
   readonly product = input.required<Product>();
 

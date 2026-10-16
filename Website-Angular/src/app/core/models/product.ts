@@ -39,6 +39,7 @@ export interface Product {
   badge: Badge | null;
   /** How many product photos exist. */
   images: number;
+  media?: { images: string[]; video: string | null };
   /** True where a 360° video exists at assets/video/spin/<id>.mp4. */
   spin: boolean;
   /** Display string, e.g. "120 ml (4.06 OZ)". */

@@ -28,6 +28,19 @@ export function imgSrc(id: string, n = 1): string {
   return `/assets/img/products/${id}/${id}-${n}.webp`;
 }
 
+/**
+ * Prefer an uploaded media URL when one exists, fall back to the static asset path.
+ * `mediaIndex` is 0-based (0 = first image).
+ */
+export function mediaUrl(product: { id: string; media?: { images: string[] } }, mediaIndex = 0): string {
+  const uploaded = product.media?.images?.[mediaIndex];
+  return uploaded ?? imgSrc(product.id, mediaIndex + 1);
+}
+
+export function mediaVideoUrl(product: { id: string; media?: { video: string | null } }): string | null {
+  return product.media?.video ?? null;
+}
+
 export function catSrc(id: string): string {
   return `/assets/img/categories/${id}.webp`;
 }

@@ -1,0 +1,200 @@
+<div class="product-form">
+  <!-- Header -->
+  <div class="page-head">
+    <div>
+      <a routerLink=".." class="back-link">
+        <svg viewBox="0 0 24 24" width="16" height="16">
+          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2"
+                fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to products
+      </a>
+      <h1 class="h-lg">{{ isEditMode() ? 'Edit product' : 'New product' }}</h1>
+    </div>
+  </div>
+
+  <app-loading-spinner *ngIf="isLoading()" message="Loading…"></app-loading-spinner>
+
+  <form *ngIf="!isLoading()" [formGroup]="form" (ngSubmit)="onSubmit()" class="form-body" novalidate>
+    <!-- ─────── Basic info ─────── -->
+    <section class="form-section">
+      <h2 class="section-title">Basic info</h2>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="id">Product ID *</label>
+          <input
+            id="id"
+            type="text"
+            formControlName="id"
+            placeholder="e.g. rose-water-mist"
+            [readonly]="isEditMode()"
+          />
+          <small class="hint">Lowercase, dashes only. Cannot be changed after creation.</small>
+          <div class="error" *ngIf="f['id'].invalid && f['id'].touched">
+            Required. Use lowercase letters, numbers, and dashes.
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="category">Category *</label>
+          <select id="category" formControlName="category">
+            <option value="" disabled>Select a category</option>
+            <option *ngFor="let c of categories()" [value]="c.id">{{ c.en }}</option>
+          </select>
+          <div class="error" *ngIf="f['category'].invalid && f['category'].touched">
+            Category is required
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="price">Price (PKR) *</label>
+          <input id="price" type="number" formControlName="price" min="0" step="1" />
+          <div class="error" *ngIf="f['price'].invalid && f['price'].touched">
+            Price must be a positive number
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="oldPrice">Old price (PKR)</label>
+          <input id="oldPrice" type="number" formControlName="oldPrice" min="0" step="1" />
+          <small class="hint">Leave empty for no strike-through price.</small>
+        </div>
+
+        <div class="field">
+          <label for="badge">Badge</label>
+          <select id="badge" formControlName="badge">
+            <option value="">None</option>
+            <option value="bestseller">Best seller</option>
+            <option value="new">New</option>
+            <option value="sale">Sale</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="size">Size</label>
+          <input id="size" type="text" formControlName="size" placeholder="120 ml (4.06 OZ)" />
+        </div>
+
+        <div class="field">
+          <label for="displayOrder">Display order</label>
+          <input id="displayOrder" type="number" formControlName="displayOrder" min="0" />
+          <small class="hint">Lower numbers show first.</small>
+        </div>
+      </div>
+
+      <div class="form-grid form-grid--toggles">
+        <label class="toggle">
+          <input type="checkbox" formControlName="spin" />
+          <span>Has 360° video</span>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" formControlName="isActive" />
+          <span>Active (visible on site)</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ─────── Media ─────── -->
+    <app-product-media-manager *ngIf="productId as savedProductId; else saveMediaFirst"
+      [productId]="savedProductId" />
+    <ng-template #saveMediaFirst>
+      <section class="form-section" aria-labelledby="media-section-title">
+        <h2 class="section-title" id="media-section-title">{{ i18n.t('admin.media.title') }}</h2>
+        <p class="media-save-note">{{ i18n.t('admin.media.saveFirst') }}</p>
+      </section>
+    </ng-template>
+
+    <!-- ─────── English copy ─────── -->
+    <section class="form-section">
+      <h2 class="section-title">
+        <span class="lang-flag">EN</span> English content
+      </h2>
+
+      <div formGroupName="en" class="form-grid">
+        <div class="field">
+          <label for="en-name">Name *</label>
+          <input id="en-name" type="text" formControlName="name" />
+          <div class="error" *ngIf="fEn['name'].invalid && fEn['name'].touched">Required</div>
+        </div>
+
+        <div class="field">
+          <label for="en-tagline">Tagline *</label>
+          <input id="en-tagline" type="text" formControlName="tagline" />
+          <div class="error" *ngIf="fEn['tagline'].invalid && fEn['tagline'].touched">Required</div>
+        </div>
+
+        <div class="field field--full">
+          <label for="en-desc">Description *</label>
+          <textarea id="en-desc" rows="4" formControlName="description"></textarea>
+          <div class="error" *ngIf="fEn['description'].invalid && fEn['description'].touched">Required</div>
+        </div>
+
+        <div class="field">
+          <label for="en-ing">Ingredients <small>(one per line)</small></label>
+          <textarea id="en-ing" rows="5" formControlName="ingredients"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="en-ben">Benefits <small>(one per line)</small></label>
+          <textarea id="en-ben" rows="5" formControlName="benefits"></textarea>
+        </div>
+
+        <div class="field field--full">
+          <label for="en-usage">How to use</label>
+          <textarea id="en-usage" rows="3" formControlName="usage"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────── Arabic copy ─────── -->
+    <section class="form-section" dir="rtl">
+      <h2 class="section-title">
+        <span class="lang-flag">AR</span> المحتوى العربي
+      </h2>
+
+      <div formGroupName="ar" class="form-grid">
+        <div class="field">
+          <label for="ar-name">الاسم *</label>
+          <input id="ar-name" type="text" formControlName="name" />
+          <div class="error" *ngIf="fAr['name'].invalid && fAr['name'].touched">مطلوب</div>
+        </div>
+
+        <div class="field">
+          <label for="ar-tagline">الوصف المختصر *</label>
+          <input id="ar-tagline" type="text" formControlName="tagline" />
+          <div class="error" *ngIf="fAr['tagline'].invalid && fAr['tagline'].touched">مطلوب</div>
+        </div>
+
+        <div class="field field--full">
+          <label for="ar-desc">الوصف *</label>
+          <textarea id="ar-desc" rows="4" formControlName="description"></textarea>
+          <div class="error" *ngIf="fAr['description'].invalid && fAr['description'].touched">مطلوب</div>
+        </div>
+
+        <div class="field">
+          <label for="ar-ing">المكونات <small>(عنصر واحد في كل سطر)</small></label>
+          <textarea id="ar-ing" rows="5" formControlName="ingredients"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="ar-ben">الفوائد <small>(عنصر واحد في كل سطر)</small></label>
+          <textarea id="ar-ben" rows="5" formControlName="benefits"></textarea>
+        </div>
+
+        <div class="field field--full">
+          <label for="ar-usage">طريقة الاستخدام</label>
+          <textarea id="ar-usage" rows="3" formControlName="usage"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────── Actions ─────── -->
+    <div class="form-actions">
+      <a class="btn btn--outline" routerLink="..">Cancel</a>
+      <button type="submit" class="btn btn--gold" [disabled]="isSaving()">
+        {{ isSaving() ? 'Saving…' : (isEditMode() ? 'Save changes' : 'Create product') }}
+      </button>
+    </div>
+  </form>
+</div>

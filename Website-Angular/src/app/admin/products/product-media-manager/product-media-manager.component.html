@@ -1,0 +1,132 @@
+<section class="media-manager" [attr.aria-busy]="loading() || mutating()" [attr.aria-labelledby]="uid + '-title'">
+  <header class="manager-heading">
+    <div>
+      <h2 [id]="uid + '-title'">{{ text('admin.media.title') }}</h2>
+      <p>{{ text('admin.media.subtitle') }}</p>
+    </div>
+    <button type="button" class="btn btn--outline btn--sm" (click)="loadMedia()" [disabled]="loading() || mutating()">
+      {{ text('admin.media.refresh') }}
+    </button>
+  </header>
+
+  <div class="feedback" aria-live="polite" aria-atomic="true">
+    @if (loading()) { <p class="loading-note">{{ text('admin.media.loading') }}</p> }
+    @if (status()) { <p class="success-note">{{ status() }}</p> }
+  </div>
+  @if (loadError()) {
+    <div class="error-note" role="alert"><p>{{ loadError() }}</p>
+      <button type="button" class="text-action" (click)="loadMedia()" [disabled]="loading() || mutating()">{{ text('admin.media.retry') }}</button>
+    </div>
+  }
+  @if (error()) { <p class="error-note" role="alert">{{ error() }}</p> }
+
+  <div class="media-sections">
+    <section class="media-section" [attr.aria-labelledby]="uid + '-images-title'">
+      <div class="section-heading">
+        <h3 [id]="uid + '-images-title'">{{ text('admin.media.images') }}</h3>
+        <span class="count">{{ images().length }}</span>
+      </div>
+      <p class="hint">{{ text('admin.media.imagesHint') }}</p>
+
+      @if (!loading() && !loadError() && !images().length) {
+        <p class="empty-note">{{ text('admin.media.noImages') }}</p>
+      }
+      <div class="image-grid">
+        @for (image of images(); track image.previewKey; let index = $index) {
+          <figure class="media-card">
+            <div class="image-stage">
+              <img [src]="image.url" [alt]="text('admin.media.imageAlt', { count: index + 1 })"
+                   width="320" height="240" loading="lazy" [hidden]="failedPreviews().has(image.id)"
+                   (error)="previewFailed(image.id)">
+              @if (failedPreviews().has(image.id)) { <span class="preview-error">{{ text('admin.media.previewError') }}</span> }
+            </div>
+            <figcaption>
+              <span>{{ text('admin.media.imageAlt', { count: index + 1 }) }}<small>{{ formatSize(image.file_size) }}</small></span>
+              <button type="button" class="delete-action" [disabled]="disabled()" (click)="requestDelete(image)"
+                      [attr.aria-label]="text('admin.media.deleteImage', { count: index + 1 })">{{ text('admin.media.delete') }}</button>
+            </figcaption>
+          </figure>
+        }
+      </div>
+
+      <div class="upload-box" [class.is-dragging]="dragging() === 'images'" [class.is-disabled]="disabled()"
+           (dragover)="dragOver($event, 'images')" (dragleave)="dragLeave($event)" (drop)="dropFiles($event, 'images')">
+        <p class="upload-prompt">{{ text('admin.media.dropImages') }}</p>
+        <p class="hint" [id]="uid + '-images-help'">{{ text('admin.media.imageFormats') }}</p>
+        <input #imagePicker type="file" hidden multiple accept="image/jpeg,image/png,image/webp"
+               [attr.aria-label]="text('admin.media.chooseImages')" [disabled]="disabled()" (change)="selectFiles($event, 'images')">
+        <button #imagesButton type="button" class="btn btn--outline btn--sm" [disabled]="disabled()"
+                [attr.aria-describedby]="uid + '-images-help'" (click)="imagePicker.click()">{{ text('admin.media.chooseImages') }}</button>
+      </div>
+      @if (imageErrors().length) {
+        <ul class="validation-errors" role="alert">@for (message of imageErrors(); track $index) { <li>{{ message }}</li> }</ul>
+      }
+      @if (imageFiles().length) {
+        <ul class="file-queue" [attr.aria-label]="text('admin.media.selectedFiles')">
+          @for (file of imageFiles(); track $index; let index = $index) {
+            <li><span class="file-info"><bdi>{{ file.name }}</bdi><small>{{ formatSize(file.size) }}</small></span>
+              <button type="button" class="text-action" [disabled]="disabled()" (click)="removeFile(index, 'images')"
+                      [attr.aria-label]="text('admin.media.removeFile', { name: file.name })">{{ text('admin.media.remove') }}</button>
+            </li>
+          }
+        </ul>
+        <button type="button" class="btn btn--gold upload-action" [disabled]="disabled()" (click)="uploadImages()">
+          {{ uploading() === 'images' ? text('admin.media.uploadingImages') : text('admin.media.uploadImages', { count: imageFiles().length }) }}
+        </button>
+      }
+      @if (uploading() === 'images') {
+        <div class="upload-progress" role="status"><progress [attr.aria-label]="text('admin.media.uploadingImages')"></progress><span>{{ text('admin.media.wait') }}</span></div>
+      }
+    </section>
+
+    <section class="media-section" [attr.aria-labelledby]="uid + '-video-title'">
+      <div class="section-heading"><h3 [id]="uid + '-video-title'">{{ text('admin.media.video') }}</h3></div>
+      <p class="hint">{{ text('admin.media.videoHint') }}</p>
+      @if (video(); as clip) {
+        <div class="video-card">
+          <video #videoPreview [src]="clip.url" controls playsinline preload="metadata" width="640" height="400"
+                 [attr.aria-label]="text('admin.media.video')" (error)="previewFailed(clip.id)"></video>
+          @if (failedPreviews().has(clip.id)) { <p class="preview-error">{{ text('admin.media.previewError') }}</p> }
+          <div class="video-details"><span>{{ formatSize(clip.file_size) }} · MP4</span>
+            <button type="button" class="delete-action" [disabled]="disabled()" (click)="requestDelete(clip)">{{ text('admin.media.deleteVideo') }}</button>
+          </div>
+        </div>
+      } @else if (!loading() && !loadError()) { <p class="empty-note">{{ text('admin.media.noVideo') }}</p> }
+
+      <div class="upload-box" [class.is-dragging]="dragging() === 'video'" [class.is-disabled]="disabled()"
+           (dragover)="dragOver($event, 'video')" (dragleave)="dragLeave($event)" (drop)="dropFiles($event, 'video')">
+        <p class="upload-prompt">{{ text('admin.media.dropVideo') }}</p>
+        <p class="hint" [id]="uid + '-video-help'">{{ text('admin.media.videoFormats') }}</p>
+        <input #videoPicker type="file" hidden accept="video/mp4" [attr.aria-label]="text('admin.media.chooseVideo')"
+               [disabled]="disabled()" (change)="selectFiles($event, 'video')">
+        <button #videoButton type="button" class="btn btn--outline btn--sm" [disabled]="disabled()"
+                [attr.aria-describedby]="uid + '-video-help'" (click)="videoPicker.click()">{{ text('admin.media.chooseVideo') }}</button>
+      </div>
+      @if (videoErrors().length) {
+        <ul class="validation-errors" role="alert">@for (message of videoErrors(); track $index) { <li>{{ message }}</li> }</ul>
+      }
+      @if (videoFile(); as file) {
+        <ul class="file-queue" [attr.aria-label]="text('admin.media.selectedFiles')"><li>
+          <span class="file-info"><bdi>{{ file.name }}</bdi><small>{{ formatSize(file.size) }}</small></span>
+          <button type="button" class="text-action" [disabled]="disabled()" (click)="removeFile(0, 'video')"
+                  [attr.aria-label]="text('admin.media.removeFile', { name: file.name })">{{ text('admin.media.remove') }}</button>
+        </li></ul>
+        <button type="button" class="btn btn--gold upload-action" [disabled]="disabled()" (click)="requestVideoUpload()">
+          {{ uploading() === 'video' ? text('admin.media.uploadingVideo') : video() ? text('admin.media.replaceVideo') : text('admin.media.uploadVideo') }}
+        </button>
+      }
+      @if (uploading() === 'video') {
+        <div class="upload-progress" role="status"><progress [attr.aria-label]="text('admin.media.uploadingVideo')"></progress><span>{{ text('admin.media.wait') }}</span></div>
+      }
+    </section>
+  </div>
+</section>
+
+@if (confirmation(); as pending) {
+  <app-confirm-dialog cdkTrapFocus [cdkTrapFocusAutoCapture]="true"
+    [heading]="dialogHeading()" [body]="dialogBody()"
+    [confirmLabel]="uploading() === 'video' ? text('admin.media.uploadingVideo') : deleting() ? text('admin.media.deleting') : pending.action === 'replaceVideo' ? text('admin.media.replaceVideo') : text('admin.media.delete')"
+    [busy]="mutating() || loading()" [danger]="true"
+    (confirmed)="confirmAction()" (dismissed)="dismissConfirmation()">
+  </app-confirm-dialog>
+}

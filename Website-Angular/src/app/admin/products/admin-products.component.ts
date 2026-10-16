@@ -8,6 +8,7 @@ import { CategoryService } from '../../services/category.service';
 import { ToastService } from '../../core/services/toast.service';
 import { ExportService } from '../../services/export.service';
 import { ApiProduct, ApiCategory } from '../../core/models/api.model';
+import { mediaUrl } from '../../core/image';
 
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
 import { ConfirmDialogComponent } from '../ui/confirm-dialog.component';
@@ -386,7 +387,7 @@ export class AdminProductsComponent implements OnInit {
   // Helpers
   // ------------------------------------------------------------
   imgSrc(p: ApiProduct): string {
-    return `${p.mediaBaseUrl}/${p.id}-1.png`;
+    return mediaUrl(p, 0);
   }
 
   onImgError(e: Event): void {

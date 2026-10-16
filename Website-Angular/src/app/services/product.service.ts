@@ -21,13 +21,15 @@ export class ProductService {
 
   /** GET /api/products — public list (active only) */
   list(filters: ProductFilters = {}): Observable<ProductListResponse> {
-    const params = this.buildParams(filters);
+    const params = this.buildParams(filters).set('includeMedia', 'true');
     return this.http.get<ProductListResponse>(`${this.apiUrl}/products`, { params });
   }
 
   /** GET /api/products/:id — public single */
   getById(id: string): Observable<{ product: ApiProduct }> {
-    return this.http.get<{ product: ApiProduct }>(`${this.apiUrl}/products/${id}`);
+    return this.http.get<{ product: ApiProduct }>(`${this.apiUrl}/products/${id}`, {
+      params: { includeMedia: 'true' },
+    });
   }
 
   // ============================================================
@@ -36,7 +38,7 @@ export class ProductService {
 
   /** GET /api/admin/products — admin list (includes inactive) */
   adminList(filters: ProductFilters = {}): Observable<ProductListResponse> {
-    const params = this.buildParams(filters);
+    const params = this.buildParams(filters).set('includeMedia', 'true');
     return this.http.get<ProductListResponse>(`${this.apiUrl}/admin/products`, { params });
   }
 
@@ -46,7 +48,8 @@ export class ProductService {
   ): Observable<{ success: boolean; product: ApiProduct }> {
     return this.http.post<{ success: boolean; product: ApiProduct }>(
       `${this.apiUrl}/admin/products`,
-      payload
+      payload,
+      { params: { includeMedia: 'true' } }
     );
   }
 
@@ -57,7 +60,8 @@ export class ProductService {
   ): Observable<{ success: boolean; product: ApiProduct }> {
     return this.http.put<{ success: boolean; product: ApiProduct }>(
       `${this.apiUrl}/admin/products/${id}`,
-      payload
+      payload,
+      { params: { includeMedia: 'true' } }
     );
   }
 

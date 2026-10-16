@@ -1,5 +1,6 @@
 <div class="adm-modal" (click)="dismissed.emit()">
-  <div class="adm-modal__box" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title"
+  <div class="adm-modal__box" #dialogBox role="alertdialog" aria-modal="true" aria-labelledby="confirm-title"
+       [attr.tabindex]="busy() ? 0 : null" [attr.aria-busy]="busy()"
        (click)="$event.stopPropagation()">
     <h2 id="confirm-title">{{ heading() }}</h2>
     @if (body()) {

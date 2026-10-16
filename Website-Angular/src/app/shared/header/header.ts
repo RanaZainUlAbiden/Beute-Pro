@@ -7,7 +7,7 @@ import { NgOptimizedImage } from '@angular/common';
 
 import { ImgFallbackDirective } from '../../core/directives/img-fallback.directive';
 import { ApiProduct, ApiCategory } from '../../core/models/api.model';
-import { imgSrc, imgDims } from '../../core/image';
+import { mediaUrl, imgDims } from '../../core/image';
 import { AudioService } from '../../core/services/audio.service';
 import { CartService } from '../../core/services/cart.service';
 import { I18nService } from '../../core/services/i18n.service';
@@ -66,7 +66,7 @@ export class Header {
   protected readonly featured = signal<ApiProduct | null>(null);
 
   protected readonly concerns = CONCERNS;
-  protected readonly imgSrc = imgSrc;
+  protected readonly mediaUrl = mediaUrl;
   protected readonly imgDims = imgDims;
   protected readonly adminPath = environment.adminPath;
 

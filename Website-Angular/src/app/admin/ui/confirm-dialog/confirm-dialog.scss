@@ -1,2 +1,2 @@
-/* Empty by design — `.adm-modal` and its box live with the rest of
-   the admin CSS in styles.scss, next to the tables they interrupt. */
+/* Modal geometry stays in styles.scss; only the busy focus target is local. */
+.adm-modal__box:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; }
