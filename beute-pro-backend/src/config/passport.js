@@ -20,7 +20,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 // Google OAuth Strategy
-passport.use(
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,

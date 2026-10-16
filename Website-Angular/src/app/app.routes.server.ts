@@ -27,6 +27,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    path: 'admin-panel-bdjhdfvjdsbfmnsdfmnsd-vh09879823749823bm475nkndsf-dfshidf/**',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender,
   },

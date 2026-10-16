@@ -27,6 +27,8 @@ const settingsRoutes  = require('./routes/settingsRoutes');
 const { startExchangeRateJob } = require('./jobs/updateRates');
 
 const app = express();
+// Railway terminates HTTPS before forwarding to the application.
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 
 // ============================================
@@ -139,7 +141,7 @@ app.use((err, req, res, next) => {
 // ============================================
 // START SERVER
 // ============================================
-app.listen(PORT, () => {
+app.listen(PORT, '::', () => {
   console.log(`🚀 Béute Pro backend running on http://localhost:${PORT}`);
   console.log(`📦 Environment: ${process.env.NODE_ENV}`);
 

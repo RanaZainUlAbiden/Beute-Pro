@@ -1,0 +1,7 @@
+node_modules
+dist
+.angular
+.git
+masters
+__screenshots__
+*.log

@@ -12,6 +12,12 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
+// Static prerendering runs without the private backend. Return a normal HTTP
+// error so existing catalog fallbacks can render; serve.mjs proxies live traffic.
+app.use('/api', (_req, res) => {
+  res.status(503).json({ error: 'API unavailable during static prerendering' });
+});
+
 /**
  * Example Express Rest API endpoints can be defined here.
  * Uncomment and define endpoints as necessary.

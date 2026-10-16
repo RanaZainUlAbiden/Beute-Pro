@@ -5,7 +5,9 @@ const connectionString = process.env.DATABASE_URL;
 
 // Detect whether we're connecting to a remote (cloud) host or localhost.
 // Local Postgres doesn't support SSL; Aiven / Railway / Render / Neon do.
-const isLocalhost = /(?:localhost|127\.0\.0\.1)/.test(connectionString);
+const hostname = new URL(connectionString).hostname;
+const isLocalhost = ['localhost', '127.0.0.1', '::1'].includes(hostname);
+const isPrivate = hostname.endsWith('.railway.internal');
 
 const poolConfig = {
   connectionString,
@@ -14,7 +16,7 @@ const poolConfig = {
   connectionTimeoutMillis: 10000,
 };
 
-if (!isLocalhost) {
+if (!isLocalhost && !isPrivate) {
   // Cloud Postgres (Aiven, Heroku, Railway, etc.) — SSL required.
   // sslmode=no-verify is Aiven-friendly: encrypt but skip CA verification.
   poolConfig.connectionString = connectionString.replace(
