@@ -5,6 +5,7 @@ import type { Observable } from 'rxjs';
 import { CURRENCY, PRODUCTS } from '../core/data/products';
 import type { Order } from '../services/order';
 import { environment } from '../../environments/environment';
+import { T } from '../core/data/i18n.data';
 
 /* =============================================================
    ADMIN API
@@ -204,20 +205,17 @@ export function adminProductName(id: string): string {
 
    Only ever a detail line under a translated headline, never the
    headline itself — the server speaks English and an Arabic admin
-   still needs to be told, in Arabic, that the screen failed. A
-   status-only line is better than nothing: "0" is what Angular
-   reports when the request never reached the backend at all,
-   which is the case worth distinguishing. */
-export function adminErrorDetail(err: unknown): string {
-  const e = err as { error?: { error?: unknown }; status?: number; message?: string } | null;
-  if (!e) return '';
-
-  const fromBody = e.error?.error;
-  if (typeof fromBody === 'string' && fromBody.trim()) return fromBody.trim();
-
-  if (e.status === 0) return 'Could not reach the server (no response).';
-  if (typeof e.status === 'number' && e.status > 0) {
-    return `Server responded ${e.status}${e.message ? ` — ${e.message}` : ''}`;
+   still needs to be told, in Arabic, that the screen failed.
+   Callers may supply the active locale's fallback; the one-argument
+   form is also safe for errors without any message. */
+export function adminErrorDetail(
+  err: unknown,
+  fallback = T.en['admin.common.apiDown'],
+): string {
+  const e = err as { error?: { error?: unknown; message?: unknown }; message?: unknown } | null;
+  const candidates = [e?.error?.error, e?.error?.message, e?.message, err];
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) return candidate.trim();
   }
-  return typeof e.message === 'string' ? e.message : '';
+  return fallback.trim() || T.en['admin.common.apiDown'];
 }

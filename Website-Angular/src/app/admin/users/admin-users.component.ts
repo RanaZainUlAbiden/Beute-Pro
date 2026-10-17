@@ -9,7 +9,7 @@ import { I18nService } from '../../core/services/i18n.service';
 import { adminErrorDetail } from '../admin-api';
 
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
-import { LoadErrorComponent } from '../ui/load-error.component';
+import { LoadErrorComponent } from '../ui/load-error/load-error.component';
 import { ConfirmDialogComponent } from '../ui/confirm-dialog.component';
 
 type RoleFilter = '' | 'admin' | 'customer';
@@ -34,11 +34,11 @@ type SortDir = 'asc' | 'desc';
           <h1 class="h-lg">Users</h1>
           <!-- "0 users · 0 admins" after a failed read is a false claim
                that the admin account is missing. Say nothing instead. -->
-          <p class="page-sub" *ngIf="!loadError()">
+          <p class="page-sub" *ngIf="!isLoading() && loadError() === null">
             {{ total() }} user{{ total() === 1 ? '' : 's' }}
             · <span class="admin-count">{{ adminCount() }} admin{{ adminCount() === 1 ? '' : 's' }}</span>
           </p>
-          <p class="page-sub" *ngIf="loadError()">—</p>
+          <p class="page-sub" *ngIf="isLoading() || loadError() !== null">—</p>
         </div>
       </div>
 
@@ -76,14 +76,13 @@ type SortDir = 'asc' | 'desc';
 
       <!-- Load failed — shown INSTEAD of the empty state. -->
       <app-load-error
-        *ngIf="!isLoading() && loadError()"
-        [title]="i18n.t('admin.users.loadErrTitle')"
+        *ngIf="!isLoading() && loadError() !== null"
         [detail]="loadError()!"
         (retry)="loadUsers()"
       ></app-load-error>
 
       <!-- Empty -->
-      <div class="empty-state" *ngIf="!isLoading() && !loadError() && users().length === 0">
+      <div class="empty-state" *ngIf="!isLoading() && loadError() === null && users().length === 0">
         <svg viewBox="0 0 24 24" width="48" height="48">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
                 stroke="currentColor" stroke-width="1.5" fill="none"
@@ -95,7 +94,7 @@ type SortDir = 'asc' | 'desc';
       </div>
 
       <!-- Table -->
-      <div class="table-card" *ngIf="!isLoading() && users().length > 0">
+      <div class="table-card" *ngIf="!isLoading() && loadError() === null && users().length > 0">
         <div class="table-header">
           <span>User</span>
           <span>Contact</span>
@@ -466,6 +465,7 @@ export class AdminUsersComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
+          this.loadError.set(null);
           this.users.set(res.users);
           this.total.set(res.total);
           this.isLoading.set(false);
@@ -474,8 +474,8 @@ export class AdminUsersComponent implements OnInit {
           console.error('Failed to load users', err);
           this.users.set([]);
           this.total.set(0);
-          this.loadError.set(adminErrorDetail(err));
-          this.toast.show(this.i18n.t('admin.users.loadErrTitle'));
+          this.loadError.set(adminErrorDetail(err, this.i18n.t('admin.common.apiDown')));
+          this.toast.show(this.i18n.t('admin.common.loadFailed'));
           this.isLoading.set(false);
         },
       });

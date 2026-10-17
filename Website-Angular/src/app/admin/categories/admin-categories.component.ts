@@ -8,7 +8,7 @@ import { adminErrorDetail } from '../admin-api';
 import { ApiCategory } from '../../core/models/api.model';
 
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
-import { LoadErrorComponent } from '../ui/load-error.component';
+import { LoadErrorComponent } from '../ui/load-error/load-error.component';
 import { ConfirmDialogComponent } from '../ui/confirm-dialog.component';
 import { CategoryFormComponent } from './category-form.component';
 
@@ -30,10 +30,10 @@ import { CategoryFormComponent } from './category-form.component';
           <h1 class="h-lg">Categories</h1>
           <!-- A count is a claim about the data; don't make one when the
                read failed. "—" is honest, "0 categories" is not. -->
-          <p class="page-sub" *ngIf="!loadError()">
+          <p class="page-sub" *ngIf="!isLoading() && loadError() === null">
             {{ categories().length }} categor{{ categories().length === 1 ? 'y' : 'ies' }}
           </p>
-          <p class="page-sub" *ngIf="loadError()">—</p>
+          <p class="page-sub" *ngIf="isLoading() || loadError() !== null">—</p>
         </div>
         <button class="btn btn--gold" (click)="openCreate()">
           <svg viewBox="0 0 24 24" width="16" height="16">
@@ -50,20 +50,19 @@ import { CategoryFormComponent } from './category-form.component';
       <!-- Load failed — shown INSTEAD of the empty state, so a dead
            API never reads as an empty catalogue. -->
       <app-load-error
-        *ngIf="!isLoading() && loadError()"
-        [title]="i18n.t('admin.categories.loadErrTitle')"
+        *ngIf="!isLoading() && loadError() !== null"
         [detail]="loadError()!"
         (retry)="loadCategories()"
       ></app-load-error>
 
       <!-- Empty -->
-      <div class="empty-state" *ngIf="!isLoading() && !loadError() && categories().length === 0">
+      <div class="empty-state" *ngIf="!isLoading() && loadError() === null && categories().length === 0">
         <p>No categories yet.</p>
         <button class="btn btn--gold" (click)="openCreate()">Create the first one</button>
       </div>
 
       <!-- Grid -->
-      <div class="cat-grid" *ngIf="!isLoading() && !loadError() && categories().length > 0">
+      <div class="cat-grid" *ngIf="!isLoading() && loadError() === null && categories().length > 0">
         <div class="cat-card" *ngFor="let c of categories()">
           <div class="cat-card__order">
             <span class="order-num">{{ c.displayOrder }}</span>
@@ -274,16 +273,17 @@ export class AdminCategoriesComponent implements OnInit {
     this.loadError.set(null);
     this.categoryService.list().subscribe({
       next: (res) => {
+        this.loadError.set(null);
         this.categories.set(res.categories);
         this.isLoading.set(false);
       },
       error: (err) => {
         console.error('Failed to load categories', err);
-        this.toast.show(this.i18n.t('admin.categories.loadErrTitle'));
+        this.toast.show(this.i18n.t('admin.common.loadFailed'));
         // Drop any stale rows: a half-rendered list behind an error
         // panel is the ambiguity this fix exists to remove.
         this.categories.set([]);
-        this.loadError.set(adminErrorDetail(err));
+        this.loadError.set(adminErrorDetail(err, this.i18n.t('admin.common.apiDown')));
         this.isLoading.set(false);
       },
     });

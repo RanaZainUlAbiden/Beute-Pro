@@ -13,7 +13,7 @@ import { ApiProduct, ApiCategory } from '../../core/models/api.model';
 import { mediaUrl } from '../../core/image';
 
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
-import { LoadErrorComponent } from '../ui/load-error.component';
+import { LoadErrorComponent } from '../ui/load-error/load-error.component';
 import { ConfirmDialogComponent } from '../ui/confirm-dialog.component';
 import { CsvExportButtonComponent } from '../ui/csv-export-button.component';
 
@@ -36,8 +36,8 @@ import { CsvExportButtonComponent } from '../ui/csv-export-button.component';
         <div>
           <h1 class="h-lg">Products</h1>
           <!-- Not a count when the read failed — see load-error.component.ts. -->
-          <p class="page-sub" *ngIf="!loadError()">{{ total() }} product{{ total() === 1 ? '' : 's' }} in the catalogue</p>
-          <p class="page-sub" *ngIf="loadError()">—</p>
+          <p class="page-sub" *ngIf="!isLoading() && loadError() === null">{{ total() }} product{{ total() === 1 ? '' : 's' }} in the catalogue</p>
+          <p class="page-sub" *ngIf="isLoading() || loadError() !== null">—</p>
         </div>
         <div class="head-actions">
           <!-- ✅ CSV export -->
@@ -81,14 +81,13 @@ import { CsvExportButtonComponent } from '../ui/csv-export-button.component';
 
       <!-- Load failed — shown INSTEAD of the empty state. -->
       <app-load-error
-        *ngIf="!isLoading() && loadError()"
-        [title]="i18n.t('admin.products.loadErrTitle')"
+        *ngIf="!isLoading() && loadError() !== null"
         [detail]="loadError()!"
         (retry)="loadProducts()"
       ></app-load-error>
 
       <!-- Empty -->
-      <div class="empty-state" *ngIf="!isLoading() && !loadError() && products().length === 0">
+      <div class="empty-state" *ngIf="!isLoading() && loadError() === null && products().length === 0">
         <svg viewBox="0 0 24 24" width="48" height="48">
           <path d="M6 7h12l-1.2 12H7.2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
           <path d="M9 7a3 3 0 0 1 6 0" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -98,7 +97,7 @@ import { CsvExportButtonComponent } from '../ui/csv-export-button.component';
       </div>
 
       <!-- Table -->
-      <div class="table-card" *ngIf="!isLoading() && !loadError() && products().length > 0">
+      <div class="table-card" *ngIf="!isLoading() && loadError() === null && products().length > 0">
         <div class="table-header">
           <span class="col-img"></span>
           <span>Product</span>
@@ -377,6 +376,7 @@ export class AdminProductsComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
+          this.loadError.set(null);
           this.products.set(res.products);
           this.total.set(res.total);
           this.isLoading.set(false);
@@ -385,9 +385,9 @@ export class AdminProductsComponent implements OnInit {
           console.error('Failed to load products', err);
           this.products.set([]);
           this.total.set(0);
-          this.loadError.set(adminErrorDetail(err));
+          this.loadError.set(adminErrorDetail(err, this.i18n.t('admin.common.apiDown')));
           this.isLoading.set(false);
-          this.toast.show(this.i18n.t('admin.products.loadErrTitle'));
+          this.toast.show(this.i18n.t('admin.common.loadFailed'));
         },
       });
   }

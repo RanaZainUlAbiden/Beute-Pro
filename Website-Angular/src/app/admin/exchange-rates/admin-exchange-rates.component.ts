@@ -8,7 +8,7 @@ import { I18nService } from '../../core/services/i18n.service';
 import { adminErrorDetail } from '../admin-api';
 
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
-import { LoadErrorComponent } from '../ui/load-error.component';
+import { LoadErrorComponent } from '../ui/load-error/load-error.component';
 
 interface CurrencyMeta {
   code: string;
@@ -52,7 +52,7 @@ interface RateRow {
             <span *ngIf="lastUpdated()"> · Last updated {{ lastUpdated() }}</span>
           </p>
         </div>
-        <button class="btn btn--gold" (click)="refresh()" [disabled]="isRefreshing() || isLoading() || !!loadError()">
+        <button class="btn btn--gold" (click)="refresh()" [disabled]="isRefreshing() || isLoading() || loadError() !== null">
           <svg viewBox="0 0 24 24" width="16" height="16" *ngIf="!isRefreshing()">
             <path d="M23 4v6h-6M1 20v-6h6" stroke="currentColor" stroke-width="2"
                   fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -85,19 +85,18 @@ interface RateRow {
            invitation, which was actively misleading: the public API
            returns USD/AED even while this read fails. -->
       <app-load-error
-        *ngIf="!isLoading() && loadError()"
-        [title]="i18n.t('admin.rates.loadErrTitle')"
+        *ngIf="!isLoading() && loadError() !== null"
         [detail]="loadError()!"
         (retry)="load()"
       ></app-load-error>
 
       <!-- Empty -->
-      <div class="empty-state" *ngIf="!isLoading() && !loadError() && rows().length === 0">
+      <div class="empty-state" *ngIf="!isLoading() && loadError() === null && rows().length === 0">
         <p>No exchange rates configured yet. Click <b>Refresh from API</b> to populate them.</p>
       </div>
 
       <!-- Rate cards -->
-      <div class="rate-grid" *ngIf="!isLoading() && !loadError() && rows().length > 0">
+      <div class="rate-grid" *ngIf="!isLoading() && loadError() === null && rows().length > 0">
         <div class="rate-card" *ngFor="let row of rows(); trackBy: trackByCode"
              [class.is-dirty]="row.isDirty">
 
@@ -405,6 +404,7 @@ export class AdminExchangeRatesComponent implements OnInit {
     this.loadError.set(null);
     this.currencyService.getRates().subscribe({
       next: (res) => {
+        this.loadError.set(null);
         this.updatedAt.set(res.updatedAt);
         this.rows.set(this.buildRows(res.rates));
         this.isLoading.set(false);
@@ -413,8 +413,8 @@ export class AdminExchangeRatesComponent implements OnInit {
         console.error('Failed to load rates', err);
         this.rows.set([]);
         this.updatedAt.set(null);
-        this.loadError.set(adminErrorDetail(err));
-        this.toast.show(this.i18n.t('admin.rates.loadErrTitle'));
+        this.loadError.set(adminErrorDetail(err, this.i18n.t('admin.common.apiDown')));
+        this.toast.show(this.i18n.t('admin.common.loadFailed'));
         this.isLoading.set(false);
       },
     });

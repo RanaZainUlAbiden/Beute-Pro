@@ -9,7 +9,7 @@ import { adminErrorDetail } from '../admin-api';
 import { ApiInventoryRow } from '../../core/models/api.model';
 
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
-import { LoadErrorComponent } from '../ui/load-error.component';
+import { LoadErrorComponent } from '../ui/load-error/load-error.component';
 
 @Component({
   selector: 'app-admin-inventory',
@@ -23,13 +23,13 @@ import { LoadErrorComponent } from '../ui/load-error.component';
           <h1 class="h-lg">Inventory</h1>
           <!-- "0 products" after a failed read reads as an empty
                warehouse. Don't claim a count we don't have. -->
-          <p class="page-sub" *ngIf="!loadError()">
+          <p class="page-sub" *ngIf="!isLoading() && loadError() === null">
             {{ rows().length }} product{{ rows().length === 1 ? '' : 's' }}
             <ng-container *ngIf="lowStockCount() > 0">
               · <span class="low-warn">{{ lowStockCount() }} low on stock</span>
             </ng-container>
           </p>
-          <p class="page-sub" *ngIf="loadError()">—</p>
+          <p class="page-sub" *ngIf="isLoading() || loadError() !== null">—</p>
         </div>
       </div>
 
@@ -63,14 +63,13 @@ import { LoadErrorComponent } from '../ui/load-error.component';
 
       <!-- Load failed — shown INSTEAD of the empty state. -->
       <app-load-error
-        *ngIf="!isLoading() && loadError()"
-        [title]="i18n.t('admin.inventory.loadErrTitle')"
+        *ngIf="!isLoading() && loadError() !== null"
         [detail]="loadError()!"
         (retry)="loadInventory()"
       ></app-load-error>
 
       <!-- Empty -->
-      <div class="empty-state" *ngIf="!isLoading() && !loadError() && rows().length === 0">
+      <div class="empty-state" *ngIf="!isLoading() && loadError() === null && rows().length === 0">
         <svg viewBox="0 0 24 24" width="48" height="48">
           <path d="M6 7h12l-1.2 12H7.2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
           <path d="M9 7a3 3 0 0 1 6 0" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -79,7 +78,7 @@ import { LoadErrorComponent } from '../ui/load-error.component';
       </div>
 
       <!-- Table -->
-      <div class="table-card" *ngIf="!isLoading() && !loadError() && rows().length > 0">
+      <div class="table-card" *ngIf="!isLoading() && loadError() === null && rows().length > 0">
         <div class="table-header">
           <span>Product</span>
           <span class="col-threshold">Low-stock at</span>
@@ -354,6 +353,7 @@ export class AdminInventoryComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
+          this.loadError.set(null);
           const enriched: InventoryRowWithState[] = res.items.map((item) => ({
             ...item,
             isDirty: false,
@@ -365,8 +365,8 @@ export class AdminInventoryComponent implements OnInit {
         error: (err) => {
           console.error('Failed to load inventory', err);
           this.rows.set([]);
-          this.loadError.set(adminErrorDetail(err));
-          this.toast.show(this.i18n.t('admin.inventory.loadErrTitle'));
+          this.loadError.set(adminErrorDetail(err, this.i18n.t('admin.common.apiDown')));
+          this.toast.show(this.i18n.t('admin.common.loadFailed'));
           this.isLoading.set(false);
         },
       });

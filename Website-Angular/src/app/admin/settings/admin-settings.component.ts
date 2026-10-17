@@ -7,7 +7,7 @@ import { ToastService } from '../../core/services/toast.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { adminErrorDetail } from '../admin-api';
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
-import { LoadErrorComponent } from '../ui/load-error.component';
+import { LoadErrorComponent } from '../ui/load-error/load-error.component';
 
 interface SettingField {
   key: string;
@@ -48,7 +48,7 @@ interface SettingGroup {
           <button
             class="btn btn--gold"
             (click)="save()"
-            [disabled]="!hasChanges() || isSaving() || isLoading() || !!loadError()"
+            [disabled]="!hasChanges() || isSaving() || isLoading() || loadError() !== null"
           >
             <svg *ngIf="!isSaving()" viewBox="0 0 24 24" width="16" height="16">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
@@ -79,18 +79,17 @@ interface SettingGroup {
            locked, and Save is disabled: the danger is not that the
            admin sees nothing, it is that they save over something. -->
       <app-load-error
-        *ngIf="!isLoading() && loadError()"
-        [title]="i18n.t('admin.settings.loadErrTitle')"
+        *ngIf="!isLoading() && loadError() !== null"
         [detail]="loadError()!"
         (retry)="load()"
       ></app-load-error>
 
-      <p class="locked-note" *ngIf="!isLoading() && loadError()">
+      <p class="locked-note" *ngIf="!isLoading() && loadError() !== null">
         {{ i18n.t('admin.settings.lockedNote') }}
       </p>
 
       <!-- Groups -->
-      <div class="groups" *ngIf="!isLoading()" [class.is-locked]="!!loadError()">
+      <div class="groups" *ngIf="!isLoading()" [class.is-locked]="loadError() !== null">
         <section class="group" *ngFor="let group of groups">
           <div class="group-head">
             <div class="group-icon">
@@ -114,10 +113,10 @@ interface SettingGroup {
                 <input
                   [id]="'st-' + field.key"
                   [type]="field.type"
-                  [placeholder]="loadError() ? '' : (field.placeholder || '')"
+                  [placeholder]="loadError() !== null ? '' : (field.placeholder || '')"
                   [ngModel]="values()[field.key] || ''"
                   (ngModelChange)="onValueChange(field.key, $event)"
-                  [disabled]="!!loadError()"
+                  [disabled]="loadError() !== null"
                 />
                 <span class="affix affix--suffix" *ngIf="field.suffix">{{ field.suffix }}</span>
               </div>
@@ -136,8 +135,8 @@ interface SettingGroup {
     .locked-note {
       margin: 0.9rem 0 0;
       padding: 0.8rem 1.1rem;
-      background: rgba(168, 68, 60, 0.08);
-      border-left: 3px solid #a8443c;
+      background: var(--danger-soft, #f7e7e4);
+      border-inline-start: 3px solid var(--danger, #a8443c);
       border-radius: var(--r, 8px);
       color: var(--green, #0F2A1D);
       font-size: 0.85rem;
@@ -410,6 +409,7 @@ export class AdminSettingsComponent implements OnInit {
     this.loadError.set(null);
     this.settingsService.adminGetAll().subscribe({
       next: (res) => {
+        this.loadError.set(null);
         this.serverValues.set({ ...res.settings });
         this.values.set({ ...res.settings });
         this.isLoading.set(false);
@@ -420,8 +420,8 @@ export class AdminSettingsComponent implements OnInit {
         // stale baseline while the form is locked.
         this.serverValues.set({});
         this.values.set({});
-        this.loadError.set(adminErrorDetail(err));
-        this.toast.show(this.i18n.t('admin.settings.loadErrTitle'));
+        this.loadError.set(adminErrorDetail(err, this.i18n.t('admin.common.apiDown')));
+        this.toast.show(this.i18n.t('admin.common.loadFailed'));
         this.isLoading.set(false);
       },
     });
@@ -429,7 +429,7 @@ export class AdminSettingsComponent implements OnInit {
 
   /** Guards the write even if the button is ever re-enabled by mistake. */
   private canSave(): boolean {
-    return !this.loadError() && !this.isLoading();
+    return this.loadError() === null && !this.isLoading();
   }
 
   reload(): void {
