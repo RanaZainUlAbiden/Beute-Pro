@@ -1,16 +1,39 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { EMPTY, Observable, catchError, distinctUntilChanged, map, switchMap, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { AuthService } from './auth';
 
 @Injectable({ providedIn: 'root' })
 export class WishlistService {
   private http = inject(HttpClient);
+  private readonly auth = inject(AuthService);
   private apiUrl = environment.apiUrl;
 
   private readonly ids = signal<readonly string[]>([]);
   /** Saved product ids, as a signal — reactive for OnPush components and effects. */
   readonly items = this.ids.asReadonly();
+
+  constructor() {
+    // AuthService has finished restoring its session before this subscription
+    // can issue HTTP requests through the auth interceptor.
+    this.auth.user$.pipe(
+      map((user) => user?.id ?? null),
+      distinctUntilChanged(),
+      switchMap((userId) => {
+        this.clear();
+        if (userId === null) return EMPTY;
+        return this.loadWishlist().pipe(
+          catchError((error) => {
+            console.warn('Failed to load wishlist after session change', error);
+            return EMPTY;
+          }),
+        );
+      }),
+      takeUntilDestroyed(),
+    ).subscribe();
+  }
 
   /**
    * Load wishlist from server

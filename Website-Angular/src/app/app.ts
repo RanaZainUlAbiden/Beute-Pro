@@ -16,6 +16,7 @@ import { ProgressBar } from './shared/progress-bar/progress-bar';
 import { Toast } from './shared/toast/toast';
 import { WelcomePopup } from './shared/welcome-popup/welcome-popup';
 import { WhatsappButton } from './shared/whatsapp-button/whatsapp-button';
+import { WishlistService } from './services/wishlist';
 
 /* =============================================================
    THE SHELL
@@ -53,6 +54,8 @@ export class App {
   private readonly audioEl = viewChild.required<ElementRef<HTMLAudioElement>>('audioEl');
 
   constructor() {
+    // Start auth-driven wishlist synchronization on every route, including admin.
+    inject(WishlistService);
     this.applyPage();
     this.router.events
       .pipe(filter((e) => e instanceof NavigationEnd))

@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { WishlistService } from './wishlist'; // ✅ Import
 
 export interface User {
   id: number;
@@ -35,9 +34,6 @@ export class AuthService {
 
   private isBrowser: boolean;
 
-  // ✅ Inject WishlistService
-  private wishlist = inject(WishlistService);
-
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.isBrowser = isPlatformBrowser(platformId);
     if (this.isBrowser) {
@@ -53,11 +49,6 @@ export class AuthService {
       try {
         const user = JSON.parse(userJson);
         this.userSubject.next(user);
-        // ✅ Restore the wishlist too — a page reload keeps the session
-        // in localStorage but the in-memory wishlist signal starts empty.
-        this.wishlist.loadWishlist().subscribe({
-          error: (err) => console.warn('Failed to load wishlist on session restore', err),
-        });
       } catch {
         this.logout();
       }
@@ -82,10 +73,6 @@ export class AuthService {
       localStorage.setItem(this.tokenKey, res.token);
       localStorage.setItem(this.userKey, JSON.stringify(res.user));
       this.userSubject.next(res.user);
-      // ✅ Load wishlist after successful login/register
-      this.wishlist.loadWishlist().subscribe({
-        error: (err) => console.warn('Failed to load wishlist after login', err),
-      });
     }
   }
 
@@ -106,9 +93,6 @@ export class AuthService {
         if (!this.isBrowser) return;
         localStorage.setItem(this.userKey, JSON.stringify(user));
         this.userSubject.next(user);
-        this.wishlist.loadWishlist().subscribe({
-          error: (err) => console.warn('Failed to load wishlist after login', err),
-        });
       })
     );
   }
@@ -128,7 +112,6 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
     this.userSubject.next(null);
-    this.wishlist.clear();
     this.router.navigate(['/login']);
   }
 
