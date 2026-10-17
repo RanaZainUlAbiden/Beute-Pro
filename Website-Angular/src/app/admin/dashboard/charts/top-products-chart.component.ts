@@ -1,4 +1,5 @@
-import { Component, Input, computed, signal } from '@angular/core';
+import { I18nService } from '../../../core/services/i18n.service';
+import { Component, Input, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import type { ChartConfiguration, ChartData } from 'chart.js';
@@ -20,8 +21,8 @@ export interface TopProduct {
     <div class="chart-card">
       <div class="chart-head">
         <div>
-          <h3 class="chart-title">Top products</h3>
-          <p class="chart-sub">By revenue, all time</p>
+          <h3 class="chart-title">{{ i18n.t('admin.dashboard.topProducts') }}</h3>
+          <p class="chart-sub">{{ i18n.t('admin.dashboard.chart.byRevenueAllTime') }}</p>
         </div>
       </div>
 
@@ -35,7 +36,7 @@ export interface TopProduct {
       </div>
 
       <ng-template #noData>
-        <div class="chart-empty">No sales yet.</div>
+        <div class="chart-empty">{{ i18n.t('admin.dashboard.chart.noSalesYet') }}</div>
       </ng-template>
     </div>
   `,
@@ -78,6 +79,7 @@ export interface TopProduct {
   `],
 })
 export class TopProductsChartComponent {
+  protected readonly i18n = inject(I18nService);
   private readonly _data = signal<TopProduct[]>([]);
 
   @Input()
@@ -101,7 +103,7 @@ export class TopProductsChartComponent {
       labels,
       datasets: [
         {
-          label: 'Revenue (PKR)',
+          label: this.i18n.t('admin.dashboard.chart.revenuePkr'),
           data: revenues,
           backgroundColor: [
             '#C9A44C',  // gold

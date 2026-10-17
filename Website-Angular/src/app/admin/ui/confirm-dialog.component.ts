@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { I18nService } from '../../core/services/i18n.service';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -21,12 +22,12 @@ import { CommonModule } from '@angular/common';
           </svg>
         </div>
 
-        <h3 class="dialog-title">{{ title }}</h3>
-        <p class="dialog-message">{{ message }}</p>
+        <h3 class="dialog-title">{{ title || i18n.t('admin.common.areYouSure') }}</h3>
+        <p class="dialog-message">{{ message || i18n.t('admin.common.thisActionCannotBeUndone') }}</p>
 
         <div class="dialog-actions">
           <button class="btn btn--outline" (click)="cancel.emit()" [disabled]="isLoading">
-            {{ cancelText }}
+            {{ cancelText || i18n.t('admin.common.cancel') }}
           </button>
           <button
             class="btn"
@@ -35,7 +36,7 @@ import { CommonModule } from '@angular/common';
             (click)="confirm.emit()"
             [disabled]="isLoading"
           >
-            {{ isLoading ? 'Working…' : confirmText }}
+            {{ isLoading ? i18n.t('admin.common.working') : (confirmText || i18n.t('admin.common.confirm')) }}
           </button>
         </div>
       </div>
@@ -125,11 +126,12 @@ import { CommonModule } from '@angular/common';
   `],
 })
 export class ConfirmDialogComponent {
+  protected readonly i18n = inject(I18nService);
   @Input() isOpen = false;
-  @Input() title = 'Are you sure?';
-  @Input() message = 'This action cannot be undone.';
-  @Input() confirmText = 'Confirm';
-  @Input() cancelText = 'Cancel';
+  @Input() title = '';
+  @Input() message = '';
+  @Input() confirmText = '';
+  @Input() cancelText = '';
   @Input() variant: 'primary' | 'danger' = 'primary';
   @Input() isLoading = false;
 

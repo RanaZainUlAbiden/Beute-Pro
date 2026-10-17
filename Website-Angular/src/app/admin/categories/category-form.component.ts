@@ -1,3 +1,4 @@
+import { I18nService } from '../../core/services/i18n.service';
 import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -14,8 +15,8 @@ import { ApiCategory } from '../../core/models/api.model';
     <div class="modal-backdrop" [class.is-open]="isOpen" (click)="onBackdropClick($event)">
       <div class="modal" (click)="$event.stopPropagation()">
         <div class="modal-head">
-          <h3>{{ category ? 'Edit category' : 'New category' }}</h3>
-          <button class="modal-close" (click)="onCancel()" aria-label="Close" [disabled]="isSaving()">
+          <h3>{{ category ? i18n.t('admin.categories.form.editCategory') : i18n.t('admin.categories.form.newCategory') }}</h3>
+          <button class="modal-close" (click)="onCancel()" [attr.aria-label]="i18n.t('admin.categories.form.close')" [disabled]="isSaving()">
             <svg viewBox="0 0 24 24" width="20" height="20">
               <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" fill="none"/>
@@ -25,51 +26,51 @@ import { ApiCategory } from '../../core/models/api.model';
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-body">
           <div class="field">
-            <label for="cat-id">Category ID *</label>
+            <label for="cat-id">{{ i18n.t('admin.categories.form.categoryId') }}</label>
             <input
               id="cat-id"
               type="text"
               formControlName="id"
-              placeholder="e.g. mists"
+              [placeholder]="i18n.t('admin.categories.form.eGMists')"
               [readonly]="isEditMode"
             />
-            <small class="hint">Lowercase, dashes only. Cannot be changed after creation.</small>
+            <small class="hint">{{ i18n.t('admin.categories.form.lowercaseDashesOnlyCannotBeChangedAfterCreation') }}</small>
             <div class="error" *ngIf="f['id'].invalid && f['id'].touched">
-              Required. Lowercase letters, numbers, dashes only.
+              {{ i18n.t('admin.categories.form.requiredLowercaseLettersNumbersDashesOnly') }}
             </div>
           </div>
 
           <div class="field">
-            <label for="cat-en">English name *</label>
-            <input id="cat-en" type="text" formControlName="en" placeholder="Face Mists" />
-            <div class="error" *ngIf="f['en'].invalid && f['en'].touched">Required</div>
+            <label for="cat-en">{{ i18n.t('admin.categories.form.englishName') }}</label>
+            <input id="cat-en" type="text" dir="ltr" formControlName="en" [placeholder]="i18n.t('admin.categories.form.faceMists')" />
+            <div class="error" *ngIf="f['en'].invalid && f['en'].touched">{{ i18n.t('admin.categories.form.required') }}</div>
           </div>
 
           <div class="field" dir="rtl">
-            <label for="cat-ar">الاسم بالعربية *</label>
-            <input id="cat-ar" type="text" formControlName="ar" placeholder="ضباب الوجه" />
-            <div class="error" *ngIf="f['ar'].invalid && f['ar'].touched">مطلوب</div>
+            <label for="cat-ar">{{ i18n.t('admin.categories.form.arabicName') }}</label>
+            <input id="cat-ar" type="text" formControlName="ar" [placeholder]="i18n.t('admin.categories.form.arabicExample')" />
+            <div class="error" *ngIf="f['ar'].invalid && f['ar'].touched">{{ i18n.t('admin.categories.form.required') }}</div>
           </div>
 
           <div class="field">
-            <label for="cat-img">Image URL</label>
+            <label for="cat-img">{{ i18n.t('admin.categories.form.imageUrl') }}</label>
             <input id="cat-img" type="text" formControlName="imageUrl"
                    placeholder="/assets/img/categories/mists.jpg" />
-            <small class="hint">Optional. Used for the category tile on the shop page.</small>
+            <small class="hint">{{ i18n.t('admin.categories.form.optionalUsedForTheCategoryTileOnTheShopPage') }}</small>
           </div>
 
           <div class="field">
-            <label for="cat-order">Display order</label>
+            <label for="cat-order">{{ i18n.t('admin.categories.form.displayOrder') }}</label>
             <input id="cat-order" type="number" formControlName="displayOrder" min="0" />
-            <small class="hint">Lower numbers show first.</small>
+            <small class="hint">{{ i18n.t('admin.categories.form.lowerNumbersShowFirst') }}</small>
           </div>
 
           <div class="modal-actions">
             <button type="button" class="btn btn--outline" (click)="onCancel()" [disabled]="isSaving()">
-              Cancel
+              {{ i18n.t('admin.common.cancel') }}
             </button>
             <button type="submit" class="btn btn--gold" [disabled]="isSaving() || form.invalid">
-              {{ isSaving() ? 'Saving…' : (isEditMode ? 'Save changes' : 'Create') }}
+              {{ isSaving() ? i18n.t('admin.common.saving') : (isEditMode ? i18n.t('admin.categories.form.saveChanges') : i18n.t('admin.categories.form.create')) }}
             </button>
           </div>
         </form>
@@ -184,6 +185,7 @@ import { ApiCategory } from '../../core/models/api.model';
   `],
 })
 export class CategoryFormComponent implements OnInit {
+  protected readonly i18n = inject(I18nService);
   private fb = inject(FormBuilder);
   private categoryService = inject(CategoryService);
   private toast = inject(ToastService);
@@ -284,13 +286,13 @@ export class CategoryFormComponent implements OnInit {
     request$.subscribe({
       next: (res: any) => {
         this.isSaving.set(false);
-        this.toast.show(this.isEditMode ? 'Category updated' : 'Category created');
+        this.toast.show(this.isEditMode ? this.i18n.t('admin.categories.form.categoryUpdated') : this.i18n.t('admin.categories.form.categoryCreated'));
         this.saved.emit(res.category);
       },
       error: (err) => {
         console.error('Save category failed', err);
         this.isSaving.set(false);
-        const msg = err.error?.error || 'Failed to save category';
+        const msg = err.error?.error || this.i18n.t('admin.categories.form.failedToSaveCategory');
         this.toast.show(msg);
       },
     });

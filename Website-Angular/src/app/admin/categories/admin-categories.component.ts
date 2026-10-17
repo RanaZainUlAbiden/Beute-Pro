@@ -27,11 +27,11 @@ import { CategoryFormComponent } from './category-form.component';
       <!-- Header -->
       <div class="page-head">
         <div>
-          <h1 class="h-lg">Categories</h1>
+          <h1 class="h-lg">{{ i18n.t('admin.nav.categories') }}</h1>
           <!-- A count is a claim about the data; don't make one when the
                read failed. "—" is honest, "0 categories" is not. -->
           <p class="page-sub" *ngIf="!isLoading() && loadError() === null">
-            {{ categories().length }} categor{{ categories().length === 1 ? 'y' : 'ies' }}
+            {{ i18n.t('admin.categories.header.count').replace('{count}', categories().length.toString()) }}
           </p>
           <p class="page-sub" *ngIf="isLoading() || loadError() !== null">—</p>
         </div>
@@ -40,12 +40,12 @@ import { CategoryFormComponent } from './category-form.component';
             <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2"
                   stroke-linecap="round" fill="none"/>
           </svg>
-          Add category
+          {{ i18n.t('admin.categories.header.addCategory') }}
         </button>
       </div>
 
       <!-- Loading -->
-      <app-loading-spinner *ngIf="isLoading()" message="Loading categories…"></app-loading-spinner>
+      <app-loading-spinner *ngIf="isLoading()" [message]="i18n.t('admin.categories.header.loadingCategories')"></app-loading-spinner>
 
       <!-- Load failed — shown INSTEAD of the empty state, so a dead
            API never reads as an empty catalogue. -->
@@ -57,8 +57,8 @@ import { CategoryFormComponent } from './category-form.component';
 
       <!-- Empty -->
       <div class="empty-state" *ngIf="!isLoading() && loadError() === null && categories().length === 0">
-        <p>No categories yet.</p>
-        <button class="btn btn--gold" (click)="openCreate()">Create the first one</button>
+        <p>{{ i18n.t('admin.categories.header.noCategoriesYet') }}</p>
+        <button class="btn btn--gold" (click)="openCreate()">{{ i18n.t('admin.categories.header.createTheFirstOne') }}</button>
       </div>
 
       <!-- Grid -->
@@ -66,25 +66,25 @@ import { CategoryFormComponent } from './category-form.component';
         <div class="cat-card" *ngFor="let c of categories()">
           <div class="cat-card__order">
             <span class="order-num">{{ c.displayOrder }}</span>
-            <span class="order-label">order</span>
+            <span class="order-label">{{ i18n.t('admin.categories.header.order') }}</span>
           </div>
 
           <div class="cat-card__body">
             <div class="cat-card__id">{{ c.id }}</div>
             <div class="cat-card__names">
               <div class="name-en">
-                <span class="lang-chip">EN</span>
+                <span class="lang-chip">{{ i18n.t('admin.categories.header.en') }}</span>
                 {{ c.en }}
               </div>
               <div class="name-ar" dir="rtl">
-                <span class="lang-chip">AR</span>
+                <span class="lang-chip">{{ i18n.t('admin.categories.header.ar') }}</span>
                 {{ c.ar }}
               </div>
             </div>
           </div>
 
           <div class="cat-card__actions">
-            <button class="icon-action" title="Edit" (click)="openEdit(c)">
+            <button class="icon-action" [title]="i18n.t('admin.common.edit')" (click)="openEdit(c)">
               <svg viewBox="0 0 24 24" width="16" height="16">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
                       stroke="currentColor" stroke-width="1.8" fill="none"
@@ -94,7 +94,7 @@ import { CategoryFormComponent } from './category-form.component';
                       stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <button class="icon-action icon-action--danger" title="Delete" (click)="confirmDelete(c)">
+            <button class="icon-action icon-action--danger" [title]="i18n.t('admin.media.delete')" (click)="confirmDelete(c)">
               <svg viewBox="0 0 24 24" width="16" height="16">
                 <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14Z"
                       stroke="currentColor" stroke-width="1.8" fill="none"
@@ -117,9 +117,9 @@ import { CategoryFormComponent } from './category-form.component';
       <!-- ─────── Delete confirm ─────── -->
       <app-confirm-dialog
         [isOpen]="deleteDialogOpen()"
-        title="Delete category?"
-        [message]="'Are you sure you want to delete “' + (pendingDelete()?.en || '') + '”? Categories that still have products cannot be deleted.'"
-        confirmText="Delete"
+        [title]="i18n.t('admin.categories.header.deleteCategory')"
+        [message]="i18n.t('admin.categories.deleteMessage').replace('{name}', (i18n.isRTL() ? pendingDelete()?.ar : pendingDelete()?.en) || '')"
+        [confirmText]="i18n.t('admin.media.delete')"
         variant="danger"
         [isLoading]="isDeleting()"
         (confirm)="doDelete()"
@@ -338,13 +338,13 @@ export class AdminCategoriesComponent implements OnInit {
         this.isDeleting.set(false);
         this.deleteDialogOpen.set(false);
         this.pendingDelete.set(null);
-        this.toast.show(`“${c.en}” deleted`);
+        this.toast.show(this.i18n.t('admin.categories.deleted').replace('{name}', this.i18n.isRTL() ? c.ar : c.en));
         this.loadCategories();
       },
       error: (err) => {
         console.error('Delete category failed', err);
         this.isDeleting.set(false);
-        const msg = err.error?.error || 'Failed to delete category';
+        const msg = err.error?.error || this.i18n.t('admin.categories.header.failedToDeleteCategory');
         this.toast.show(msg);
         this.cancelDelete();
       },

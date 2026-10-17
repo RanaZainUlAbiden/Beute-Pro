@@ -29,143 +29,8 @@ import { CsvExportButtonComponent } from '../ui/csv-export-button.component';
     ConfirmDialogComponent,
     CsvExportButtonComponent, // ✅ now actually used in template
   ],
-  template: `
-    <div class="admin-products">
-      <!-- Header -->
-      <div class="page-head">
-        <div>
-          <h1 class="h-lg">Products</h1>
-          <!-- Not a count when the read failed — see load-error.component.ts. -->
-          <p class="page-sub" *ngIf="!isLoading() && loadError() === null">{{ total() }} product{{ total() === 1 ? '' : 's' }} in the catalogue</p>
-          <p class="page-sub" *ngIf="isLoading() || loadError() !== null">—</p>
-        </div>
-        <div class="head-actions">
-          <!-- ✅ CSV export -->
-          <app-csv-export-button
-            label="Export products"
-            [isLoading]="exportBusy()"
-            (clicked)="exportCsv()" />
-
-          <a class="btn btn--gold" routerLink="new">
-            <svg viewBox="0 0 24 24" width="16" height="16">
-              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" fill="none"/>
-            </svg>
-            Add product
-          </a>
-        </div>
-      </div>
-
-      <!-- Filters -->
-      <div class="filters">
-        <div class="filter-search">
-          <svg viewBox="0 0 24 24" width="16" height="16">
-            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8" fill="none"/>
-            <path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" fill="none"/>
-          </svg>
-          <input
-            type="text"
-            placeholder="Search by name or ID…"
-            [(ngModel)]="searchTerm"
-            (ngModelChange)="onSearchChange($event)"
-          />
-        </div>
-        <select class="filter-select" [(ngModel)]="categoryFilter" (ngModelChange)="onCategoryChange($event)">
-          <option value="">All categories</option>
-          <option *ngFor="let c of categories()" [value]="c.id">{{ c.en }}</option>
-        </select>
-      </div>
-
-      <!-- Loading -->
-      <app-loading-spinner *ngIf="isLoading()" message="Loading products…"></app-loading-spinner>
-
-      <!-- Load failed — shown INSTEAD of the empty state. -->
-      <app-load-error
-        *ngIf="!isLoading() && loadError() !== null"
-        [detail]="loadError()!"
-        (retry)="loadProducts()"
-      ></app-load-error>
-
-      <!-- Empty -->
-      <div class="empty-state" *ngIf="!isLoading() && loadError() === null && products().length === 0">
-        <svg viewBox="0 0 24 24" width="48" height="48">
-          <path d="M6 7h12l-1.2 12H7.2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <path d="M9 7a3 3 0 0 1 6 0" stroke="currentColor" stroke-width="1.5" fill="none"/>
-        </svg>
-        <p>No products found.</p>
-        <a class="btn btn--gold" routerLink="new">Add your first product</a>
-      </div>
-
-      <!-- Table -->
-      <div class="table-card" *ngIf="!isLoading() && loadError() === null && products().length > 0">
-        <div class="table-header">
-          <span class="col-img"></span>
-          <span>Product</span>
-          <span>Category</span>
-          <span class="col-num">Price</span>
-          <span>Badge</span>
-          <span class="col-bool">Active</span>
-          <span class="col-actions">Actions</span>
-        </div>
-
-        <div class="table-row" *ngFor="let p of products()">
-          <span class="col-img">
-            <img
-              [src]="imgSrc(p)"
-              [alt]="p.en.name"
-              loading="lazy"
-              (error)="onImgError($event)"
-            />
-          </span>
-          <span class="col-product">
-            <strong>{{ p.en.name }}</strong>
-            <small>{{ p.id }}</small>
-          </span>
-          <span class="col-category">{{ categoryName(p.category) }}</span>
-          <span class="col-num price">₨ {{ p.price | number }}</span>
-          <span>
-            <span *ngIf="p.badge" class="badge" [class]="'badge--' + p.badge">{{ p.badge }}</span>
-            <span *ngIf="!p.badge" class="muted">—</span>
-          </span>
-          <span class="col-bool">
-            <span class="status-dot" [class.is-on]="p.isActive" [class.is-off]="!p.isActive"></span>
-            {{ p.isActive ? 'Yes' : 'No' }}
-          </span>
-          <span class="col-actions">
-            <a class="icon-action" title="Edit" [routerLink]="[p.id, 'edit']">
-              <svg viewBox="0 0 24 24" width="16" height="16">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                      stroke="currentColor" stroke-width="1.8" fill="none"
-                      stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"
-                      stroke="currentColor" stroke-width="1.8" fill="none"
-                      stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </a>
-            <button class="icon-action icon-action--danger" title="Delete" (click)="confirmDelete(p)">
-              <svg viewBox="0 0 24 24" width="16" height="16">
-                <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14Z"
-                      stroke="currentColor" stroke-width="1.8" fill="none"
-                      stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </span>
-        </div>
-      </div>
-
-      <!-- Confirm Delete Dialog -->
-      <app-confirm-dialog
-        [isOpen]="deleteDialogOpen()"
-        title="Delete product?"
-        [message]="'This will deactivate “' + (pendingDelete()?.en?.name || '') + '”. Existing orders stay intact.'"
-        confirmText="Delete"
-        variant="danger"
-        [isLoading]="isDeleting()"
-        (confirm)="doDelete()"
-        (cancel)="cancelDelete()"
-      ></app-confirm-dialog>
-    </div>
-  `,
+  templateUrl: './admin-products.component.html',
+  styleUrl: './admin-products.component.scss',
   styles: [`
     .admin-products { padding: 0; }
     .page-head {
@@ -408,6 +273,19 @@ export class AdminProductsComponent implements OnInit {
   // ------------------------------------------------------------
   // Helpers
   // ------------------------------------------------------------
+  productName(p: ApiProduct): string {
+    return this.i18n.isRTL() ? (p.ar?.name || p.en.name) : p.en.name;
+  }
+
+  badgeLabel(badge: string): string {
+    switch (badge) {
+      case 'bestseller': return this.i18n.t('admin.products.form.bestSeller');
+      case 'new': return this.i18n.t('admin.products.form.new');
+      case 'sale': return this.i18n.t('admin.products.form.sale');
+      default: return badge;
+    }
+  }
+
   imgSrc(p: ApiProduct): string {
     return mediaUrl(p, 0);
   }
@@ -420,7 +298,7 @@ export class AdminProductsComponent implements OnInit {
 
   categoryName(id: string): string {
     const c = this.categories().find((x) => x.id === id);
-    return c ? c.en : id;
+    return c ? (this.i18n.isRTL() ? c.ar : c.en) : id;
   }
 
   // ------------------------------------------------------------
@@ -432,11 +310,11 @@ export class AdminProductsComponent implements OnInit {
     this.exportService.download('products').subscribe({
       next: () => {
         this.exportBusy.set(false);
-        this.toast.show('Download started');
+        this.toast.show(this.i18n.t('admin.orders.header.downloadStarted'));
       },
       error: (err) => {
         this.exportBusy.set(false);
-        this.toast.show(err.error?.error || 'Export failed');
+        this.toast.show(err.error?.error || this.i18n.t('admin.orders.header.exportFailed'));
       },
     });
   }
@@ -464,13 +342,13 @@ export class AdminProductsComponent implements OnInit {
         this.isDeleting.set(false);
         this.deleteDialogOpen.set(false);
         this.pendingDelete.set(null);
-        this.toast.show(`“${product.en.name}” deactivated`);
+        this.toast.show(this.i18n.t('admin.products.deleted').replace('{name}', this.productName(product)));
         this.loadProducts();
       },
       error: (err) => {
         console.error('Delete failed', err);
         this.isDeleting.set(false);
-        this.toast.show('Failed to delete product');
+        this.toast.show(this.i18n.t('admin.products.header.failedToDeleteProduct'));
       },
     });
   }

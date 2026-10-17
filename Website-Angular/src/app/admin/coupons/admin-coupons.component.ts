@@ -29,10 +29,10 @@ import { CouponFormComponent } from './coupon-form.component';
       <!-- Header -->
       <div class="page-head">
         <div>
-          <h1 class="h-lg">Coupons</h1>
+          <h1 class="h-lg">{{ i18n.t('admin.nav.coupons') }}</h1>
           <p class="page-sub" *ngIf="!isLoading() && loadError() === null">
-            {{ coupons().length }} coupon{{ coupons().length === 1 ? '' : 's' }}
-            · <span class="active-count">{{ activeCount() }} active</span>
+            {{ i18n.t('admin.coupons.header.count').replace('{count}', coupons().length.toString()) }}
+            · <span class="active-count">{{ i18n.t('admin.coupons.header.activeCount').replace('{count}', activeCount().toString()) }}</span>
           </p>
           <p class="page-sub" *ngIf="isLoading() || loadError() !== null">—</p>
         </div>
@@ -41,7 +41,7 @@ import { CouponFormComponent } from './coupon-form.component';
             <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2"
                   stroke-linecap="round" fill="none"/>
           </svg>
-          New coupon
+          {{ i18n.t('admin.coupons.header.newCoupon') }}
         </button>
       </div>
 
@@ -49,12 +49,12 @@ import { CouponFormComponent } from './coupon-form.component';
       <div class="filters">
         <label class="toggle-filter">
           <input type="checkbox" [(ngModel)]="activeOnly" (ngModelChange)="onFilterChange()" />
-          <span>Active only</span>
+          <span>{{ i18n.t('admin.coupons.header.activeOnly') }}</span>
         </label>
       </div>
 
       <!-- Loading -->
-      <app-loading-spinner *ngIf="isLoading()" message="Loading coupons…"></app-loading-spinner>
+      <app-loading-spinner *ngIf="isLoading()" [message]="i18n.t('admin.coupons.header.loadingCoupons')"></app-loading-spinner>
 
       <!-- Load failed — shown INSTEAD of the empty state, so a dead
            API never reads as "no coupons yet". -->
@@ -70,8 +70,8 @@ import { CouponFormComponent } from './coupon-form.component';
           <path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8z"
                 stroke="currentColor" stroke-width="1.5" fill="none"/>
         </svg>
-        <p>No coupons yet.</p>
-        <button class="btn btn--gold" (click)="openCreate()">Create your first coupon</button>
+        <p>{{ i18n.t('admin.coupons.header.noCouponsYet') }}</p>
+        <button class="btn btn--gold" (click)="openCreate()">{{ i18n.t('admin.coupons.header.createYourFirstCoupon') }}</button>
       </div>
 
       <!-- Grid -->
@@ -80,8 +80,8 @@ import { CouponFormComponent } from './coupon-form.component';
           <!-- Top row: code + status -->
           <div class="card-head">
             <div class="code-wrap">
-              <span class="code">{{ c.code }}</span>
-              <button class="copy-btn" (click)="copyCode(c.code)" title="Copy code">
+              <span class="code"><bdi dir="ltr">{{ c.code }}</bdi></span>
+              <button class="copy-btn" (click)="copyCode(c.code)" [title]="i18n.t('admin.coupons.header.copyCode')">
                 <svg viewBox="0 0 24 24" width="14" height="14">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"
                         stroke="currentColor" stroke-width="2" fill="none"/>
@@ -100,26 +100,26 @@ import { CouponFormComponent } from './coupon-form.component';
 
           <!-- Big discount -->
           <div class="discount">
-            <span class="discount-value">
+            <span class="discount-value" dir="ltr">
               {{ c.discountType === 'percentage' ? c.discountValue + '%' : '₨ ' + (c.discountValue | number) }}
             </span>
-            <span class="discount-label">off</span>
+            <span class="discount-label">{{ i18n.t('admin.coupons.header.off') }}</span>
           </div>
 
           <!-- Meta -->
           <div class="meta">
             <div class="meta-row">
-              <span class="meta-label">Min order</span>
+              <span class="meta-label">{{ i18n.t('admin.coupons.header.minOrder') }}</span>
               <span class="meta-value">₨ {{ c.minOrderValue | number }}</span>
             </div>
             <div class="meta-row">
-              <span class="meta-label">Usage</span>
+              <span class="meta-label">{{ i18n.t('admin.coupons.header.usage') }}</span>
               <span class="meta-value">
                 {{ c.usedCount }} / {{ c.maxUses !== null ? c.maxUses : '∞' }}
               </span>
             </div>
             <div class="meta-row">
-              <span class="meta-label">Expires</span>
+              <span class="meta-label">{{ i18n.t('admin.coupons.header.expires') }}</span>
               <span class="meta-value">{{ formatExpiry(c) }}</span>
             </div>
           </div>
@@ -131,8 +131,8 @@ import { CouponFormComponent } from './coupon-form.component';
 
           <!-- Actions -->
           <div class="card-actions">
-            <button class="btn btn--outline btn--sm" (click)="openEdit(c)">Edit</button>
-            <button class="btn btn--danger-outline btn--sm" (click)="confirmDelete(c)">Delete</button>
+            <button class="btn btn--outline btn--sm" (click)="openEdit(c)">{{ i18n.t('admin.common.edit') }}</button>
+            <button class="btn btn--danger-outline btn--sm" (click)="confirmDelete(c)">{{ i18n.t('admin.media.delete') }}</button>
           </div>
         </div>
       </div>
@@ -148,9 +148,9 @@ import { CouponFormComponent } from './coupon-form.component';
       <!-- Confirm delete -->
       <app-confirm-dialog
         [isOpen]="deleteDialogOpen()"
-        title="Delete coupon?"
-        [message]="'Are you sure you want to delete “' + (pendingDelete()?.code || '') + '”? This action cannot be undone.'"
-        confirmText="Delete"
+        [title]="i18n.t('admin.coupons.header.deleteCoupon')"
+        [message]="i18n.t('admin.coupons.deleteMessage').replace('{code}', pendingDelete()?.code || '')"
+        [confirmText]="i18n.t('admin.media.delete')"
         variant="danger"
         [isLoading]="isDeleting()"
         (confirm)="doDelete()"
@@ -427,9 +427,9 @@ export class AdminCouponsComponent implements OnInit {
   }
 
   statusLabel(c: ApiCoupon): string {
-    if (this.isExpired(c)) return 'Expired';
-    if (!c.isActive) return 'Inactive';
-    return 'Active';
+    if (this.isExpired(c)) return this.i18n.t('admin.coupons.header.expired');
+    if (!c.isActive) return this.i18n.t('admin.coupons.header.inactive');
+    return this.i18n.t('admin.coupons.header.active');
   }
 
   usagePercent(c: ApiCoupon): number {
@@ -438,7 +438,7 @@ export class AdminCouponsComponent implements OnInit {
   }
 
   formatExpiry(c: ApiCoupon): string {
-    if (!c.expiresAt) return 'Never';
+    if (!c.expiresAt) return this.i18n.t('admin.coupons.header.never');
     const d = new Date(c.expiresAt);
     return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   }
@@ -446,8 +446,8 @@ export class AdminCouponsComponent implements OnInit {
   copyCode(code: string): void {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(code).then(() => {
-        this.toast.show(`Copied “${code}”`);
-      }).catch(() => this.toast.show('Failed to copy'));
+        this.toast.show(this.i18n.t('admin.coupons.copied').replace('{code}', code));
+      }).catch(() => this.toast.show(this.i18n.t('admin.coupons.header.failedToCopy')));
     } else {
       // Fallback for older browsers
       const ta = document.createElement('textarea');
@@ -456,7 +456,7 @@ export class AdminCouponsComponent implements OnInit {
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
-      this.toast.show(`Copied “${code}”`);
+      this.toast.show(this.i18n.t('admin.coupons.copied').replace('{code}', code));
     }
   }
 
@@ -482,13 +482,13 @@ export class AdminCouponsComponent implements OnInit {
         this.isDeleting.set(false);
         this.deleteDialogOpen.set(false);
         this.pendingDelete.set(null);
-        this.toast.show(`“${c.code}” deleted`);
+        this.toast.show(this.i18n.t('admin.coupons.deleted').replace('{code}', c.code));
         this.loadCoupons();
       },
       error: (err) => {
         console.error('Delete coupon failed', err);
         this.isDeleting.set(false);
-        this.toast.show(err.error?.error || 'Failed to delete coupon');
+        this.toast.show(err.error?.error || this.i18n.t('admin.coupons.header.failedToDeleteCoupon'));
         this.cancelDelete();
       },
     });

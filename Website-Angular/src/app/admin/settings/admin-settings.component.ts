@@ -34,8 +34,8 @@ interface SettingGroup {
       <!-- Header -->
       <div class="page-head">
         <div>
-          <h1 class="h-lg">Store Settings</h1>
-          <p class="page-sub">Configure shipping, contact information and storefront behaviour</p>
+          <h1 class="h-lg">{{ i18n.t('admin.settings.header.storeSettings') }}</h1>
+          <p class="page-sub">{{ i18n.t('admin.settings.header.configureShippingContactInformationAndStorefrontBehaviour') }}</p>
         </div>
         <div class="head-actions">
           <button
@@ -43,7 +43,7 @@ interface SettingGroup {
             (click)="reload()"
             [disabled]="isLoading() || isSaving()"
           >
-            Reset
+            {{ i18n.t('admin.settings.header.reset') }}
           </button>
           <button
             class="btn btn--gold"
@@ -58,7 +58,7 @@ interface SettingGroup {
                     stroke="currentColor" stroke-width="2" fill="none"
                     stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            {{ isSaving() ? 'Saving…' : 'Save changes' }}
+            {{ isSaving() ? i18n.t('admin.common.saving') : i18n.t('admin.categories.form.saveChanges') }}
           </button>
         </div>
       </div>
@@ -66,11 +66,11 @@ interface SettingGroup {
       <!-- Dirty badge -->
       <div class="dirty-banner" *ngIf="hasChanges() && !isSaving()">
         <span class="dot"></span>
-        You have unsaved changes
+        {{ i18n.t('admin.settings.header.youHaveUnsavedChanges') }}
       </div>
 
       <!-- Loading -->
-      <app-loading-spinner *ngIf="isLoading()" message="Loading settings…"></app-loading-spinner>
+      <app-loading-spinner *ngIf="isLoading()" [message]="i18n.t('admin.settings.header.loadingSettings')"></app-loading-spinner>
 
       <!-- Load failed. Unlike the other screens this one still renders
            its form underneath, because an empty form here is not an
@@ -90,7 +90,7 @@ interface SettingGroup {
 
       <!-- Groups -->
       <div class="groups" *ngIf="!isLoading()" [class.is-locked]="loadError() !== null">
-        <section class="group" *ngFor="let group of groups">
+        <section class="group" *ngFor="let group of groups()">
           <div class="group-head">
             <div class="group-icon">
               <svg viewBox="0 0 24 24" width="20" height="20">
@@ -322,24 +322,24 @@ export class AdminSettingsComponent implements OnInit {
   });
 
   /** Declarative list of setting fields, grouped visually. */
-  readonly groups: SettingGroup[] = [
+  readonly groups = computed<SettingGroup[]>(() => [
     {
-      title: 'Shipping & Delivery',
+      title: this.i18n.t('admin.settings.header.shippingDelivery'),
       // Truck icon path
       icon: 'M1 3h15v13H1zM16 8h4l3 3v5h-7M5.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM18.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
       fields: [
         {
           key: 'free_shipping_min_pkr',
-          label: 'Free shipping minimum',
-          description: 'Orders above this amount ship free. Enter 0 to disable.',
+          label: this.i18n.t('admin.settings.header.freeShippingMinimum'),
+          description: this.i18n.t('admin.settings.header.ordersAboveThisAmountShipFreeEnter0ToDisable'),
           type: 'number',
           prefix: '₨',
           placeholder: '3000',
         },
         {
           key: 'cod_extra_charges_pkr',
-          label: 'COD extra charge',
-          description: 'Additional fee for cash-on-delivery orders.',
+          label: this.i18n.t('admin.settings.header.codExtraCharge'),
+          description: this.i18n.t('admin.settings.header.additionalFeeForCashOnDeliveryOrders'),
           type: 'number',
           prefix: '₨',
           placeholder: '0',
@@ -347,55 +347,55 @@ export class AdminSettingsComponent implements OnInit {
       ],
     },
     {
-      title: 'Contact & Support',
+      title: this.i18n.t('admin.settings.header.contactSupport'),
       // Phone icon path
       icon: 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.574 2.81.7A2 2 0 0 1 22 16.92z',
       fields: [
         {
           key: 'store_phone',
-          label: 'Store phone',
-          description: 'Displayed on the contact page and footer.',
+          label: this.i18n.t('admin.settings.header.storePhone'),
+          description: this.i18n.t('admin.settings.header.displayedOnTheContactPageAndFooter'),
           type: 'text',
           placeholder: '+92-300-1234567',
         },
         {
           key: 'store_whatsapp',
-          label: 'WhatsApp number',
-          description: 'Used for the floating WhatsApp button.',
+          label: this.i18n.t('admin.settings.header.whatsappNumber'),
+          description: this.i18n.t('admin.settings.header.usedForTheFloatingWhatsappButton'),
           type: 'text',
           placeholder: '+92-300-1234567',
         },
         {
           key: 'store_email',
-          label: 'Support email',
-          description: 'Where customer replies should go.',
+          label: this.i18n.t('admin.settings.header.supportEmail'),
+          description: this.i18n.t('admin.settings.header.whereCustomerRepliesShouldGo'),
           type: 'text',
           placeholder: 'sales@beutepro.com',
         },
       ],
     },
     {
-      title: 'Storefront',
+      title: this.i18n.t('admin.settings.header.storefront'),
       // Globe icon path
       icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z',
       fields: [
         {
           key: 'currency_code',
-          label: 'Base currency code',
-          description: 'Informational only — all prices are stored in PKR.',
+          label: this.i18n.t('admin.settings.header.baseCurrencyCode'),
+          description: this.i18n.t('admin.settings.header.informationalOnlyAllPricesAreStoredInPkr'),
           type: 'text',
           placeholder: 'PKR',
         },
         {
           key: 'store_announcement',
-          label: 'Topbar announcement',
-          description: 'Shown in the header topbar. Leave empty to hide.',
+          label: this.i18n.t('admin.settings.header.topbarAnnouncement'),
+          description: this.i18n.t('admin.settings.header.shownInTheHeaderTopbarLeaveEmptyToHide'),
           type: 'text',
-          placeholder: 'Cash on delivery across Pakistan · Free shipping over Rs 3,000',
+          placeholder: this.i18n.t('admin.settings.header.cashOnDeliveryAcrossPakistanFreeShippingOverRs3000'),
         },
       ],
     },
-  ];
+  ]);
 
   ngOnInit(): void {
     this.load();
@@ -433,7 +433,7 @@ export class AdminSettingsComponent implements OnInit {
   }
 
   reload(): void {
-    if (this.hasChanges() && !confirm('Discard unsaved changes?')) return;
+    if (this.hasChanges() && !confirm(this.i18n.t('admin.settings.header.discardUnsavedChanges'))) return;
     this.load();
   }
 
@@ -468,17 +468,17 @@ export class AdminSettingsComponent implements OnInit {
         this.serverValues.set({ ...res.settings });
         this.values.set({ ...res.settings });
         this.isSaving.set(false);
-        this.toast.show('Settings saved');
+        this.toast.show(this.i18n.t('admin.settings.header.settingsSaved'));
       },
       error: (err) => {
         console.error('Save settings failed', err);
         this.isSaving.set(false);
-        this.toast.show(err.error?.error || 'Failed to save settings');
+        this.toast.show(err.error?.error || this.i18n.t('admin.settings.header.failedToSaveSettings'));
       },
     });
   }
 
   private allFields(): SettingField[] {
-    return this.groups.flatMap((g) => g.fields);
+    return this.groups().flatMap((g) => g.fields);
   }
 }

@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { I18nService } from '../../core/services/i18n.service';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -10,7 +11,7 @@ import { CommonModule } from '@angular/common';
       class="btn btn--outline btn--sm"
       (click)="clicked.emit()"
       [disabled]="isLoading"
-      [attr.aria-label]="label"
+      [attr.aria-label]="label || i18n.t('admin.common.exportCsv')"
     >
       <svg viewBox="0 0 24 24" width="15" height="15" *ngIf="!isLoading">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"
@@ -18,7 +19,7 @@ import { CommonModule } from '@angular/common';
               stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span class="csv-spinner" *ngIf="isLoading"></span>
-      <span>{{ isLoading ? 'Exporting…' : label }}</span>
+      <span>{{ isLoading ? i18n.t('admin.common.exporting') : (label || i18n.t('admin.common.exportCsv')) }}</span>
     </button>
   `,
   styles: [`
@@ -60,7 +61,8 @@ import { CommonModule } from '@angular/common';
   `],
 })
 export class CsvExportButtonComponent {
-  @Input() label = 'Export CSV';
+  protected readonly i18n = inject(I18nService);
+  @Input() label = '';
   @Input() isLoading = false;
   @Output() clicked = new EventEmitter<void>();
 }

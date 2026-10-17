@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { I18nService } from '../../core/services/i18n.service';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -11,10 +12,10 @@ import { FormsModule } from '@angular/forms';
       <div class="bulk-bar__info">
         <span class="bulk-bar__count">{{ selectedCount }}</span>
         <span class="bulk-bar__label">
-          {{ selectedCount === 1 ? 'item selected' : 'items selected' }}
+          {{ selectedCount === 1 ? i18n.t('admin.common.itemSelected') : i18n.t('admin.common.itemsSelected') }}
         </span>
         <button class="bulk-bar__clear" (click)="clear.emit()" *ngIf="selectedCount > 0">
-          Clear
+          {{ i18n.t('admin.common.clear') }}
         </button>
       </div>
 
@@ -27,19 +28,19 @@ import { FormsModule } from '@angular/forms';
             (ngModelChange)="onStatusSelected($event)"
             [disabled]="isLoading"
           >
-            <option value="" disabled>Change status…</option>
-            <option value="pending">Pending</option>
-            <option value="processing">Processing</option>
-            <option value="shipped">Shipped</option>
-            <option value="delivered">Delivered</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="" disabled>{{ i18n.t('admin.common.changeStatus') }}</option>
+            <option value="pending">{{ i18n.t('admin.payment.status.pending') }}</option>
+            <option value="processing">{{ i18n.t('admin.common.processing') }}</option>
+            <option value="shipped">{{ i18n.t('admin.common.shipped') }}</option>
+            <option value="delivered">{{ i18n.t('admin.common.delivered') }}</option>
+            <option value="cancelled">{{ i18n.t('admin.common.cancelled') }}</option>
           </select>
         </ng-container>
 
         <!-- Tracking update -->
         <ng-container *ngIf="showTrackingAction">
           <button class="btn btn--sm btn--outline" (click)="openTracking.emit()" [disabled]="isLoading">
-            Add tracking
+            {{ i18n.t('admin.common.addTracking') }}
           </button>
         </ng-container>
 
@@ -51,18 +52,18 @@ import { FormsModule } from '@angular/forms';
                     stroke="currentColor" stroke-width="2" fill="none"
                     stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            Export CSV
+            {{ i18n.t('admin.common.exportCsv') }}
           </button>
         </ng-container>
 
         <!-- Delete -->
         <ng-container *ngIf="showDeleteAction">
           <button class="btn btn--sm btn--danger" (click)="delete.emit()" [disabled]="isLoading">
-            Delete
+            {{ i18n.t('admin.media.delete') }}
           </button>
         </ng-container>
 
-        <span class="bulk-bar__loading" *ngIf="isLoading">Working…</span>
+        <span class="bulk-bar__loading" *ngIf="isLoading">{{ i18n.t('admin.common.working') }}</span>
       </div>
     </div>
   `,
@@ -156,6 +157,7 @@ import { FormsModule } from '@angular/forms';
   `],
 })
 export class BulkActionsBarComponent {
+  protected readonly i18n = inject(I18nService);
   @Input() selectedCount = 0;
   @Input() isLoading = false;
 

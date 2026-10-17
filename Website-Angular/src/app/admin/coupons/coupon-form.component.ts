@@ -1,3 +1,4 @@
+import { I18nService } from '../../core/services/i18n.service';
 import {
   Component,
   EventEmitter,
@@ -23,8 +24,8 @@ import { ApiCoupon, DiscountType } from '../../core/models/api.model';
     <div class="modal-backdrop" [class.is-open]="isOpen" (click)="onBackdropClick($event)">
       <div class="modal" (click)="$event.stopPropagation()">
         <div class="modal-head">
-          <h3>{{ coupon ? 'Edit coupon' : 'New coupon' }}</h3>
-          <button class="modal-close" (click)="onCancel()" aria-label="Close" [disabled]="isSaving()">
+          <h3>{{ coupon ? i18n.t('admin.coupons.form.editCoupon') : i18n.t('admin.coupons.header.newCoupon') }}</h3>
+          <button class="modal-close" (click)="onCancel()" [attr.aria-label]="i18n.t('admin.categories.form.close')" [disabled]="isSaving()">
             <svg viewBox="0 0 24 24" width="20" height="20">
               <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" fill="none"/>
@@ -35,89 +36,89 @@ import { ApiCoupon, DiscountType } from '../../core/models/api.model';
         <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-body">
           <!-- Code -->
           <div class="field">
-            <label for="cp-code">Coupon code *</label>
+            <label for="cp-code">{{ i18n.t('admin.coupons.form.couponCode') }}</label>
             <input
               id="cp-code"
               type="text"
               formControlName="code"
-              placeholder="e.g. WELCOME10"
+              [placeholder]="i18n.t('admin.coupons.form.eGWelcome10')"
               [readonly]="isEditMode"
               style="text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;"
             />
-            <small class="hint" *ngIf="!isEditMode">Letters, numbers, dashes. Will be uppercased.</small>
-            <small class="hint" *ngIf="isEditMode">Code cannot be changed after creation.</small>
+            <small class="hint" *ngIf="!isEditMode">{{ i18n.t('admin.coupons.form.lettersNumbersDashesWillBeUppercased') }}</small>
+            <small class="hint" *ngIf="isEditMode">{{ i18n.t('admin.coupons.form.codeCannotBeChangedAfterCreation') }}</small>
             <div class="error" *ngIf="f['code'].invalid && f['code'].touched">
-              Required. Use letters, numbers and dashes only (min 3 chars).
+              {{ i18n.t('admin.coupons.form.requiredUseLettersNumbersAndDashesOnlyMin3Chars') }}
             </div>
           </div>
 
           <!-- Discount type + value -->
           <div class="row-2">
             <div class="field">
-              <label for="cp-type">Discount type *</label>
+              <label for="cp-type">{{ i18n.t('admin.coupons.form.discountType') }}</label>
               <select id="cp-type" formControlName="discountType">
-                <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed (Rs)</option>
+                <option value="percentage">{{ i18n.t('admin.coupons.form.percentage') }}</option>
+                <option value="fixed">{{ i18n.t('admin.coupons.form.fixedRs') }}</option>
               </select>
             </div>
 
             <div class="field">
               <label for="cp-value">
-                {{ f['discountType'].value === 'percentage' ? 'Percentage off' : 'Amount off (Rs)' }} *
+                {{ f['discountType'].value === 'percentage' ? i18n.t('admin.coupons.form.percentageOff') : i18n.t('admin.coupons.form.amountOffRs') }} *
               </label>
               <input id="cp-value" type="number" formControlName="discountValue" min="0" step="1" />
               <div class="error" *ngIf="f['discountValue'].invalid && f['discountValue'].touched">
-                Must be a positive number
+                {{ i18n.t('admin.coupons.form.mustBeAPositiveNumber') }}
               </div>
               <div class="error" *ngIf="f['discountType'].value === 'percentage' && f['discountValue'].value > 100">
-                Percentage cannot exceed 100
+                {{ i18n.t('admin.coupons.form.percentageCannotExceed100') }}
               </div>
             </div>
           </div>
 
           <!-- Min order -->
           <div class="field">
-            <label for="cp-min">Minimum order value (Rs)</label>
+            <label for="cp-min">{{ i18n.t('admin.coupons.form.minimumOrderValueRs') }}</label>
             <input id="cp-min" type="number" formControlName="minOrderValue" min="0" step="1" />
-            <small class="hint">Cart must be at least this amount. Leave 0 for no minimum.</small>
+            <small class="hint">{{ i18n.t('admin.coupons.form.cartMustBeAtLeastThisAmountLeave0ForNoMinimum') }}</small>
           </div>
 
           <!-- Max uses -->
           <div class="field">
-            <label for="cp-max">Usage limit</label>
+            <label for="cp-max">{{ i18n.t('admin.coupons.form.usageLimit') }}</label>
             <input id="cp-max" type="number" formControlName="maxUses" min="1" />
-            <small class="hint">Leave empty for unlimited uses.</small>
+            <small class="hint">{{ i18n.t('admin.coupons.form.leaveEmptyForUnlimitedUses') }}</small>
           </div>
 
           <!-- Expiry -->
           <div class="field">
-            <label for="cp-exp">Expires on</label>
+            <label for="cp-exp">{{ i18n.t('admin.coupons.form.expiresOn') }}</label>
             <input id="cp-exp" type="date" formControlName="expiresAtDate" />
-            <small class="hint">Leave empty for no expiry.</small>
+            <small class="hint">{{ i18n.t('admin.coupons.form.leaveEmptyForNoExpiry') }}</small>
           </div>
 
           <!-- Active -->
           <label class="toggle">
             <input type="checkbox" formControlName="isActive" />
-            <span>Active — customers can use this coupon</span>
+            <span>{{ i18n.t('admin.coupons.form.activeCustomersCanUseThisCoupon') }}</span>
           </label>
 
           <!-- Preview -->
           <div class="preview" *ngIf="form.valid">
-            <span class="preview-label">Preview</span>
+            <span class="preview-label">{{ i18n.t('admin.coupons.form.preview') }}</span>
             <span class="preview-text">
-              <b>{{ f['code'].value | uppercase }}</b> gives
-              <b>{{ previewDiscount() }}</b>
-              off orders over <b>₨ {{ (f['minOrderValue'].value || 0) | number }}</b>
+              <b>{{ f['code'].value | uppercase }}</b> {{ i18n.t('admin.coupons.form.gives') }}
+              <b><bdi dir="ltr">{{ previewDiscount() }}</bdi></b>
+              {{ i18n.t('admin.coupons.form.offOrdersOver') }} <b><bdi dir="ltr">₨ {{ (f['minOrderValue'].value || 0) | number }}</bdi></b>
             </span>
           </div>
 
           <div class="modal-actions">
             <button type="button" class="btn btn--outline" (click)="onCancel()" [disabled]="isSaving()">
-              Cancel
+              {{ i18n.t('admin.common.cancel') }}
             </button>
             <button type="submit" class="btn btn--gold" [disabled]="isSaving() || form.invalid">
-              {{ isSaving() ? 'Saving…' : (isEditMode ? 'Save changes' : 'Create coupon') }}
+              {{ isSaving() ? i18n.t('admin.common.saving') : (isEditMode ? i18n.t('admin.categories.form.saveChanges') : i18n.t('admin.coupons.form.createCoupon')) }}
             </button>
           </div>
         </form>
@@ -265,6 +266,7 @@ import { ApiCoupon, DiscountType } from '../../core/models/api.model';
   `],
 })
 export class CouponFormComponent implements OnInit, OnChanges {
+  protected readonly i18n = inject(I18nService);
   private fb = inject(FormBuilder);
   private couponService = inject(CouponService);
   private toast = inject(ToastService);
@@ -344,7 +346,7 @@ export class CouponFormComponent implements OnInit, OnChanges {
   onSubmit(): void {
     // Extra check: percentage cannot exceed 100
     if (this.f['discountType'].value === 'percentage' && this.f['discountValue'].value > 100) {
-      this.toast.show('Percentage discount cannot exceed 100');
+      this.toast.show(this.i18n.t('admin.coupons.form.percentageDiscountCannotExceed100'));
       return;
     }
     if (this.form.invalid) {
@@ -379,13 +381,13 @@ export class CouponFormComponent implements OnInit, OnChanges {
     request$.subscribe({
       next: (res) => {
         this.isSaving.set(false);
-        this.toast.show(this.isEditMode ? 'Coupon updated' : 'Coupon created');
+        this.toast.show(this.isEditMode ? this.i18n.t('admin.coupons.form.couponUpdated') : this.i18n.t('admin.coupons.form.couponCreated'));
         this.saved.emit(res.coupon);
       },
       error: (err) => {
         console.error('Save coupon failed', err);
         this.isSaving.set(false);
-        const msg = err.error?.error || 'Failed to save coupon';
+        const msg = err.error?.error || this.i18n.t('admin.coupons.form.failedToSaveCoupon');
         this.toast.show(msg);
       },
     });

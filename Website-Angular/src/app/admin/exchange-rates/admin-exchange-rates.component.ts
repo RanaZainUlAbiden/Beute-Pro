@@ -18,11 +18,11 @@ interface CurrencyMeta {
 }
 
 const CURRENCY_META: Record<string, CurrencyMeta> = {
-  USD: { code: 'USD', name: 'US Dollar',       symbol: '$', flag: '🇺🇸' },
-  AED: { code: 'AED', name: 'UAE Dirham',      symbol: 'د.إ', flag: '🇦🇪' },
-  GBP: { code: 'GBP', name: 'British Pound',   symbol: '£', flag: '🇬🇧' },
-  EUR: { code: 'EUR', name: 'Euro',            symbol: '€', flag: '🇪🇺' },
-  SAR: { code: 'SAR', name: 'Saudi Riyal',     symbol: 'ر.س', flag: '🇸🇦' },
+  USD: { code: 'USD', name: 'admin.exchange-rates.currency.usDollar',       symbol: '$', flag: '🇺🇸' },
+  AED: { code: 'AED', name: 'admin.exchange-rates.currency.uaeDirham',      symbol: 'د.إ', flag: '🇦🇪' },
+  GBP: { code: 'GBP', name: 'admin.exchange-rates.currency.britishPound',   symbol: '£', flag: '🇬🇧' },
+  EUR: { code: 'EUR', name: 'admin.exchange-rates.currency.euro',            symbol: '€', flag: '🇪🇺' },
+  SAR: { code: 'SAR', name: 'admin.exchange-rates.currency.saudiRiyal',     symbol: 'ر.س', flag: '🇸🇦' },
 };
 
 interface RateRow {
@@ -30,7 +30,7 @@ interface RateRow {
   name: string;
   symbol: string;
   flag: string;
-  rate: number;         // 1 PKR = rate × <code>
+  rate: number;         // <bdi dir="ltr">1 PKR</bdi> = rate × <code>
   editing: boolean;
   draftRate: number;
   isSaving: boolean;
@@ -46,10 +46,10 @@ interface RateRow {
       <!-- Header -->
       <div class="page-head">
         <div>
-          <h1 class="h-lg">Exchange Rates</h1>
+          <h1 class="h-lg">{{ i18n.t('admin.exchange-rates.header.exchangeRates') }}</h1>
           <p class="page-sub">
-            Base currency: <b>PKR</b>
-            <span *ngIf="lastUpdated()"> · Last updated {{ lastUpdated() }}</span>
+            {{ i18n.t('admin.exchange-rates.header.baseCurrency') }} <b>PKR</b>
+            <span *ngIf="lastUpdated()"> {{ i18n.t('admin.exchange-rates.header.LastUpdated') }} {{ lastUpdated() }}</span>
           </p>
         </div>
         <button class="btn btn--gold" (click)="refresh()" [disabled]="isRefreshing() || isLoading() || loadError() !== null">
@@ -61,7 +61,7 @@ interface RateRow {
                   stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <span *ngIf="isRefreshing()" class="mini-spinner"></span>
-          {{ isRefreshing() ? 'Refreshing…' : 'Refresh from API' }}
+          {{ isRefreshing() ? i18n.t('admin.exchange-rates.header.refreshing') : i18n.t('admin.exchange-rates.header.refreshFromApi') }}
         </button>
       </div>
 
@@ -73,13 +73,12 @@ interface RateRow {
                 stroke-linecap="round" fill="none"/>
         </svg>
         <span>
-          All prices in the store are stored in PKR. These rates are used to display
-          converted amounts (USD / AED) to international customers.
+          {{ i18n.t('admin.exchange-rates.description') }}
         </span>
       </div>
 
       <!-- Loading -->
-      <app-loading-spinner *ngIf="isLoading()" message="Loading exchange rates…"></app-loading-spinner>
+      <app-loading-spinner *ngIf="isLoading()" [message]="i18n.t('admin.exchange-rates.header.loadingExchangeRates')"></app-loading-spinner>
 
       <!-- Load failed — shown INSTEAD of the "none configured yet"
            invitation, which was actively misleading: the public API
@@ -92,7 +91,7 @@ interface RateRow {
 
       <!-- Empty -->
       <div class="empty-state" *ngIf="!isLoading() && loadError() === null && rows().length === 0">
-        <p>No exchange rates configured yet. Click <b>Refresh from API</b> to populate them.</p>
+        <p>{{ i18n.t('admin.exchange-rates.header.noExchangeRatesConfiguredYetClick') }} <b>{{ i18n.t('admin.exchange-rates.header.refreshFromApi') }}</b> {{ i18n.t('admin.exchange-rates.header.toPopulateThem') }}</p>
       </div>
 
       <!-- Rate cards -->
@@ -105,7 +104,7 @@ interface RateRow {
             <span class="flag">{{ row.flag }}</span>
             <div class="rate-code-wrap">
               <span class="rate-code">{{ row.code }}</span>
-              <span class="rate-name">{{ row.name }}</span>
+              <span class="rate-name">{{ currencyName(row.code) }}</span>
             </div>
           </div>
 
@@ -116,7 +115,7 @@ interface RateRow {
               <span class="equals">=</span>
               <span class="rate-value">
                 <ng-container *ngIf="!row.editing">
-                  {{ row.rate | number:'1.4-6' }} {{ row.code }}
+                  <bdi dir="ltr">{{ row.rate | number:'1.4-6' }} {{ row.code }}</bdi>
                 </ng-container>
                 <input
                   *ngIf="row.editing"
@@ -131,14 +130,14 @@ interface RateRow {
             </div>
 
             <div class="rate-line rate-line--inverse">
-              <span class="inverse-label">Inverse:</span>
+              <span class="inverse-label">{{ i18n.t('admin.exchange-rates.header.inverse') }}</span>
               <span class="inverse-value">
-                1 {{ row.code }} ≈ {{ inverseRate(row) }} PKR
+                <bdi dir="ltr">1 {{ row.code }} ≈ {{ inverseRate(row) }} PKR</bdi>
               </span>
             </div>
 
             <div class="rate-meta">
-              <span class="updated">Updated: {{ formatUpdated(updatedAt()) }}</span>
+              <span class="updated">{{ i18n.t('admin.exchange-rates.header.updated') }} {{ formatUpdated(updatedAt()) }}</span>
             </div>
           </div>
 
@@ -146,19 +145,19 @@ interface RateRow {
           <div class="rate-actions">
             <ng-container *ngIf="!row.editing">
               <button class="btn btn--outline btn--sm" (click)="startEdit(row)" [disabled]="row.isSaving">
-                Manual override
+                {{ i18n.t('admin.exchange-rates.header.manualOverride') }}
               </button>
             </ng-container>
             <ng-container *ngIf="row.editing">
               <button class="btn btn--ghost btn--sm" (click)="cancelEdit(row)" [disabled]="row.isSaving">
-                Cancel
+                {{ i18n.t('admin.common.cancel') }}
               </button>
               <button
                 class="btn btn--gold btn--sm"
                 (click)="saveRow(row)"
                 [disabled]="row.isSaving || !row.isDirty"
               >
-                {{ row.isSaving ? 'Saving…' : 'Save' }}
+                {{ row.isSaving ? i18n.t('admin.common.saving') : i18n.t('admin.common.save') }}
               </button>
             </ng-container>
           </div>
@@ -384,12 +383,12 @@ export class AdminExchangeRatesComponent implements OnInit {
     const d = new Date(u);
     const diffMs = Date.now() - d.getTime();
     const mins = Math.floor(diffMs / 60_000);
-    if (mins < 1) return 'just now';
-    if (mins < 60) return `${mins} min ago`;
+    if (mins < 1) return this.i18n.t('admin.exchange-rates.header.justNow');
+    if (mins < 60) return this.i18n.t('admin.exchange-rates.minutesAgo').replace('{count}', mins.toString());
     const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours} h ago`;
+    if (hours < 24) return this.i18n.t('admin.exchange-rates.hoursAgo').replace('{count}', hours.toString());
     const days = Math.floor(hours / 24);
-    return `${days} d ago`;
+    return this.i18n.t('admin.exchange-rates.daysAgo').replace('{count}', days.toString());
   });
 
   ngOnInit(): void {
@@ -452,13 +451,13 @@ export class AdminExchangeRatesComponent implements OnInit {
     this.currencyService.refresh().subscribe({
       next: () => {
         this.isRefreshing.set(false);
-        this.toast.show('Rates refreshed');
+        this.toast.show(this.i18n.t('admin.exchange-rates.header.ratesRefreshed'));
         this.load();
       },
       error: (err) => {
         console.error('Refresh failed', err);
         this.isRefreshing.set(false);
-        this.toast.show(err.error?.error || 'Failed to refresh rates');
+        this.toast.show(err.error?.error || this.i18n.t('admin.exchange-rates.header.failedToRefreshRates'));
       },
     });
   }
@@ -496,12 +495,12 @@ export class AdminExchangeRatesComponent implements OnInit {
         row.isDirty = false;
         row.isSaving = false;
         this.updatedAt.set(res.updatedAt);
-        this.toast.show(`${row.code} rate updated`);
+        this.toast.show(this.i18n.t('admin.exchange-rates.updated').replace('{code}', row.code));
       },
       error: (err) => {
         console.error('Save rate failed', err);
         row.isSaving = false;
-        const msg = err.error?.error || 'Failed to update rate';
+        const msg = err.error?.error || this.i18n.t('admin.exchange-rates.header.failedToUpdateRate');
         this.toast.show(msg);
       },
     });
@@ -510,6 +509,11 @@ export class AdminExchangeRatesComponent implements OnInit {
   // ------------------------------------------------------------
   // Helpers
   // ------------------------------------------------------------
+  currencyName(code: string): string {
+    const name = CURRENCY_META[code]?.name;
+    return name ? this.i18n.t(name as import('../../core/data/i18n.data').TranslationKey) : code;
+  }
+
   trackByCode(_i: number, row: RateRow): string {
     return row.code;
   }
@@ -524,7 +528,7 @@ export class AdminExchangeRatesComponent implements OnInit {
   }
 
   formatUpdated(iso: string | null): string {
-    if (!iso) return 'Never';
+    if (!iso) return this.i18n.t('admin.coupons.header.never');
     const d = new Date(iso);
     return d.toLocaleString('en-GB', {
       day: '2-digit',

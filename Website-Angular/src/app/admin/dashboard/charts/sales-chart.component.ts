@@ -1,4 +1,5 @@
-import { Component, Input, computed, signal } from '@angular/core';
+import { I18nService } from '../../../core/services/i18n.service';
+import { Component, Input, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import type { ChartConfiguration, ChartData } from 'chart.js';
@@ -19,14 +20,14 @@ export interface DailyRevenuePoint {
     <div class="chart-card">
       <div class="chart-head">
         <div>
-          <h3 class="chart-title">Revenue (last 7 days)</h3>
+          <h3 class="chart-title">{{ i18n.t('admin.dashboard.chart.revenueLast7Days') }}</h3>
           <p class="chart-sub">
-            Total: <b>₨ {{ totalRevenue() | number }}</b>
+            {{ i18n.t('admin.dashboard.chart.total') }} <b>₨ {{ totalRevenue() | number }}</b>
           </p>
         </div>
         <div class="chart-legend">
           <span class="legend-dot"></span>
-          <span class="legend-label">Daily revenue</span>
+          <span class="legend-label">{{ i18n.t('admin.dashboard.chart.dailyRevenue') }}</span>
         </div>
       </div>
 
@@ -40,7 +41,7 @@ export interface DailyRevenuePoint {
       </div>
 
       <ng-template #noData>
-        <div class="chart-empty">No revenue data for this period.</div>
+        <div class="chart-empty">{{ i18n.t('admin.dashboard.chart.noRevenueDataForThisPeriod') }}</div>
       </ng-template>
     </div>
   `,
@@ -98,6 +99,7 @@ export interface DailyRevenuePoint {
   `],
 })
 export class SalesChartComponent {
+  protected readonly i18n = inject(I18nService);
   private readonly _data = signal<DailyRevenuePoint[]>([]);
 
   /** Input as a plain array — parent passes the daily revenue from the dashboard API. */
@@ -126,7 +128,7 @@ export class SalesChartComponent {
       labels: points.map((p) => this.formatDay(p.date)),
       datasets: [
         {
-          label: 'Revenue (PKR)',
+          label: this.i18n.t('admin.dashboard.chart.revenuePkr'),
           data: points.map((p) => p.revenue),
           borderColor: '#C9A44C',
           backgroundColor: (ctx: any) => {

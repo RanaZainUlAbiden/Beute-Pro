@@ -124,7 +124,7 @@ export class ProductFormComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load product', err);
-        this.toast.show('Failed to load product');
+        this.toast.show(this.i18n.t('admin.products.form.failedToLoadProduct'));
         this.isLoading.set(false);
         this.router.navigate(['..'], { relativeTo: this.route });
       },
@@ -137,7 +137,7 @@ export class ProductFormComponent implements OnInit {
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.toast.show('Please fix the errors before saving');
+      this.toast.show(this.i18n.t('admin.products.form.pleaseFixTheErrorsBeforeSaving'));
       return;
     }
 
@@ -166,13 +166,13 @@ export class ProductFormComponent implements OnInit {
       next: (res) => {
         this.media.set(res.product.media);
         this.isSaving.set(false);
-        this.toast.show(this.isEditMode() ? 'Product updated' : 'Product created');
+        this.toast.show(this.isEditMode() ? this.i18n.t('admin.products.form.productUpdated') : this.i18n.t('admin.products.form.productCreated'));
         this.router.navigate(['..'], { relativeTo: this.route });
       },
       error: (err) => {
         console.error('Save failed', err);
         this.isSaving.set(false);
-        const msg = err.error?.error || 'Failed to save product';
+        const msg = err.error?.error || this.i18n.t('admin.products.form.failedToSaveProduct');
         this.toast.show(msg);
       },
     });

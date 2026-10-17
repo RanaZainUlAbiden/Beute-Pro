@@ -211,12 +211,12 @@ export class AdminOrdersComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.bulkBusy.set(false);
-          this.toast.show(`${res.updated} order(s) marked as ${this.statusLabel(newStatus)}`);
+          this.toast.show(this.i18n.t('admin.orders.bulkUpdated').replace('{count}', res.updated.toString()).replace('{status}', this.statusLabel(newStatus)));
           this.load();
         },
         error: (err) => {
           this.bulkBusy.set(false);
-          this.toast.show(err.error?.error || 'Bulk update failed');
+          this.toast.show(err.error?.error || this.i18n.t('admin.orders.header.bulkUpdateFailed'));
         },
       });
   }
@@ -226,21 +226,21 @@ export class AdminOrdersComponent implements OnInit {
     if (!ids.length) return;
 
     // Simple prompts — a proper modal can be added later
-    const trackingNumber = prompt('Tracking number:');
+    const trackingNumber = prompt(this.i18n.t('admin.orders.header.trackingNumber'));
     if (!trackingNumber) return;
-    const courierName = prompt('Courier name (e.g. TCS, Leopards):');
+    const courierName = prompt(this.i18n.t('admin.orders.header.courierNameEGTcsLeopards'));
     if (!courierName) return;
 
     this.bulkBusy.set(true);
     this.orderService.bulkUpdateTracking(ids, trackingNumber, courierName).subscribe({
       next: (res) => {
         this.bulkBusy.set(false);
-        this.toast.show(`Tracking saved on ${res.updated} order(s)`);
+        this.toast.show(this.i18n.t('admin.orders.trackingSaved').replace('{count}', res.updated.toString()));
         this.load();
       },
       error: (err) => {
         this.bulkBusy.set(false);
-        this.toast.show(err.error?.error || 'Bulk tracking failed');
+        this.toast.show(err.error?.error || this.i18n.t('admin.orders.header.bulkTrackingFailed'));
       },
     });
   }
@@ -250,11 +250,11 @@ export class AdminOrdersComponent implements OnInit {
     this.exportService.download('orders', { status: this.status() || undefined }).subscribe({
       next: () => {
         this.exportBusy.set(false);
-        this.toast.show('Download started');
+        this.toast.show(this.i18n.t('admin.orders.header.downloadStarted'));
       },
       error: (err) => {
         this.exportBusy.set(false);
-        this.toast.show(err.error?.error || 'Export failed');
+        this.toast.show(err.error?.error || this.i18n.t('admin.orders.header.exportFailed'));
       },
     });
   }
@@ -269,7 +269,7 @@ export class AdminOrdersComponent implements OnInit {
     // and show a note. Add a dedicated DELETE /admin/orders/bulk endpoint
     // to enable this.
     this.deleteDialogOpen.set(false);
-    this.toast.show('Bulk delete is not available yet');
+    this.toast.show(this.i18n.t('admin.orders.header.bulkDeleteIsNotAvailableYet'));
   }
 
   protected cancelBulkDelete(): void {

@@ -1,4 +1,5 @@
-import { Component, Input, computed, signal } from '@angular/core';
+import { I18nService } from '../../../core/services/i18n.service';
+import { Component, Input, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import type { ChartConfiguration, ChartData } from 'chart.js';
@@ -19,12 +20,12 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled:   '#A8443C',  // red
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  pending:    'Pending',
-  processing: 'Processing',
-  shipped:    'Shipped',
-  delivered:  'Delivered',
-  cancelled:  'Cancelled',
+const STATUS_LABELS: Record<string, import('../../../core/data/i18n.data').TranslationKey> = {
+  pending:    'admin.payment.status.pending',
+  processing: 'admin.common.processing',
+  shipped:    'admin.common.shipped',
+  delivered:  'admin.common.delivered',
+  cancelled:  'admin.common.cancelled',
 };
 
 @Component({
@@ -35,9 +36,9 @@ const STATUS_LABELS: Record<string, string> = {
     <div class="chart-card">
       <div class="chart-head">
         <div>
-          <h3 class="chart-title">Order status</h3>
+          <h3 class="chart-title">{{ i18n.t('admin.dashboard.chart.orderStatus') }}</h3>
           <p class="chart-sub">
-            {{ totalOrders() }} order{{ totalOrders() === 1 ? '' : 's' }} total
+            {{ i18n.t('admin.dashboard.chart.totalOrders').replace('{count}', totalOrders().toString()) }}
           </p>
         </div>
       </div>
@@ -64,7 +65,7 @@ const STATUS_LABELS: Record<string, string> = {
       </div>
 
       <ng-template #noData>
-        <div class="chart-empty">No orders yet.</div>
+        <div class="chart-empty">{{ i18n.t('admin.dashboard.chart.noOrdersYet') }}</div>
       </ng-template>
     </div>
   `,
@@ -164,6 +165,7 @@ const STATUS_LABELS: Record<string, string> = {
   `],
 })
 export class StatusChartComponent {
+  protected readonly i18n = inject(I18nService);
   private readonly _data = signal<OrderStatusCount[]>([]);
 
   @Input()
@@ -185,7 +187,7 @@ export class StatusChartComponent {
   chartData = computed<ChartData<'doughnut'>>(() => {
     const items = this._data();
     return {
-      labels: items.map((r) => STATUS_LABELS[r.status] || r.status),
+      labels: items.map((r) => STATUS_LABELS[r.status] ? this.i18n.t(STATUS_LABELS[r.status]) : r.status),
       datasets: [
         {
           data: items.map((r) => Number(r.count)),
@@ -204,7 +206,7 @@ export class StatusChartComponent {
     return items.map((r) => {
       const count = Number(r.count);
       return {
-        label: STATUS_LABELS[r.status] || r.status,
+        label: STATUS_LABELS[r.status] ? this.i18n.t(STATUS_LABELS[r.status]) : r.status,
         color: STATUS_COLORS[r.status] || '#5C7A68',
         count,
         pct: Math.round((count / total) * 100),
@@ -229,7 +231,7 @@ export class StatusChartComponent {
           label: (ctx) => {
             const label = ctx.label || '';
             const val = Number(ctx.parsed);
-            return `${label}: ${val} order${val === 1 ? '' : 's'}`;
+            return `${label}: ${this.i18n.t('admin.dashboard.chart.orderCount').replace('{count}', val.toString())}`;
           },
         },
       },

@@ -13,7 +13,7 @@
       }
     </button>
 
-    <nav class="adm__nav" aria-label="Admin sections">
+    <nav class="adm__nav" [attr.aria-label]="i18n.t('admin.admin-layout.header.adminSections')">
 
       <!-- ─────────── OVERVIEW ─────────── -->
       @if (!collapsed()) {

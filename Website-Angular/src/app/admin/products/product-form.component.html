@@ -7,90 +7,90 @@
           <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2"
                 fill="none" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        Back to products
+        {{ i18n.t('admin.products.form.backToProducts') }}
       </a>
-      <h1 class="h-lg">{{ isEditMode() ? 'Edit product' : 'New product' }}</h1>
+      <h1 class="h-lg">{{ isEditMode() ? i18n.t('admin.products.form.editProduct') : i18n.t('admin.products.form.newProduct') }}</h1>
     </div>
   </div>
 
-  <app-loading-spinner *ngIf="isLoading()" message="Loading…"></app-loading-spinner>
+  <app-loading-spinner *ngIf="isLoading()" [message]="i18n.t('admin.products.form.loading')"></app-loading-spinner>
 
   <form *ngIf="!isLoading()" [formGroup]="form" (ngSubmit)="onSubmit()" class="form-body" novalidate>
     <!-- ─────── Basic info ─────── -->
     <section class="form-section">
-      <h2 class="section-title">Basic info</h2>
+      <h2 class="section-title">{{ i18n.t('admin.products.form.basicInfo') }}</h2>
 
       <div class="form-grid">
         <div class="field">
-          <label for="id">Product ID *</label>
+          <label for="id">{{ i18n.t('admin.products.form.productId') }}</label>
           <input
             id="id"
             type="text"
             formControlName="id"
-            placeholder="e.g. rose-water-mist"
+            [placeholder]="i18n.t('admin.products.form.eGRoseWaterMist')"
             [readonly]="isEditMode()"
           />
-          <small class="hint">Lowercase, dashes only. Cannot be changed after creation.</small>
+          <small class="hint">{{ i18n.t('admin.categories.form.lowercaseDashesOnlyCannotBeChangedAfterCreation') }}</small>
           <div class="error" *ngIf="f['id'].invalid && f['id'].touched">
-            Required. Use lowercase letters, numbers, and dashes.
+            {{ i18n.t('admin.products.form.requiredUseLowercaseLettersNumbersAndDashes') }}
           </div>
         </div>
 
         <div class="field">
-          <label for="category">Category *</label>
+          <label for="category">{{ i18n.t('admin.products.form.category') }}</label>
           <select id="category" formControlName="category">
-            <option value="" disabled>Select a category</option>
-            <option *ngFor="let c of categories()" [value]="c.id">{{ c.en }}</option>
+            <option value="" disabled>{{ i18n.t('admin.products.form.selectACategory') }}</option>
+            <option *ngFor="let c of categories()" [value]="c.id">{{ i18n.isRTL() ? c.ar : c.en }}</option>
           </select>
           <div class="error" *ngIf="f['category'].invalid && f['category'].touched">
-            Category is required
+            {{ i18n.t('admin.products.form.categoryIsRequired') }}
           </div>
         </div>
 
         <div class="field">
-          <label for="price">Price (PKR) *</label>
+          <label for="price">{{ i18n.t('admin.products.form.pricePkr') }}</label>
           <input id="price" type="number" formControlName="price" min="0" step="1" />
           <div class="error" *ngIf="f['price'].invalid && f['price'].touched">
-            Price must be a positive number
+            {{ i18n.t('admin.products.form.priceMustBeAPositiveNumber') }}
           </div>
         </div>
 
         <div class="field">
-          <label for="oldPrice">Old price (PKR)</label>
+          <label for="oldPrice">{{ i18n.t('admin.products.form.oldPricePkr') }}</label>
           <input id="oldPrice" type="number" formControlName="oldPrice" min="0" step="1" />
-          <small class="hint">Leave empty for no strike-through price.</small>
+          <small class="hint">{{ i18n.t('admin.products.form.leaveEmptyForNoStrikeThroughPrice') }}</small>
         </div>
 
         <div class="field">
-          <label for="badge">Badge</label>
+          <label for="badge">{{ i18n.t('admin.products.header.badge') }}</label>
           <select id="badge" formControlName="badge">
-            <option value="">None</option>
-            <option value="bestseller">Best seller</option>
-            <option value="new">New</option>
-            <option value="sale">Sale</option>
+            <option value="">{{ i18n.t('admin.products.form.none') }}</option>
+            <option value="bestseller">{{ i18n.t('admin.products.form.bestSeller') }}</option>
+            <option value="new">{{ i18n.t('admin.products.form.new') }}</option>
+            <option value="sale">{{ i18n.t('admin.products.form.sale') }}</option>
           </select>
         </div>
 
         <div class="field">
-          <label for="size">Size</label>
-          <input id="size" type="text" formControlName="size" placeholder="120 ml (4.06 OZ)" />
+          <label for="size">{{ i18n.t('admin.products.form.size') }}</label>
+          <input id="size" type="text" dir="ltr" formControlName="size" [placeholder]="i18n.t('admin.products.form.120Ml406Oz')" />
         </div>
 
         <div class="field">
-          <label for="displayOrder">Display order</label>
+          <label for="displayOrder">{{ i18n.t('admin.categories.form.displayOrder') }}</label>
           <input id="displayOrder" type="number" formControlName="displayOrder" min="0" />
-          <small class="hint">Lower numbers show first.</small>
+          <small class="hint">{{ i18n.t('admin.categories.form.lowerNumbersShowFirst') }}</small>
         </div>
       </div>
 
       <div class="form-grid form-grid--toggles">
         <label class="toggle">
           <input type="checkbox" formControlName="spin" />
-          <span>Has 360° video</span>
+          <span>{{ i18n.t('admin.products.form.has360Video') }}</span>
         </label>
         <label class="toggle">
           <input type="checkbox" formControlName="isActive" />
-          <span>Active (visible on site)</span>
+          <span>{{ i18n.t('admin.products.form.activeVisibleOnSite') }}</span>
         </label>
       </div>
     </section>
@@ -108,40 +108,40 @@
     <!-- ─────── English copy ─────── -->
     <section class="form-section">
       <h2 class="section-title">
-        <span class="lang-flag">EN</span> English content
+        <span class="lang-flag">{{ i18n.t('admin.categories.header.en') }}</span> {{ i18n.t('admin.products.form.englishContent') }}
       </h2>
 
-      <div formGroupName="en" class="form-grid">
+      <div formGroupName="en" class="form-grid" dir="ltr">
         <div class="field">
-          <label for="en-name">Name *</label>
+          <label for="en-name">{{ i18n.t('admin.products.form.name') }}</label>
           <input id="en-name" type="text" formControlName="name" />
-          <div class="error" *ngIf="fEn['name'].invalid && fEn['name'].touched">Required</div>
+          <div class="error" *ngIf="fEn['name'].invalid && fEn['name'].touched">{{ i18n.t('admin.categories.form.required') }}</div>
         </div>
 
         <div class="field">
-          <label for="en-tagline">Tagline *</label>
+          <label for="en-tagline">{{ i18n.t('admin.products.form.tagline') }}</label>
           <input id="en-tagline" type="text" formControlName="tagline" />
-          <div class="error" *ngIf="fEn['tagline'].invalid && fEn['tagline'].touched">Required</div>
+          <div class="error" *ngIf="fEn['tagline'].invalid && fEn['tagline'].touched">{{ i18n.t('admin.categories.form.required') }}</div>
         </div>
 
         <div class="field field--full">
-          <label for="en-desc">Description *</label>
+          <label for="en-desc">{{ i18n.t('admin.products.form.description') }}</label>
           <textarea id="en-desc" rows="4" formControlName="description"></textarea>
-          <div class="error" *ngIf="fEn['description'].invalid && fEn['description'].touched">Required</div>
+          <div class="error" *ngIf="fEn['description'].invalid && fEn['description'].touched">{{ i18n.t('admin.categories.form.required') }}</div>
         </div>
 
         <div class="field">
-          <label for="en-ing">Ingredients <small>(one per line)</small></label>
+          <label for="en-ing">{{ i18n.t('admin.products.form.ingredients') }} <small>{{ i18n.t('admin.products.form.OnePerLine') }}</small></label>
           <textarea id="en-ing" rows="5" formControlName="ingredients"></textarea>
         </div>
 
         <div class="field">
-          <label for="en-ben">Benefits <small>(one per line)</small></label>
+          <label for="en-ben">{{ i18n.t('admin.products.form.benefits') }} <small>{{ i18n.t('admin.products.form.OnePerLine') }}</small></label>
           <textarea id="en-ben" rows="5" formControlName="benefits"></textarea>
         </div>
 
         <div class="field field--full">
-          <label for="en-usage">How to use</label>
+          <label for="en-usage">{{ i18n.t('admin.products.form.howToUse') }}</label>
           <textarea id="en-usage" rows="3" formControlName="usage"></textarea>
         </div>
       </div>
@@ -150,40 +150,40 @@
     <!-- ─────── Arabic copy ─────── -->
     <section class="form-section" dir="rtl">
       <h2 class="section-title">
-        <span class="lang-flag">AR</span> المحتوى العربي
+        <span class="lang-flag">{{ i18n.t('admin.categories.header.ar') }}</span> {{ i18n.t('admin.products.form.arabicContent') }}
       </h2>
 
       <div formGroupName="ar" class="form-grid">
         <div class="field">
-          <label for="ar-name">الاسم *</label>
+          <label for="ar-name">{{ i18n.t('admin.products.form.name') }}</label>
           <input id="ar-name" type="text" formControlName="name" />
-          <div class="error" *ngIf="fAr['name'].invalid && fAr['name'].touched">مطلوب</div>
+          <div class="error" *ngIf="fAr['name'].invalid && fAr['name'].touched">{{ i18n.t('admin.categories.form.required') }}</div>
         </div>
 
         <div class="field">
-          <label for="ar-tagline">الوصف المختصر *</label>
+          <label for="ar-tagline">{{ i18n.t('admin.products.form.tagline') }}</label>
           <input id="ar-tagline" type="text" formControlName="tagline" />
-          <div class="error" *ngIf="fAr['tagline'].invalid && fAr['tagline'].touched">مطلوب</div>
+          <div class="error" *ngIf="fAr['tagline'].invalid && fAr['tagline'].touched">{{ i18n.t('admin.categories.form.required') }}</div>
         </div>
 
         <div class="field field--full">
-          <label for="ar-desc">الوصف *</label>
+          <label for="ar-desc">{{ i18n.t('admin.products.form.description') }}</label>
           <textarea id="ar-desc" rows="4" formControlName="description"></textarea>
-          <div class="error" *ngIf="fAr['description'].invalid && fAr['description'].touched">مطلوب</div>
+          <div class="error" *ngIf="fAr['description'].invalid && fAr['description'].touched">{{ i18n.t('admin.categories.form.required') }}</div>
         </div>
 
         <div class="field">
-          <label for="ar-ing">المكونات <small>(عنصر واحد في كل سطر)</small></label>
+          <label for="ar-ing">{{ i18n.t('admin.products.form.ingredients') }} <small>{{ i18n.t('admin.products.form.OnePerLine') }}</small></label>
           <textarea id="ar-ing" rows="5" formControlName="ingredients"></textarea>
         </div>
 
         <div class="field">
-          <label for="ar-ben">الفوائد <small>(عنصر واحد في كل سطر)</small></label>
+          <label for="ar-ben">{{ i18n.t('admin.products.form.benefits') }} <small>{{ i18n.t('admin.products.form.OnePerLine') }}</small></label>
           <textarea id="ar-ben" rows="5" formControlName="benefits"></textarea>
         </div>
 
         <div class="field field--full">
-          <label for="ar-usage">طريقة الاستخدام</label>
+          <label for="ar-usage">{{ i18n.t('admin.products.form.howToUse') }}</label>
           <textarea id="ar-usage" rows="3" formControlName="usage"></textarea>
         </div>
       </div>
@@ -191,9 +191,9 @@
 
     <!-- ─────── Actions ─────── -->
     <div class="form-actions">
-      <a class="btn btn--outline" routerLink="..">Cancel</a>
+      <a class="btn btn--outline" routerLink="..">{{ i18n.t('admin.common.cancel') }}</a>
       <button type="submit" class="btn btn--gold" [disabled]="isSaving()">
-        {{ isSaving() ? 'Saving…' : (isEditMode() ? 'Save changes' : 'Create product') }}
+        {{ isSaving() ? i18n.t('admin.common.saving') : (isEditMode() ? i18n.t('admin.categories.form.saveChanges') : i18n.t('admin.products.form.createProduct')) }}
       </button>
     </div>
   </form>

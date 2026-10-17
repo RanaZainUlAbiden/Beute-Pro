@@ -31,12 +31,12 @@ type SortDir = 'asc' | 'desc';
       <!-- Header -->
       <div class="page-head">
         <div>
-          <h1 class="h-lg">Users</h1>
+          <h1 class="h-lg">{{ i18n.t('admin.nav.users') }}</h1>
           <!-- "0 users · 0 admins" after a failed read is a false claim
                that the admin account is missing. Say nothing instead. -->
           <p class="page-sub" *ngIf="!isLoading() && loadError() === null">
-            {{ total() }} user{{ total() === 1 ? '' : 's' }}
-            · <span class="admin-count">{{ adminCount() }} admin{{ adminCount() === 1 ? '' : 's' }}</span>
+            {{ i18n.t('admin.users.header.count').replace('{count}', total().toString()) }}
+            · <span class="admin-count">{{ i18n.t('admin.users.header.adminCount').replace('{count}', adminCount().toString()) }}</span>
           </p>
           <p class="page-sub" *ngIf="isLoading() || loadError() !== null">—</p>
         </div>
@@ -51,28 +51,28 @@ type SortDir = 'asc' | 'desc';
           </svg>
           <input
             type="text"
-            placeholder="Search by name, email or phone…"
+            [placeholder]="i18n.t('admin.users.header.searchByNameEmailOrPhone')"
             [(ngModel)]="searchTerm"
             (ngModelChange)="onSearchChange($event)"
           />
         </div>
 
         <select class="filter-select" [(ngModel)]="roleFilter" (ngModelChange)="onRoleChange($event)">
-          <option value="">All roles</option>
-          <option value="admin">Admins</option>
-          <option value="customer">Customers</option>
+          <option value="">{{ i18n.t('admin.users.header.allRoles') }}</option>
+          <option value="admin">{{ i18n.t('admin.users.header.admins') }}</option>
+          <option value="customer">{{ i18n.t('admin.nav.groupCustomers') }}</option>
         </select>
 
         <select class="filter-select" [(ngModel)]="sortBy" (ngModelChange)="onSortChange()">
-          <option value="created_at">Newest first</option>
-          <option value="full_name">Name (A–Z)</option>
-          <option value="email">Email (A–Z)</option>
-          <option value="order_count">Most orders</option>
+          <option value="created_at">{{ i18n.t('admin.users.header.newestFirst') }}</option>
+          <option value="full_name">{{ i18n.t('admin.users.header.nameAZ') }}</option>
+          <option value="email">{{ i18n.t('admin.users.header.emailAZ') }}</option>
+          <option value="order_count">{{ i18n.t('admin.users.header.mostOrders') }}</option>
         </select>
       </div>
 
       <!-- Loading -->
-      <app-loading-spinner *ngIf="isLoading()" message="Loading users…"></app-loading-spinner>
+      <app-loading-spinner *ngIf="isLoading()" [message]="i18n.t('admin.users.header.loadingUsers')"></app-loading-spinner>
 
       <!-- Load failed — shown INSTEAD of the empty state. -->
       <app-load-error
@@ -90,18 +90,18 @@ type SortDir = 'asc' | 'desc';
           <circle cx="12" cy="7" r="4"
                   stroke="currentColor" stroke-width="1.5" fill="none"/>
         </svg>
-        <p>No users match your filter.</p>
+        <p>{{ i18n.t('admin.users.header.noUsersMatchYourFilter') }}</p>
       </div>
 
       <!-- Table -->
       <div class="table-card" *ngIf="!isLoading() && loadError() === null && users().length > 0">
         <div class="table-header">
-          <span>User</span>
-          <span>Contact</span>
-          <span class="col-num">Orders</span>
-          <span class="col-date">Joined</span>
-          <span class="col-role">Role</span>
-          <span class="col-actions">Actions</span>
+          <span>{{ i18n.t('admin.users.header.user') }}</span>
+          <span>{{ i18n.t('admin.users.header.contact') }}</span>
+          <span class="col-num">{{ i18n.t('admin.nav.orders') }}</span>
+          <span class="col-date">{{ i18n.t('admin.customers.colJoined') }}</span>
+          <span class="col-role">{{ i18n.t('admin.users.header.role') }}</span>
+          <span class="col-actions">{{ i18n.t('admin.common.actions') }}</span>
         </div>
 
         <div class="table-row"
@@ -114,8 +114,8 @@ type SortDir = 'asc' | 'desc';
             <span class="avatar" [class.avatar--admin]="u.is_admin">{{ initials(u) }}</span>
             <span class="user-info">
               <strong>
-                {{ u.full_name || '(no name)' }}
-                <span class="you-badge" *ngIf="isSelf(u)">You</span>
+                {{ u.full_name || i18n.t('admin.users.header.NoName') }}
+                <span class="you-badge" *ngIf="isSelf(u)">{{ i18n.t('admin.users.header.you') }}</span>
               </strong>
               <small>{{ u.email }}</small>
             </span>
@@ -124,7 +124,7 @@ type SortDir = 'asc' | 'desc';
           <!-- Contact -->
           <span class="col-contact">
             <small>{{ u.phone || '—' }}</small>
-            <small class="muted-line">{{ u.address || 'No address' }}</small>
+            <small class="muted-line">{{ u.address || i18n.t('admin.users.header.noAddress') }}</small>
           </span>
 
           <!-- Orders -->
@@ -143,7 +143,7 @@ type SortDir = 'asc' | 'desc';
           <span class="col-role">
             <span class="role-pill" [class.role-pill--admin]="u.is_admin"
                                     [class.role-pill--customer]="!u.is_admin">
-              {{ u.is_admin ? 'Admin' : 'Customer' }}
+              {{ u.is_admin ? i18n.t('admin.nav.adminLabel') : i18n.t('admin.dashboard.colCustomer') }}
             </span>
           </span>
 
@@ -155,7 +155,7 @@ type SortDir = 'asc' | 'desc';
               (click)="confirmPromote(u)"
               [disabled]="isSelf(u)"
             >
-              Make admin
+              {{ i18n.t('admin.users.header.makeAdmin') }}
             </button>
             <button
               *ngIf="u.is_admin"
@@ -164,7 +164,7 @@ type SortDir = 'asc' | 'desc';
               [disabled]="isSelf(u)"
               [title]="isSelf(u) ? 'You cannot remove your own admin access' : ''"
             >
-              Remove admin
+              {{ i18n.t('admin.users.header.removeAdmin') }}
             </button>
           </span>
         </div>
@@ -173,9 +173,9 @@ type SortDir = 'asc' | 'desc';
       <!-- Confirm Role Change Dialog -->
       <app-confirm-dialog
         [isOpen]="roleDialogOpen()"
-        [title]="pendingRoleChange()?.to === 'admin' ? 'Make user an admin?' : 'Remove admin access?'"
+        [title]="pendingRoleChange()?.to === 'admin' ? i18n.t('admin.users.header.makeUserAnAdmin') : i18n.t('admin.users.header.removeAdminAccess')"
         [message]="roleDialogMessage()"
-        [confirmText]="pendingRoleChange()?.to === 'admin' ? 'Make admin' : 'Remove admin'"
+        [confirmText]="pendingRoleChange()?.to === 'admin' ? i18n.t('admin.users.header.makeAdmin') : i18n.t('admin.users.header.removeAdmin')"
         [variant]="pendingRoleChange()?.to === 'admin' ? 'primary' : 'danger'"
         [isLoading]="isRoleChangeSaving()"
         (confirm)="doRoleChange()"
@@ -558,9 +558,9 @@ export class AdminUsersComponent implements OnInit {
     const name = change.user.full_name || change.user.email;
 
     if (change.to === 'admin') {
-      return `“${name}” will get full access to the admin panel, including products, orders, users and settings.`;
+      return this.i18n.t('admin.users.promoteMessage').replace('{name}', name);
     }
-    return `“${name}” will lose all admin access and become a regular customer. Their order history stays intact.`;
+    return this.i18n.t('admin.users.demoteMessage').replace('{name}', name);
   }
 
   doRoleChange(): void {
@@ -577,15 +577,15 @@ export class AdminUsersComponent implements OnInit {
         this.pendingRoleChange.set(null);
         this.toast.show(
           isAdmin
-            ? `${change.user.full_name || change.user.email} is now an admin`
-            : `${change.user.full_name || change.user.email} is no longer an admin`
+            ? this.i18n.t('admin.users.promoted').replace('{name}', change.user.full_name || change.user.email)
+            : this.i18n.t('admin.users.demoted').replace('{name}', change.user.full_name || change.user.email)
         );
         this.loadUsers();
       },
       error: (err) => {
         console.error('Role change failed', err);
         this.isRoleChangeSaving.set(false);
-        const msg = err.error?.error || 'Failed to change role';
+        const msg = err.error?.error || this.i18n.t('admin.users.header.failedToChangeRole');
         this.toast.show(msg);
         this.cancelRoleChange();
       },

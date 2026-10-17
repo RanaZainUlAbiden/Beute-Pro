@@ -20,13 +20,13 @@ import { LoadErrorComponent } from '../ui/load-error/load-error.component';
       <!-- Header -->
       <div class="page-head">
         <div>
-          <h1 class="h-lg">Inventory</h1>
+          <h1 class="h-lg">{{ i18n.t('admin.nav.inventory') }}</h1>
           <!-- "0 products" after a failed read reads as an empty
                warehouse. Don't claim a count we don't have. -->
           <p class="page-sub" *ngIf="!isLoading() && loadError() === null">
-            {{ rows().length }} product{{ rows().length === 1 ? '' : 's' }}
+            {{ i18n.t('admin.inventory.header.count').replace('{count}', rows().length.toString()) }}
             <ng-container *ngIf="lowStockCount() > 0">
-              · <span class="low-warn">{{ lowStockCount() }} low on stock</span>
+              · <span class="low-warn">{{ i18n.t('admin.inventory.header.lowCount').replace('{count}', lowStockCount().toString()) }}</span>
             </ng-container>
           </p>
           <p class="page-sub" *ngIf="isLoading() || loadError() !== null">—</p>
@@ -42,7 +42,7 @@ import { LoadErrorComponent } from '../ui/load-error/load-error.component';
           </svg>
           <input
             type="text"
-            placeholder="Search products…"
+            [placeholder]="i18n.t('admin.inventory.header.searchProducts')"
             [(ngModel)]="searchTerm"
             (ngModelChange)="onSearchChange($event)"
           />
@@ -54,12 +54,12 @@ import { LoadErrorComponent } from '../ui/load-error/load-error.component';
             [(ngModel)]="lowStockOnly"
             (ngModelChange)="onLowStockChange($event)"
           />
-          <span>Low stock only</span>
+          <span>{{ i18n.t('admin.inventory.header.lowStockOnly') }}</span>
         </label>
       </div>
 
       <!-- Loading -->
-      <app-loading-spinner *ngIf="isLoading()" message="Loading inventory…"></app-loading-spinner>
+      <app-loading-spinner *ngIf="isLoading()" [message]="i18n.t('admin.inventory.header.loadingInventory')"></app-loading-spinner>
 
       <!-- Load failed — shown INSTEAD of the empty state. -->
       <app-load-error
@@ -74,17 +74,17 @@ import { LoadErrorComponent } from '../ui/load-error/load-error.component';
           <path d="M6 7h12l-1.2 12H7.2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
           <path d="M9 7a3 3 0 0 1 6 0" stroke="currentColor" stroke-width="1.5" fill="none"/>
         </svg>
-        <p>No products match your filter.</p>
+        <p>{{ i18n.t('admin.inventory.header.noProductsMatchYourFilter') }}</p>
       </div>
 
       <!-- Table -->
       <div class="table-card" *ngIf="!isLoading() && loadError() === null && rows().length > 0">
         <div class="table-header">
-          <span>Product</span>
-          <span class="col-threshold">Low-stock at</span>
-          <span class="col-qty">In stock</span>
-          <span class="col-status">Status</span>
-          <span class="col-actions">Update</span>
+          <span>{{ i18n.t('admin.orderDetail.colProduct') }}</span>
+          <span class="col-threshold">{{ i18n.t('admin.inventory.header.lowStockAt') }}</span>
+          <span class="col-qty">{{ i18n.t('admin.inventory.header.inStock') }}</span>
+          <span class="col-status">{{ i18n.t('admin.dashboard.colStatus') }}</span>
+          <span class="col-actions">{{ i18n.t('admin.inventory.header.update') }}</span>
         </div>
 
         <div
@@ -93,8 +93,8 @@ import { LoadErrorComponent } from '../ui/load-error/load-error.component';
           [class.is-low]="row.isLow"
         >
           <span class="col-product">
-            <strong>{{ row.productNameEn }}</strong>
-            <small>{{ row.productId }}</small>
+            <strong>{{ i18n.isRTL() ? (row.productNameAr || row.productNameEn) : row.productNameEn }}</strong>
+            <small><bdi dir="ltr">{{ row.productId }}</bdi></small>
           </span>
 
           <span class="col-threshold">
@@ -120,7 +120,7 @@ import { LoadErrorComponent } from '../ui/load-error/load-error.component';
           <span class="col-status">
             <span class="status-pill" [class.status-pill--ok]="!row.isLow" [class.status-pill--low]="row.isLow">
               <span class="status-dot"></span>
-              {{ row.isLow ? 'Low' : 'OK' }}
+              {{ row.isLow ? i18n.t('admin.inventory.header.low') : i18n.t('admin.inventory.header.ok') }}
             </span>
           </span>
 
@@ -132,7 +132,7 @@ import { LoadErrorComponent } from '../ui/load-error/load-error.component';
               [disabled]="!row.isDirty || row.isSaving"
               (click)="saveRow(row)"
             >
-              {{ row.isSaving ? 'Saving…' : (row.isDirty ? 'Save' : 'Saved') }}
+              {{ row.isSaving ? i18n.t('admin.common.saving') : (row.isDirty ? i18n.t('admin.common.save') : i18n.t('admin.inventory.header.saved')) }}
             </button>
           </span>
         </div>
@@ -417,12 +417,12 @@ export class AdminInventoryComponent implements OnInit {
           row.isLow = row.quantity <= row.lowStockThreshold;
           row.isDirty = false;
           row.isSaving = false;
-          this.toast.show(`Stock updated for ${row.productNameEn}`);
+          this.toast.show(this.i18n.t('admin.inventory.updated').replace('{name}', this.i18n.isRTL() ? (row.productNameAr || row.productNameEn) : row.productNameEn));
         },
         error: (err) => {
           console.error('Failed to update inventory', err);
           row.isSaving = false;
-          this.toast.show(err.error?.error || 'Failed to update stock');
+          this.toast.show(err.error?.error || this.i18n.t('admin.inventory.header.failedToUpdateStock'));
           // Reload to get back to server truth
           this.loadInventory();
         },
