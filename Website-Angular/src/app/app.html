@@ -8,13 +8,17 @@
 
 <app-back-to-top />
 
+@if (layout.chrome()) {
 <app-whatsapp-button />
+}
 
 <app-cart-drawer />
 
 <app-toast />
 
+@if (layout.chrome()) {
 <app-welcome-popup />
+}
 
 
 
