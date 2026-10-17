@@ -1,0 +1,17 @@
+<div class="load-error" role="alert" [attr.aria-busy]="retrying()">
+  <div class="load-error__icon">
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" fill="none" />
+      <path d="M12 7.5v5.5M12 16.2v.3" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" fill="none" />
+    </svg>
+  </div>
+  <p class="load-error__title">{{ heading() }}</p>
+  <p class="load-error__body">{{ i18n.t('admin.common.apiDown') }}</p>
+  @if (detail()) {
+    <p class="load-error__detail">{{ detail() }}</p>
+  }
+  <button type="button" class="btn btn--gold" (click)="retry.emit()" [disabled]="retrying()">
+    {{ retrying() ? i18n.t('admin.common.retrying') : i18n.t('admin.common.tryAgain') }}
+  </button>
+</div>

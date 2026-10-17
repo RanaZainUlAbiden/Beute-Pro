@@ -4,7 +4,10 @@ import { FormsModule } from '@angular/forms';
 
 import { SettingsService } from '../../services/settings.service';
 import { ToastService } from '../../core/services/toast.service';
+import { I18nService } from '../../core/services/i18n.service';
+import { adminErrorDetail } from '../admin-api';
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
+import { LoadErrorComponent } from '../ui/load-error/load-error.component';
 
 interface SettingField {
   key: string;
@@ -25,7 +28,7 @@ interface SettingGroup {
 @Component({
   selector: 'app-admin-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, LoadErrorComponent],
   template: `
     <div class="admin-settings">
       <!-- Header -->
@@ -45,7 +48,7 @@ interface SettingGroup {
           <button
             class="btn btn--gold"
             (click)="save()"
-            [disabled]="!hasChanges() || isSaving() || isLoading()"
+            [disabled]="!hasChanges() || isSaving() || isLoading() || loadError() !== null"
           >
             <svg *ngIf="!isSaving()" viewBox="0 0 24 24" width="16" height="16">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
@@ -69,8 +72,24 @@ interface SettingGroup {
       <!-- Loading -->
       <app-loading-spinner *ngIf="isLoading()" message="Loading settings…"></app-loading-spinner>
 
+      <!-- Load failed. Unlike the other screens this one still renders
+           its form underneath, because an empty form here is not an
+           empty state — the placeholders ("3000", "PKR") look exactly
+           like real saved values. So the fields stay visible but are
+           locked, and Save is disabled: the danger is not that the
+           admin sees nothing, it is that they save over something. -->
+      <app-load-error
+        *ngIf="!isLoading() && loadError() !== null"
+        [detail]="loadError()!"
+        (retry)="load()"
+      ></app-load-error>
+
+      <p class="locked-note" *ngIf="!isLoading() && loadError() !== null">
+        {{ i18n.t('admin.settings.lockedNote') }}
+      </p>
+
       <!-- Groups -->
-      <div class="groups" *ngIf="!isLoading()">
+      <div class="groups" *ngIf="!isLoading()" [class.is-locked]="loadError() !== null">
         <section class="group" *ngFor="let group of groups">
           <div class="group-head">
             <div class="group-icon">
@@ -94,9 +113,10 @@ interface SettingGroup {
                 <input
                   [id]="'st-' + field.key"
                   [type]="field.type"
-                  [placeholder]="field.placeholder || ''"
+                  [placeholder]="loadError() !== null ? '' : (field.placeholder || '')"
                   [ngModel]="values()[field.key] || ''"
                   (ngModelChange)="onValueChange(field.key, $event)"
+                  [disabled]="loadError() !== null"
                 />
                 <span class="affix affix--suffix" *ngIf="field.suffix">{{ field.suffix }}</span>
               </div>
@@ -110,6 +130,20 @@ interface SettingGroup {
   `,
   styles: [`
     .admin-settings { padding: 0; }
+
+    /* Locked form after a failed read */
+    .locked-note {
+      margin: 0.9rem 0 0;
+      padding: 0.8rem 1.1rem;
+      background: var(--danger-soft, #f7e7e4);
+      border-inline-start: 3px solid var(--danger, #a8443c);
+      border-radius: var(--r, 8px);
+      color: var(--green, #0F2A1D);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+    .groups.is-locked { opacity: 0.55; }
+    .groups.is-locked input { cursor: not-allowed; background: var(--ivory-2, #EFEADD); }
 
     .page-head {
       display: flex; justify-content: space-between; align-items: flex-start;
@@ -264,9 +298,12 @@ interface SettingGroup {
 export class AdminSettingsComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private toast = inject(ToastService);
+  protected readonly i18n = inject(I18nService);
 
   isLoading = signal(true);
   isSaving = signal(false);
+  /** The API's message when the read failed; null when it didn't. */
+  loadError = signal<string | null>(null);
 
   /** Server truth — what's saved in the DB. */
   private serverValues = signal<Record<string, string>>({});
@@ -369,18 +406,30 @@ export class AdminSettingsComponent implements OnInit {
   // ------------------------------------------------------------
   load(): void {
     this.isLoading.set(true);
+    this.loadError.set(null);
     this.settingsService.adminGetAll().subscribe({
       next: (res) => {
+        this.loadError.set(null);
         this.serverValues.set({ ...res.settings });
         this.values.set({ ...res.settings });
         this.isLoading.set(false);
       },
       error: (err) => {
         console.error('Failed to load settings', err);
-        this.toast.show('Failed to load settings');
+        // Both sides cleared, so hasChanges() can't go true off a
+        // stale baseline while the form is locked.
+        this.serverValues.set({});
+        this.values.set({});
+        this.loadError.set(adminErrorDetail(err, this.i18n.t('admin.common.apiDown')));
+        this.toast.show(this.i18n.t('admin.common.loadFailed'));
         this.isLoading.set(false);
       },
     });
+  }
+
+  /** Guards the write even if the button is ever re-enabled by mistake. */
+  private canSave(): boolean {
+    return this.loadError() === null && !this.isLoading();
   }
 
   reload(): void {
@@ -403,7 +452,7 @@ export class AdminSettingsComponent implements OnInit {
   // Save
   // ------------------------------------------------------------
   save(): void {
-    if (!this.hasChanges()) return;
+    if (!this.hasChanges() || !this.canSave()) return;
 
     // Only send keys that actually changed
     const changed: Record<string, string> = {};

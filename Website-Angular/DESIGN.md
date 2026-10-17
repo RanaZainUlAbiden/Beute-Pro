@@ -111,6 +111,11 @@ Controls/cards use `rounded.DEFAULT → --r`; the enclosing section uses
 - **Feedback:** inline errors remain visible; the existing `ToastService` and
   a polite live region acknowledge success. Loading and upload progress are
   indeterminate because the approved upload service returns completion values.
+- **Admin read failures:** `admin/ui/load-error/LoadErrorComponent` owns the shared
+  localized failure title, optional error detail, alert semantics and explicit
+  retry button. Screen `loadError` signals distinguish failed reads from successful
+  empty responses. Unknown counts use a dash; Settings inputs/Save and provider
+  rate refresh stay locked until a successful read restores the saved baseline.
 - **Media manager:** `UploadService` owns requests. Native file pickers are the
   keyboard alternative to drag/drop. Validate type/count/size before upload,
   keep valid queued files after failures, serialize mutations, and refetch after

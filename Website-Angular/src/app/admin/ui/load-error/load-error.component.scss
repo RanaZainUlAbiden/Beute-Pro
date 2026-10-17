@@ -1,0 +1,43 @@
+.load-error {
+  background: var(--white, #fff);
+  border-radius: var(--r-lg, 18px);
+  border-inline-start: 3px solid var(--danger, #a8443c);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--green-soft, #5c7a68);
+}
+
+.load-error__icon {
+  color: var(--danger, #a8443c);
+  margin-bottom: 0.6rem;
+}
+
+.load-error__title {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--green, #0f2a1d);
+}
+
+.load-error__body {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  max-width: 46ch;
+  margin-inline: auto;
+}
+
+.load-error__detail {
+  margin: 0 0 1rem;
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--danger, #a8443c);
+  background: var(--danger-soft, #f7e7e4);
+  border-radius: var(--r, 8px);
+  padding: 0.5rem 0.75rem;
+  max-width: 60ch;
+  margin-inline: auto;
+  overflow-wrap: anywhere;
+  // Server messages may include English identifiers and URLs in either locale.
+  direction: ltr;
+  text-align: start;
+}

@@ -5,8 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { UserAdminService, AdminUser } from '../../services/user-admin.service';
 import { AuthService } from '../../services/auth';
 import { ToastService } from '../../core/services/toast.service';
+import { I18nService } from '../../core/services/i18n.service';
+import { adminErrorDetail } from '../admin-api';
 
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
+import { LoadErrorComponent } from '../ui/load-error/load-error.component';
 import { ConfirmDialogComponent } from '../ui/confirm-dialog.component';
 
 type RoleFilter = '' | 'admin' | 'customer';
@@ -20,6 +23,7 @@ type SortDir = 'asc' | 'desc';
     CommonModule,
     FormsModule,
     LoadingSpinnerComponent,
+    LoadErrorComponent,
     ConfirmDialogComponent,
   ],
   template: `
@@ -28,10 +32,13 @@ type SortDir = 'asc' | 'desc';
       <div class="page-head">
         <div>
           <h1 class="h-lg">Users</h1>
-          <p class="page-sub">
+          <!-- "0 users · 0 admins" after a failed read is a false claim
+               that the admin account is missing. Say nothing instead. -->
+          <p class="page-sub" *ngIf="!isLoading() && loadError() === null">
             {{ total() }} user{{ total() === 1 ? '' : 's' }}
             · <span class="admin-count">{{ adminCount() }} admin{{ adminCount() === 1 ? '' : 's' }}</span>
           </p>
+          <p class="page-sub" *ngIf="isLoading() || loadError() !== null">—</p>
         </div>
       </div>
 
@@ -67,8 +74,15 @@ type SortDir = 'asc' | 'desc';
       <!-- Loading -->
       <app-loading-spinner *ngIf="isLoading()" message="Loading users…"></app-loading-spinner>
 
+      <!-- Load failed — shown INSTEAD of the empty state. -->
+      <app-load-error
+        *ngIf="!isLoading() && loadError() !== null"
+        [detail]="loadError()!"
+        (retry)="loadUsers()"
+      ></app-load-error>
+
       <!-- Empty -->
-      <div class="empty-state" *ngIf="!isLoading() && users().length === 0">
+      <div class="empty-state" *ngIf="!isLoading() && loadError() === null && users().length === 0">
         <svg viewBox="0 0 24 24" width="48" height="48">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
                 stroke="currentColor" stroke-width="1.5" fill="none"
@@ -80,7 +94,7 @@ type SortDir = 'asc' | 'desc';
       </div>
 
       <!-- Table -->
-      <div class="table-card" *ngIf="!isLoading() && users().length > 0">
+      <div class="table-card" *ngIf="!isLoading() && loadError() === null && users().length > 0">
         <div class="table-header">
           <span>User</span>
           <span>Contact</span>
@@ -408,10 +422,14 @@ export class AdminUsersComponent implements OnInit {
   private userAdminService = inject(UserAdminService);
   private authService = inject(AuthService);
   private toast = inject(ToastService);
+  protected readonly i18n = inject(I18nService);
 
   users = signal<AdminUser[]>([]);
   total = signal(0);
   isLoading = signal(true);
+  /** The API's message when the read failed; null when it didn't. */
+  loadError = signal<string | null>(null);
+
 
   searchTerm = '';
   roleFilter: RoleFilter = '';
@@ -436,6 +454,7 @@ export class AdminUsersComponent implements OnInit {
   // ------------------------------------------------------------
   loadUsers(): void {
     this.isLoading.set(true);
+    this.loadError.set(null);
     this.userAdminService
       .list({
         search: this.searchTerm || undefined,
@@ -446,13 +465,17 @@ export class AdminUsersComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
+          this.loadError.set(null);
           this.users.set(res.users);
           this.total.set(res.total);
           this.isLoading.set(false);
         },
         error: (err) => {
           console.error('Failed to load users', err);
-          this.toast.show('Failed to load users');
+          this.users.set([]);
+          this.total.set(0);
+          this.loadError.set(adminErrorDetail(err, this.i18n.t('admin.common.apiDown')));
+          this.toast.show(this.i18n.t('admin.common.loadFailed'));
           this.isLoading.set(false);
         },
       });

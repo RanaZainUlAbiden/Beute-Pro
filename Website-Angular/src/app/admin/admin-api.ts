@@ -5,6 +5,7 @@ import type { Observable } from 'rxjs';
 import { CURRENCY, PRODUCTS } from '../core/data/products';
 import type { Order } from '../services/order';
 import { environment } from '../../environments/environment';
+import { T } from '../core/data/i18n.data';
 
 /* =============================================================
    ADMIN API
@@ -197,4 +198,24 @@ export function adminDate(value: string | null | undefined, withTime = false): s
 /** Catalogue name for a product id, falling back to the id itself. */
 export function adminProductName(id: string): string {
   return PRODUCTS.find((p) => p.id === id)?.en.name ?? id;
+}
+
+/* -------------------------------------------------------------
+   The short version of what went wrong, for the load-error panel.
+
+   Only ever a detail line under a translated headline, never the
+   headline itself — the server speaks English and an Arabic admin
+   still needs to be told, in Arabic, that the screen failed.
+   Callers may supply the active locale's fallback; the one-argument
+   form is also safe for errors without any message. */
+export function adminErrorDetail(
+  err: unknown,
+  fallback = T.en['admin.common.apiDown'],
+): string {
+  const e = err as { error?: { error?: unknown; message?: unknown }; message?: unknown } | null;
+  const candidates = [e?.error?.error, e?.error?.message, e?.message, err];
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) return candidate.trim();
+  }
+  return fallback.trim() || T.en['admin.common.apiDown'];
 }

@@ -498,6 +498,10 @@ const en = {
   "admin.common.refresh": "Refresh",
   "admin.common.tryAgain": "Try again",
   "admin.common.cancel": "Cancel",
+  "admin.common.loadFailed": "Failed to load",
+  "admin.common.retrying": "Retrying…",
+  "admin.settings.lockedNote":
+    "These fields are locked because the saved values couldn't be loaded. The boxes below are empty examples, not your settings — retry before editing, or saving could overwrite real values.",
   "admin.media.title": "Product media",
   "admin.media.subtitle": "Manage uploaded product photos and the 360° video. Static images remain the fallback when no uploads exist.",
   "admin.media.refresh": "Refresh media",
@@ -1244,6 +1248,10 @@ const ar: Record<keyof typeof en, string> = {
   "admin.common.refresh": "تحديث",
   "admin.common.tryAgain": "إعادة المحاولة",
   "admin.common.cancel": "إلغاء",
+  "admin.common.loadFailed": "تعذّر التحميل",
+  "admin.common.retrying": "جارٍ إعادة المحاولة…",
+  "admin.settings.lockedNote":
+    "هذه الحقول مقفلة لأنه تعذّر تحميل القيم المحفوظة. الحقول أدناه أمثلة فارغة وليست إعداداتك — أعد المحاولة قبل التعديل، وإلا فقد يستبدل الحفظ قيمًا حقيقية.",
   "admin.media.title": "وسائط المنتج",
   "admin.media.subtitle": "إدارة صور المنتج المرفوعة وفيديو العرض بزاوية 360°. تُستخدم الصور الأصلية عند عدم وجود صور مرفوعة.",
   "admin.media.refresh": "تحديث الوسائط",

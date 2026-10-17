@@ -4,9 +4,12 @@ import { FormsModule } from '@angular/forms';
 
 import { CouponService } from '../../services/coupon.service';
 import { ToastService } from '../../core/services/toast.service';
+import { I18nService } from '../../core/services/i18n.service';
+import { adminErrorDetail } from '../admin-api';
 import { ApiCoupon } from '../../core/models/api.model';
 
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
+import { LoadErrorComponent } from '../ui/load-error/load-error.component';
 import { ConfirmDialogComponent } from '../ui/confirm-dialog.component';
 import { CouponFormComponent } from './coupon-form.component';
 
@@ -17,6 +20,7 @@ import { CouponFormComponent } from './coupon-form.component';
     CommonModule,
     FormsModule,
     LoadingSpinnerComponent,
+    LoadErrorComponent,
     ConfirmDialogComponent,
     CouponFormComponent,
   ],
@@ -26,10 +30,11 @@ import { CouponFormComponent } from './coupon-form.component';
       <div class="page-head">
         <div>
           <h1 class="h-lg">Coupons</h1>
-          <p class="page-sub">
+          <p class="page-sub" *ngIf="!isLoading() && loadError() === null">
             {{ coupons().length }} coupon{{ coupons().length === 1 ? '' : 's' }}
             · <span class="active-count">{{ activeCount() }} active</span>
           </p>
+          <p class="page-sub" *ngIf="isLoading() || loadError() !== null">—</p>
         </div>
         <button class="btn btn--gold" (click)="openCreate()">
           <svg viewBox="0 0 24 24" width="16" height="16">
@@ -51,8 +56,16 @@ import { CouponFormComponent } from './coupon-form.component';
       <!-- Loading -->
       <app-loading-spinner *ngIf="isLoading()" message="Loading coupons…"></app-loading-spinner>
 
+      <!-- Load failed — shown INSTEAD of the empty state, so a dead
+           API never reads as "no coupons yet". -->
+      <app-load-error
+        *ngIf="!isLoading() && loadError() !== null"
+        [detail]="loadError()!"
+        (retry)="loadCoupons()"
+      ></app-load-error>
+
       <!-- Empty -->
-      <div class="empty-state" *ngIf="!isLoading() && coupons().length === 0">
+      <div class="empty-state" *ngIf="!isLoading() && loadError() === null && coupons().length === 0">
         <svg viewBox="0 0 24 24" width="48" height="48">
           <path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8z"
                 stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -62,7 +75,7 @@ import { CouponFormComponent } from './coupon-form.component';
       </div>
 
       <!-- Grid -->
-      <div class="coupon-grid" *ngIf="!isLoading() && coupons().length > 0">
+      <div class="coupon-grid" *ngIf="!isLoading() && loadError() === null && coupons().length > 0">
         <div class="coupon-card" *ngFor="let c of coupons()" [class.is-expired]="isExpired(c)">
           <!-- Top row: code + status -->
           <div class="card-head">
@@ -333,9 +346,13 @@ import { CouponFormComponent } from './coupon-form.component';
 export class AdminCouponsComponent implements OnInit {
   private couponService = inject(CouponService);
   private toast = inject(ToastService);
+  protected readonly i18n = inject(I18nService);
 
   coupons = signal<ApiCoupon[]>([]);
   isLoading = signal(true);
+  /** The API's message when the read failed; null when it didn't. */
+  loadError = signal<string | null>(null);
+
   activeOnly = false;
 
   // Form state
@@ -358,16 +375,20 @@ export class AdminCouponsComponent implements OnInit {
   // ------------------------------------------------------------
   loadCoupons(): void {
     this.isLoading.set(true);
+    this.loadError.set(null);
     this.couponService
       .adminList({ activeOnly: this.activeOnly, limit: 200 })
       .subscribe({
         next: (res) => {
+          this.loadError.set(null);
           this.coupons.set(res.coupons);
           this.isLoading.set(false);
         },
         error: (err) => {
           console.error('Failed to load coupons', err);
-          this.toast.show('Failed to load coupons');
+          this.coupons.set([]);
+          this.loadError.set(adminErrorDetail(err, this.i18n.t('admin.common.apiDown')));
+          this.toast.show(this.i18n.t('admin.common.loadFailed'));
           this.isLoading.set(false);
         },
       });
