@@ -4,7 +4,7 @@ import { Type } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, Subject, of, throwError } from 'rxjs';
 
 import { AdminCategoriesComponent } from './categories/admin-categories.component';
 import { AdminProductsComponent } from './products/admin-products.component';
@@ -185,15 +185,75 @@ describe('admin load failures are not empty states', () => {
       it('shows the error panel, with the API message, when the read fails', () => {
         expect(panel()).withContext('error panel').not.toBeNull();
         expect(text()).toContain('relation "categories" does not exist');
+        expect(fixture.debugElement.query(By.css('.cat-grid, .table-card, .coupon-grid, .rate-grid')))
+          .withContext('data hidden after a failed read').toBeNull();
       });
 
-      it('does not show the empty state when the read fails', () => {
-        if (!screen.emptyText) {
-          pending('screen has no empty state');
-          return;
-        }
-        expect(text()).not.toContain(screen.emptyText);
+      it('does not claim a zero count after a failed read', () => {
+        const subtitle = fixture.debugElement.query(By.css('.page-sub')).nativeElement as HTMLElement;
+        expect(subtitle.textContent).not.toMatch(/\b0\b/);
       });
+
+      it('shows a durable error for a network failure too', () => {
+        load.and.returnValue(throwError(() => new HttpErrorResponse({ status: 0 })));
+        retryButton().click();
+        fixture.detectChanges();
+        expect(panel()).not.toBeNull();
+        if (screen.emptyText) expect(text()).not.toContain(screen.emptyText);
+      });
+
+      if (screen.emptyText) {
+        it('does not show the empty state when the read fails', () => {
+          expect(text()).not.toContain(screen.emptyText);
+        });
+
+        it('shows the empty state only after a successful empty response', () => {
+          const empty = screen.name === 'Exchange rates'
+            ? { rates: {}, updatedAt: null }
+            : screen.name === 'Categories' ? { categories: [] } : screen.ok;
+          load.and.returnValue(of(empty) as Observable<never>);
+          retryButton().click();
+          fixture.detectChanges();
+
+          expect(panel()).toBeNull();
+          expect(text()).toContain(screen.emptyText);
+        });
+      }
+
+      for (const error of [null, {}, new Error('')]) {
+        it(`keeps a failed read distinct from empty data without error text (${String(error)})`, () => {
+          load.and.returnValue(throwError(() => error));
+          retryButton().click();
+          fixture.detectChanges();
+
+          expect(panel()).withContext('message-free failure still needs an error panel').not.toBeNull();
+          if (screen.emptyText) expect(text()).not.toContain(screen.emptyText);
+          if (screen.name === 'Settings') {
+            const component = fixture.componentInstance as AdminSettingsComponent;
+            component.onValueChange('store_email', 'changed@example.com');
+            component.save();
+            expect(TestBed.inject(SettingsService).adminSetMany).not.toHaveBeenCalled();
+          }
+        });
+      }
+
+      if (['Categories', 'Products', 'Inventory', 'Users', 'Coupons'].includes(screen.name)) {
+        it('does not claim zero records while a retry is still pending', () => {
+          const pending = new Subject<unknown>();
+          load.and.returnValue(pending);
+          retryButton().click();
+          fixture.detectChanges();
+
+          const count = fixture.debugElement.query(By.css('.page-sub')).nativeElement as HTMLElement;
+          expect(count.textContent?.trim()).toBe('—');
+          expect(panel()).toBeNull();
+          expect(fixture.debugElement.query(By.css('app-loading-spinner'))).not.toBeNull();
+          pending.next(screen.ok);
+          pending.complete();
+          fixture.detectChanges();
+          expect(fixture.debugElement.query(By.css('.page-sub')).nativeElement.textContent).not.toContain('—');
+        });
+      }
 
       it('does not retry on its own', () => {
         expect(load).toHaveBeenCalledTimes(1);
@@ -213,7 +273,18 @@ describe('admin load failures are not empty states', () => {
         expect(load).toHaveBeenCalledTimes(2);
         expect(panel()).withContext('error panel after successful retry').toBeNull();
         expect(text()).not.toContain('relation "categories" does not exist');
+        expect(fixture.debugElement.query(By.css('.empty-state, .cat-grid, .table-card, .coupon-grid, .rate-grid, .groups')))
+          .withContext('success content is rendered').not.toBeNull();
       });
+
+      if (screen.name === 'Exchange rates') {
+        it('disables Refresh from API while the saved baseline is unknown', () => {
+          const button = fixture.debugElement.query(By.css('.page-head button')).nativeElement as HTMLButtonElement;
+          expect(button.disabled).toBeTrue();
+          button.click();
+          expect(TestBed.inject(CurrencyService).refresh).not.toHaveBeenCalled();
+        });
+      }
     });
   }
 });
@@ -270,7 +341,8 @@ describe('settings form is locked after a failed read', () => {
   });
 
   it('refuses to write even if save() is called directly', () => {
-    (fixture.componentInstance as unknown as { save: () => void }).save();
+    fixture.componentInstance.onValueChange('store_email', 'changed@example.com');
+    fixture.componentInstance.save();
     expect(service.adminSetMany).not.toHaveBeenCalled();
   });
 
@@ -287,5 +359,6 @@ describe('settings form is locked after a failed read', () => {
     for (const input of inputs()) {
       expect(input.disabled).withContext(input.id).toBeFalse();
     }
+    expect(inputs().find((input) => input.id === 'st-free_shipping_min_pkr')?.placeholder).toBe('3000');
   });
 });
