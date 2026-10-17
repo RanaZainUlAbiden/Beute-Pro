@@ -3,9 +3,12 @@ import { CommonModule } from '@angular/common';
 
 import { CategoryService } from '../../services/category.service';
 import { ToastService } from '../../core/services/toast.service';
+import { I18nService } from '../../core/services/i18n.service';
+import { adminErrorDetail } from '../admin-api';
 import { ApiCategory } from '../../core/models/api.model';
 
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
+import { LoadErrorComponent } from '../ui/load-error.component';
 import { ConfirmDialogComponent } from '../ui/confirm-dialog.component';
 import { CategoryFormComponent } from './category-form.component';
 
@@ -15,6 +18,7 @@ import { CategoryFormComponent } from './category-form.component';
   imports: [
     CommonModule,
     LoadingSpinnerComponent,
+    LoadErrorComponent,
     ConfirmDialogComponent,
     CategoryFormComponent,
   ],
@@ -24,9 +28,12 @@ import { CategoryFormComponent } from './category-form.component';
       <div class="page-head">
         <div>
           <h1 class="h-lg">Categories</h1>
-          <p class="page-sub">
+          <!-- A count is a claim about the data; don't make one when the
+               read failed. "—" is honest, "0 categories" is not. -->
+          <p class="page-sub" *ngIf="!loadError()">
             {{ categories().length }} categor{{ categories().length === 1 ? 'y' : 'ies' }}
           </p>
+          <p class="page-sub" *ngIf="loadError()">—</p>
         </div>
         <button class="btn btn--gold" (click)="openCreate()">
           <svg viewBox="0 0 24 24" width="16" height="16">
@@ -40,14 +47,23 @@ import { CategoryFormComponent } from './category-form.component';
       <!-- Loading -->
       <app-loading-spinner *ngIf="isLoading()" message="Loading categories…"></app-loading-spinner>
 
+      <!-- Load failed — shown INSTEAD of the empty state, so a dead
+           API never reads as an empty catalogue. -->
+      <app-load-error
+        *ngIf="!isLoading() && loadError()"
+        [title]="i18n.t('admin.categories.loadErrTitle')"
+        [detail]="loadError()!"
+        (retry)="loadCategories()"
+      ></app-load-error>
+
       <!-- Empty -->
-      <div class="empty-state" *ngIf="!isLoading() && categories().length === 0">
+      <div class="empty-state" *ngIf="!isLoading() && !loadError() && categories().length === 0">
         <p>No categories yet.</p>
         <button class="btn btn--gold" (click)="openCreate()">Create the first one</button>
       </div>
 
       <!-- Grid -->
-      <div class="cat-grid" *ngIf="!isLoading() && categories().length > 0">
+      <div class="cat-grid" *ngIf="!isLoading() && !loadError() && categories().length > 0">
         <div class="cat-card" *ngFor="let c of categories()">
           <div class="cat-card__order">
             <span class="order-num">{{ c.displayOrder }}</span>
@@ -232,9 +248,12 @@ import { CategoryFormComponent } from './category-form.component';
 export class AdminCategoriesComponent implements OnInit {
   private categoryService = inject(CategoryService);
   private toast = inject(ToastService);
+  protected readonly i18n = inject(I18nService);
 
   categories = signal<ApiCategory[]>([]);
   isLoading = signal(true);
+  /** The API's message when the read failed; null when it didn't. */
+  loadError = signal<string | null>(null);
 
   // Form modal state
   formOpen = signal(false);
@@ -252,6 +271,7 @@ export class AdminCategoriesComponent implements OnInit {
   // ------------------------------------------------------------
   loadCategories(): void {
     this.isLoading.set(true);
+    this.loadError.set(null);
     this.categoryService.list().subscribe({
       next: (res) => {
         this.categories.set(res.categories);
@@ -259,7 +279,11 @@ export class AdminCategoriesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load categories', err);
-        this.toast.show('Failed to load categories');
+        this.toast.show(this.i18n.t('admin.categories.loadErrTitle'));
+        // Drop any stale rows: a half-rendered list behind an error
+        // panel is the ambiguity this fix exists to remove.
+        this.categories.set([]);
+        this.loadError.set(adminErrorDetail(err));
         this.isLoading.set(false);
       },
     });

@@ -6,11 +6,14 @@ import { RouterModule } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { CategoryService } from '../../services/category.service';
 import { ToastService } from '../../core/services/toast.service';
+import { I18nService } from '../../core/services/i18n.service';
+import { adminErrorDetail } from '../admin-api';
 import { ExportService } from '../../services/export.service';
 import { ApiProduct, ApiCategory } from '../../core/models/api.model';
 import { mediaUrl } from '../../core/image';
 
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
+import { LoadErrorComponent } from '../ui/load-error.component';
 import { ConfirmDialogComponent } from '../ui/confirm-dialog.component';
 import { CsvExportButtonComponent } from '../ui/csv-export-button.component';
 
@@ -22,6 +25,7 @@ import { CsvExportButtonComponent } from '../ui/csv-export-button.component';
     FormsModule,
     RouterModule,
     LoadingSpinnerComponent,
+    LoadErrorComponent,
     ConfirmDialogComponent,
     CsvExportButtonComponent, // ✅ now actually used in template
   ],
@@ -31,7 +35,9 @@ import { CsvExportButtonComponent } from '../ui/csv-export-button.component';
       <div class="page-head">
         <div>
           <h1 class="h-lg">Products</h1>
-          <p class="page-sub">{{ total() }} product{{ total() === 1 ? '' : 's' }} in the catalogue</p>
+          <!-- Not a count when the read failed — see load-error.component.ts. -->
+          <p class="page-sub" *ngIf="!loadError()">{{ total() }} product{{ total() === 1 ? '' : 's' }} in the catalogue</p>
+          <p class="page-sub" *ngIf="loadError()">—</p>
         </div>
         <div class="head-actions">
           <!-- ✅ CSV export -->
@@ -73,8 +79,16 @@ import { CsvExportButtonComponent } from '../ui/csv-export-button.component';
       <!-- Loading -->
       <app-loading-spinner *ngIf="isLoading()" message="Loading products…"></app-loading-spinner>
 
+      <!-- Load failed — shown INSTEAD of the empty state. -->
+      <app-load-error
+        *ngIf="!isLoading() && loadError()"
+        [title]="i18n.t('admin.products.loadErrTitle')"
+        [detail]="loadError()!"
+        (retry)="loadProducts()"
+      ></app-load-error>
+
       <!-- Empty -->
-      <div class="empty-state" *ngIf="!isLoading() && products().length === 0">
+      <div class="empty-state" *ngIf="!isLoading() && !loadError() && products().length === 0">
         <svg viewBox="0 0 24 24" width="48" height="48">
           <path d="M6 7h12l-1.2 12H7.2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
           <path d="M9 7a3 3 0 0 1 6 0" stroke="currentColor" stroke-width="1.5" fill="none"/>
@@ -84,7 +98,7 @@ import { CsvExportButtonComponent } from '../ui/csv-export-button.component';
       </div>
 
       <!-- Table -->
-      <div class="table-card" *ngIf="!isLoading() && products().length > 0">
+      <div class="table-card" *ngIf="!isLoading() && !loadError() && products().length > 0">
         <div class="table-header">
           <span class="col-img"></span>
           <span>Product</span>
@@ -315,11 +329,15 @@ export class AdminProductsComponent implements OnInit {
   private categoryService = inject(CategoryService);
   private toast = inject(ToastService);
   private exportService = inject(ExportService);
+  protected readonly i18n = inject(I18nService);
 
   products = signal<ApiProduct[]>([]);
   categories = signal<ApiCategory[]>([]);
   total = signal(0);
   isLoading = signal(true);
+  /** The API's message when the read failed; null when it didn't. */
+  loadError = signal<string | null>(null);
+
 
   searchTerm = '';
   categoryFilter = '';
@@ -350,6 +368,7 @@ export class AdminProductsComponent implements OnInit {
 
   loadProducts(): void {
     this.isLoading.set(true);
+    this.loadError.set(null);
     this.productService
       .adminList({
         search: this.searchTerm || undefined,
@@ -364,8 +383,11 @@ export class AdminProductsComponent implements OnInit {
         },
         error: (err) => {
           console.error('Failed to load products', err);
+          this.products.set([]);
+          this.total.set(0);
+          this.loadError.set(adminErrorDetail(err));
           this.isLoading.set(false);
-          this.toast.show('Failed to load products');
+          this.toast.show(this.i18n.t('admin.products.loadErrTitle'));
         },
       });
   }

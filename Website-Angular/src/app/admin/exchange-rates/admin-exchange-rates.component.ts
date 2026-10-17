@@ -4,8 +4,11 @@ import { FormsModule } from '@angular/forms';
 
 import { CurrencyService } from '../../services/currency.service';
 import { ToastService } from '../../core/services/toast.service';
+import { I18nService } from '../../core/services/i18n.service';
+import { adminErrorDetail } from '../admin-api';
 
 import { LoadingSpinnerComponent } from '../ui/loading-spinner.component';
+import { LoadErrorComponent } from '../ui/load-error.component';
 
 interface CurrencyMeta {
   code: string;
@@ -37,7 +40,7 @@ interface RateRow {
 @Component({
   selector: 'app-admin-exchange-rates',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, LoadErrorComponent],
   template: `
     <div class="admin-rates">
       <!-- Header -->
@@ -49,7 +52,7 @@ interface RateRow {
             <span *ngIf="lastUpdated()"> · Last updated {{ lastUpdated() }}</span>
           </p>
         </div>
-        <button class="btn btn--gold" (click)="refresh()" [disabled]="isRefreshing() || isLoading()">
+        <button class="btn btn--gold" (click)="refresh()" [disabled]="isRefreshing() || isLoading() || !!loadError()">
           <svg viewBox="0 0 24 24" width="16" height="16" *ngIf="!isRefreshing()">
             <path d="M23 4v6h-6M1 20v-6h6" stroke="currentColor" stroke-width="2"
                   fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -78,13 +81,23 @@ interface RateRow {
       <!-- Loading -->
       <app-loading-spinner *ngIf="isLoading()" message="Loading exchange rates…"></app-loading-spinner>
 
+      <!-- Load failed — shown INSTEAD of the "none configured yet"
+           invitation, which was actively misleading: the public API
+           returns USD/AED even while this read fails. -->
+      <app-load-error
+        *ngIf="!isLoading() && loadError()"
+        [title]="i18n.t('admin.rates.loadErrTitle')"
+        [detail]="loadError()!"
+        (retry)="load()"
+      ></app-load-error>
+
       <!-- Empty -->
-      <div class="empty-state" *ngIf="!isLoading() && rows().length === 0">
+      <div class="empty-state" *ngIf="!isLoading() && !loadError() && rows().length === 0">
         <p>No exchange rates configured yet. Click <b>Refresh from API</b> to populate them.</p>
       </div>
 
       <!-- Rate cards -->
-      <div class="rate-grid" *ngIf="!isLoading() && rows().length > 0">
+      <div class="rate-grid" *ngIf="!isLoading() && !loadError() && rows().length > 0">
         <div class="rate-card" *ngFor="let row of rows(); trackBy: trackByCode"
              [class.is-dirty]="row.isDirty">
 
@@ -356,8 +369,11 @@ interface RateRow {
 export class AdminExchangeRatesComponent implements OnInit {
   private currencyService = inject(CurrencyService);
   private toast = inject(ToastService);
+  protected readonly i18n = inject(I18nService);
 
   isLoading = signal(true);
+  /** The API's message when the read failed; null when it didn't. */
+  loadError = signal<string | null>(null);
   isRefreshing = signal(false);
   updatedAt = signal<string | null>(null);
 
@@ -386,6 +402,7 @@ export class AdminExchangeRatesComponent implements OnInit {
   // ------------------------------------------------------------
   load(): void {
     this.isLoading.set(true);
+    this.loadError.set(null);
     this.currencyService.getRates().subscribe({
       next: (res) => {
         this.updatedAt.set(res.updatedAt);
@@ -394,7 +411,10 @@ export class AdminExchangeRatesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load rates', err);
-        this.toast.show('Failed to load exchange rates');
+        this.rows.set([]);
+        this.updatedAt.set(null);
+        this.loadError.set(adminErrorDetail(err));
+        this.toast.show(this.i18n.t('admin.rates.loadErrTitle'));
         this.isLoading.set(false);
       },
     });

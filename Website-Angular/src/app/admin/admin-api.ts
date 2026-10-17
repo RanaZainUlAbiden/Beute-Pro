@@ -198,3 +198,26 @@ export function adminDate(value: string | null | undefined, withTime = false): s
 export function adminProductName(id: string): string {
   return PRODUCTS.find((p) => p.id === id)?.en.name ?? id;
 }
+
+/* -------------------------------------------------------------
+   The short version of what went wrong, for the load-error panel.
+
+   Only ever a detail line under a translated headline, never the
+   headline itself — the server speaks English and an Arabic admin
+   still needs to be told, in Arabic, that the screen failed. A
+   status-only line is better than nothing: "0" is what Angular
+   reports when the request never reached the backend at all,
+   which is the case worth distinguishing. */
+export function adminErrorDetail(err: unknown): string {
+  const e = err as { error?: { error?: unknown }; status?: number; message?: string } | null;
+  if (!e) return '';
+
+  const fromBody = e.error?.error;
+  if (typeof fromBody === 'string' && fromBody.trim()) return fromBody.trim();
+
+  if (e.status === 0) return 'Could not reach the server (no response).';
+  if (typeof e.status === 'number' && e.status > 0) {
+    return `Server responded ${e.status}${e.message ? ` — ${e.message}` : ''}`;
+  }
+  return typeof e.message === 'string' ? e.message : '';
+}
