@@ -1,0 +1,88 @@
+.action-label {
+  display: none;
+}
+
+// Keep the desktop table; compact viewports get cards with their own action row.
+@media (max-width: 900px) {
+  .admin-products {
+    .filter-search {
+      min-width: 0;
+
+      input { min-width: 0; }
+    }
+
+    .filter-select { max-width: 100%; }
+
+    .table-card {
+      background: transparent;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .table-header { display: none; }
+
+    .table-row {
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: 0.5rem 0.75rem;
+      padding: 1rem;
+      margin-block-end: 0.75rem;
+      border: 1px solid var(--ivory-3, #E2DBC9);
+      border-radius: var(--r-lg, 18px);
+      background: var(--white, #fff);
+
+      &:last-child { border-bottom: 1px solid var(--ivory-3, #E2DBC9); }
+    }
+
+    .col-img {
+      grid-column: 1;
+      grid-row: 1 / span 3;
+      align-self: start;
+    }
+
+    .col-product, .col-category, .price {
+      grid-column: 2;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .price { text-align: start; }
+
+    // Override the original nth-child rule that hid the entire actions cell.
+    .table-row > .col-actions {
+      display: flex;
+      grid-column: 1 / -1;
+      justify-content: flex-start;
+      gap: 0.5rem;
+      margin-block-start: 0.25rem;
+      padding-block-start: 0.75rem;
+      border-block-start: 1px solid var(--ivory-3, #E2DBC9);
+    }
+
+    .col-actions .icon-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      gap: 0.45rem;
+      width: auto;
+      height: auto;
+      min-height: 44px;
+      padding: 0.5rem 0.75rem;
+      background: var(--ivory-2, #EFEADD);
+      font: inherit;
+      font-weight: 600;
+
+      &--danger {
+        color: #a8443c;
+        background: rgba(168, 68, 60, 0.08);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--green, #0F2A1D);
+        outline-offset: 2px;
+      }
+    }
+
+    .action-label { display: inline; }
+  }
+}
